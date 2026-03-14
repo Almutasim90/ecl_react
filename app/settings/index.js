@@ -197,9 +197,15 @@ export default function SettingsScreen() {
             <Text
               style={[
                 styles.sectionTitle,
-                { color: subtextColor, fontFamily: FONT_MEDIUM[fontKey] },
-                isRTL && styles.textRTL,
-                isRTL && { marginLeft: 0, marginRight: 4 },
+                {
+                  color: subtextColor,
+                  fontFamily: FONT_MEDIUM[fontKey],
+                  textAlign: isRTL ? 'right' : 'left',
+                  letterSpacing: isRTL ? 0 : 0.5,
+                  textTransform: isRTL ? 'none' : 'uppercase',
+                  marginLeft: isRTL ? 0 : 4,
+                  marginRight: isRTL ? 4 : 0,
+                },
               ]}
             >
               {section.title}
