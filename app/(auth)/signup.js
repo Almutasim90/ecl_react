@@ -335,11 +335,11 @@ const styles = StyleSheet.create({
   },
   titleRTL: {
     writingDirection: 'rtl',
+    textAlign: 'right',
   },
   errorText: {
     fontSize: 13,
     marginBottom: 12,
-    fontWeight: '500',
     textAlign: 'center',
   },
   signupBtn: {

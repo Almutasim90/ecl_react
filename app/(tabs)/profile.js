@@ -335,7 +335,6 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 40,
     color: '#2563eb',
-    fontWeight: '700',
   },
   brandBadge: {
     position: 'absolute',
@@ -358,7 +357,6 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 26,
     color: '#ffffff',
-    fontWeight: '700',
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -384,7 +382,6 @@ const styles = StyleSheet.create({
   brandText: {
     fontSize: 12,
     color: '#ffffff',
-    fontWeight: '700',
   },
   brandPlus: {
     color: '#fbbf24',
@@ -398,7 +395,6 @@ const styles = StyleSheet.create({
   memberText: {
     fontSize: 12,
     color: '#ffffff',
-    fontWeight: '600',
   },
   statsContainer: {
     flexDirection: 'row',
@@ -429,7 +425,6 @@ const styles = StyleSheet.create({
   statCount: {
     fontSize: 22,
     marginBottom: 2,
-    fontWeight: '700',
   },
   statLabel: {
     fontSize: 12,
@@ -440,7 +435,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
@@ -478,7 +472,6 @@ const styles = StyleSheet.create({
   },
   menuItemLabel: {
     fontSize: 16,
-    fontWeight: '600',
   },
   menuItemSubtitle: {
     fontSize: 12,
@@ -498,6 +491,5 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     fontSize: 16,
-    fontWeight: '600',
   },
 });

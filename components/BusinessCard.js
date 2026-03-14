@@ -51,13 +51,15 @@ export default function BusinessCard({ business, index = 0, horizontal = false }
             resizeMode="cover"
           />
           {business.featured && (
-            <View style={styles.featuredBadge}>
+            <View style={[styles.featuredBadge, isRTL && { left: undefined, right: 12 }]}>
               <Ionicons name="star" size={12} color="#ffffff" />
-              <Text style={styles.featuredText}>Featured</Text>
+              <Text style={[styles.featuredText, { fontFamily: FONT_MEDIUM[fontKey] }]}>
+                {isRTL ? 'مميز' : 'Featured'}
+              </Text>
             </View>
           )}
           {business.verified && (
-            <View style={styles.verifiedBadge}>
+            <View style={[styles.verifiedBadge, isRTL && { right: undefined, left: 12 }]}>
               <Ionicons name="checkmark-circle" size={16} color="#10b981" />
             </View>
           )}
@@ -205,7 +207,6 @@ const styles = StyleSheet.create({
   featuredText: {
     color: '#ffffff',
     fontSize: 11,
-    fontWeight: '600',
   },
   verifiedBadge: {
     position: 'absolute',
@@ -226,7 +227,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 19,
     marginBottom: 6,
-    fontWeight: '600',
   },
   category: {
     fontSize: 15,
@@ -248,7 +248,6 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 14,
-    fontWeight: '500',
   },
   reviewCount: {
     fontSize: 12,
@@ -276,7 +275,6 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 13,
-    fontWeight: '500',
   },
   textRTL: {
     textAlign: 'right',

@@ -39,7 +39,7 @@ export default function SocialAuthButtons({ onGoogle, onApple }) {
           isDark && styles.googleBtnDark,
         ]}
       >
-        <Text style={[styles.googleIcon, { fontFamily: FONT_BTN[fontKey] }]}>G</Text>
+        <Text style={styles.googleIcon}>G</Text>
         <Text style={[styles.btnLabel, { fontFamily: FONT_BTN[fontKey], color: isDark ? '#e2e8f0' : GOOGLE_TEXT }, isRTL && styles.labelRTL]}>
           {t('google')}
         </Text>
@@ -96,12 +96,12 @@ const styles = StyleSheet.create({
   },
   appleIcon: {
     fontSize: 20,
-    fontWeight: '600',
   },
   btnLabel: {
     fontSize: 15,
   },
   labelRTL: {
     writingDirection: 'rtl',
+    textAlign: 'right',
   },
 });

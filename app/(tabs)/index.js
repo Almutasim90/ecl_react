@@ -281,7 +281,6 @@ const styles = StyleSheet.create({
   avatarSmallText: {
     fontSize: 20,
     color: '#ffffff',
-    fontWeight: '700',
   },
   greetingSection: {
     gap: 2,
@@ -291,7 +290,6 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 18,
-    fontWeight: '600',
   },
   headerActions: {
     flexDirection: 'row',
@@ -322,7 +320,6 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 10,
     color: '#ffffff',
-    fontWeight: '700',
   },
   welcomeCard: {
     borderRadius: 24,
@@ -391,7 +388,6 @@ const styles = StyleSheet.create({
   welcomeTitle: {
     fontSize: 20,
     color: '#ffffff',
-    fontWeight: '700',
     marginBottom: 6,
   },
   welcomeSubtitle: {
@@ -423,7 +419,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: '700',
     marginBottom: 16,
     paddingHorizontal: 20,
   },
@@ -439,7 +434,6 @@ const styles = StyleSheet.create({
   },
   seeAll: {
     fontSize: 14,
-    fontWeight: '600',
   },
   categoriesScroll: {
     paddingLeft: 20,

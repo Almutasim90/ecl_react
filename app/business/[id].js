@@ -178,9 +178,11 @@ export default function BusinessDetailScreen() {
             </View>
           </View>
           {business.featured && (
-            <View style={styles.featuredBadge}>
+            <View style={[styles.featuredBadge, isRTL && { left: undefined, right: 16 }]}>
               <Ionicons name="star" size={12} color="#ffffff" />
-              <Text style={styles.featuredText}>Featured</Text>
+              <Text style={[styles.featuredText, { fontFamily: FONT_MEDIUM[fontKey] }]}>
+                {isRTL ? 'مميز' : 'Featured'}
+              </Text>
             </View>
           )}
         </View>
@@ -215,7 +217,7 @@ export default function BusinessDetailScreen() {
               </Text>
             </View>
             {business.verified && (
-              <View style={styles.verifiedBadge}>
+              <View style={[styles.verifiedBadge, isRTL && { marginLeft: 0, marginRight: 12 }]}>
                 <Ionicons name="checkmark-circle" size={20} color="#10b981" />
               </View>
             )}
@@ -354,7 +356,7 @@ export default function BusinessDetailScreen() {
                   <Text
                     style={[
                       styles.dayName,
-                      { color: textColor, fontFamily: FONT_MEDIUM[fontKey] },
+                      { color: textColor, fontFamily: FONT_MEDIUM[fontKey], textAlign: isRTL ? 'right' : 'left' },
                     ]}
                   >
                     {getDayName(day)}
@@ -362,7 +364,7 @@ export default function BusinessDetailScreen() {
                   <Text
                     style={[
                       styles.hourTime,
-                      { color: hours.closed ? '#ef4444' : subtextColor, fontFamily: FONT_BODY[fontKey] },
+                      { color: hours.closed ? '#ef4444' : subtextColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' },
                     ]}
                   >
                     {hours.closed ? (isRTL ? 'مغلق' : 'Closed') : `${hours.open} - ${hours.close}`}
@@ -400,7 +402,7 @@ export default function BusinessDetailScreen() {
                 >
                   <View style={[styles.reviewHeader, isRTL && styles.reviewHeaderRTL]}>
                     <View style={styles.reviewerAvatar}>
-                      <Text style={styles.reviewerInitial}>
+                      <Text style={[styles.reviewerInitial, { fontFamily: FONT_MEDIUM[fontKey] }]}>
                         {review.userName.charAt(0)}
                       </Text>
                     </View>
@@ -426,6 +428,7 @@ export default function BusinessDetailScreen() {
                           style={[
                             styles.reviewDate,
                             { color: subtextColor, fontFamily: FONT_BODY[fontKey] },
+                            isRTL && { marginLeft: 0, marginRight: 8 },
                           ]}
                         >
                           {review.date}
@@ -469,7 +472,7 @@ export default function BusinessDetailScreen() {
             )}
 
             <TouchableOpacity
-              style={[styles.writeReviewBtn, { borderColor: '#2563eb' }]}
+              style={[styles.writeReviewBtn, { borderColor: '#2563eb' }, isRTL && { flexDirection: 'row-reverse' }]}
               onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
             >
               <Ionicons name="create-outline" size={20} color="#2563eb" />
@@ -557,7 +560,6 @@ const styles = StyleSheet.create({
   featuredText: {
     color: '#ffffff',
     fontSize: 13,
-    fontWeight: '600',
   },
   content: {
     borderTopLeftRadius: 24,
@@ -734,7 +736,6 @@ const styles = StyleSheet.create({
   reviewerInitial: {
     color: '#ffffff',
     fontSize: 18,
-    fontWeight: '600',
   },
   reviewerInfo: {
     flex: 1,

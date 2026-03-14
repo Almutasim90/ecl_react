@@ -318,6 +318,7 @@ const styles = StyleSheet.create({
   },
   titleRTL: {
     writingDirection: 'rtl',
+    textAlign: 'right',
   },
   forgotPasswordBtn: {
     alignSelf: 'flex-end',
@@ -358,7 +359,6 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 13,
     marginBottom: 12,
-    fontWeight: '500',
     textAlign: 'center',
   },
   signUpRow: {

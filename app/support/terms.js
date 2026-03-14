@@ -17,7 +17,10 @@ export default function TermsScreen() {
   const router = useRouter();
   const { colors, isDark } = useTheme();
   const { isRTL } = useI18n();
-  const fontKey = isRTL ? 'Cairo' : 'Inter';
+  const fontKey = isRTL ? 'ar' : 'en';
+  const FONT_TITLE = { en: 'Inter_600SemiBold', ar: 'Cairo_600SemiBold' };
+  const FONT_BODY = { en: 'Inter_400Regular', ar: 'Cairo_400Regular' };
+  const FONT_MEDIUM = { en: 'Inter_500Medium', ar: 'Cairo_600SemiBold' };
 
   const sections = [
     {
@@ -100,20 +103,20 @@ export default function TermsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }, isRTL && styles.headerRTL]}>
         <TouchableOpacity
-          style={[styles.backButton, isRTL && styles.backButtonRTL]}
+          style={styles.backButton}
           onPress={() => router.back()}
         >
-          <Ionicons 
-            name={isRTL ? "chevron-forward" : "chevron-back"} 
-            size={24} 
-            color={colors.text} 
+          <Ionicons
+            name={isRTL ? "chevron-forward" : "chevron-back"}
+            size={24}
+            color={colors.text}
           />
         </TouchableOpacity>
         <Text style={[
-          styles.headerTitle, 
-          { color: colors.text, fontFamily: fontKey }
+          styles.headerTitle,
+          { color: colors.text, fontFamily: FONT_TITLE[fontKey] },
         ]}>
           {isRTL ? 'الشروط والأحكام' : 'Terms & Conditions'}
         </Text>
@@ -136,16 +139,16 @@ export default function TermsScreen() {
             <Ionicons name="document-text" size={40} color={colors.primary} />
           </View>
           <Text style={[
-            styles.heroTitle, 
-            { color: colors.text, fontFamily: fontKey },
-            isRTL && styles.textRTL
+            styles.heroTitle,
+            { color: colors.text, fontFamily: FONT_TITLE[fontKey] },
+            isRTL && styles.textRTL,
           ]}>
             {isRTL ? 'الشروط والأحكام' : 'Terms & Conditions'}
           </Text>
           <Text style={[
-            styles.heroSubtitle, 
-            { color: colors.textSecondary, fontFamily: fontKey },
-            isRTL && styles.textRTL
+            styles.heroSubtitle,
+            { color: colors.textSecondary, fontFamily: FONT_BODY[fontKey] },
+            isRTL && styles.textRTL,
           ]}>
             {isRTL 
               ? 'يرجى قراءة هذه الشروط بعناية قبل استخدام التطبيق'
@@ -153,8 +156,8 @@ export default function TermsScreen() {
           </Text>
           <Text style={[
             styles.lastUpdated,
-            { color: colors.primary, fontFamily: fontKey },
-            isRTL && styles.textRTL
+            { color: colors.primary, fontFamily: FONT_MEDIUM[fontKey] },
+            isRTL && styles.textRTL,
           ]}>
             {lastUpdated[isRTL ? 'ar' : 'en']}
           </Text>
@@ -172,15 +175,15 @@ export default function TermsScreen() {
             >
               <Text style={[
                 styles.sectionTitle,
-                { color: colors.text, fontFamily: fontKey },
-                isRTL && styles.textRTL
+                { color: colors.text, fontFamily: FONT_TITLE[fontKey] },
+                isRTL && styles.textRTL,
               ]}>
                 {section.title[isRTL ? 'ar' : 'en']}
               </Text>
               <Text style={[
                 styles.sectionContent,
-                { color: colors.textSecondary, fontFamily: fontKey },
-                isRTL && styles.textRTL
+                { color: colors.textSecondary, fontFamily: FONT_BODY[fontKey] },
+                isRTL && styles.textRTL,
               ]}>
                 {section.content[isRTL ? 'ar' : 'en']}
               </Text>
@@ -193,13 +196,13 @@ export default function TermsScreen() {
           from={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ type: 'timing', duration: 500, delay: 600 }}
-          style={[styles.agreementNotice, { backgroundColor: colors.primary + '10', borderColor: colors.primary + '30' }]}
+          style={[styles.agreementNotice, { backgroundColor: colors.primary + '10', borderColor: colors.primary + '30' }, isRTL && { flexDirection: 'row-reverse' }]}
         >
-          <Ionicons name="checkmark-circle" size={24} color={colors.primary} style={styles.agreementIcon} />
+          <Ionicons name="checkmark-circle" size={24} color={colors.primary} style={{ marginRight: isRTL ? 0 : 12, marginLeft: isRTL ? 12 : 0 }} />
           <Text style={[
             styles.agreementText,
-            { color: colors.text, fontFamily: fontKey },
-            isRTL && styles.textRTL
+            { color: colors.text, fontFamily: FONT_BODY[fontKey] },
+            isRTL && styles.textRTL,
           ]}>
             {isRTL 
               ? 'باستخدامك لتطبيق دليل+، فإنك توافق على هذه الشروط والأحكام'
@@ -227,6 +230,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderBottomWidth: 1,
   },
+  headerRTL: {
+    flexDirection: 'row-reverse',
+  },
   backButton: {
     padding: 8,
   },
@@ -235,7 +241,6 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '600',
   },
   placeholder: {
     width: 40,
@@ -262,7 +267,6 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     fontSize: 24,
-    fontWeight: '700',
     marginBottom: 8,
   },
   heroSubtitle: {
@@ -272,10 +276,10 @@ const styles = StyleSheet.create({
   },
   lastUpdated: {
     fontSize: 12,
-    fontWeight: '600',
   },
   textRTL: {
     textAlign: 'right',
+    writingDirection: 'rtl',
   },
   sectionsContainer: {
     gap: 12,
@@ -287,7 +291,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
     marginBottom: 8,
   },
   sectionContent: {
@@ -302,13 +305,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginTop: 8,
   },
-  agreementIcon: {
-    marginRight: 12,
-  },
   agreementText: {
     flex: 1,
     fontSize: 14,
-    fontWeight: '500',
   },
   footerSpace: {
     height: 40,

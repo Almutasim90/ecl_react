@@ -32,7 +32,7 @@ export default function CategoryChip({ category, selected = false, onPress, inde
       from={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: 'timing', duration: 300, delay: index * 30 }}
-      style={styles.chipWrapper}
+      style={[styles.chipWrapper, isRTL && { marginRight: 0, marginLeft: 10 }]}
     >
       <TouchableOpacity
         activeOpacity={0.7}
@@ -41,6 +41,7 @@ export default function CategoryChip({ category, selected = false, onPress, inde
           styles.chip,
           { backgroundColor: bgColor },
           selected && styles.chipSelected,
+          isRTL && { flexDirection: 'row-reverse' },
         ]}
       >
         <Ionicons name={category.icon} size={20} color={iconColor} />
@@ -82,9 +83,9 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: 15,
-    fontWeight: '500',
   },
   textRTL: {
     writingDirection: 'rtl',
+    textAlign: 'right',
   },
 });

@@ -174,7 +174,7 @@ export default function HelpSupportScreen() {
               style={[styles.faqItem, { backgroundColor: cardBg, borderColor }]}
             >
               <View style={[styles.faqHeader, isRTL && styles.faqHeaderRTL]}>
-                <Text style={[styles.faqQuestion, { color: textColor, fontFamily: FONT_MEDIUM[fontKey] }, isRTL && styles.textRTL]}>
+                <Text style={[styles.faqQuestion, { color: textColor, fontFamily: FONT_MEDIUM[fontKey], marginRight: isRTL ? 0 : 12, marginLeft: isRTL ? 12 : 0 }, isRTL && styles.textRTL]}>
                   {faq.question[isRTL ? 'ar' : 'en']}
                 </Text>
                 <Ionicons
@@ -323,7 +323,6 @@ const styles = StyleSheet.create({
   faqQuestion: {
     fontSize: 15,
     flex: 1,
-    marginRight: 12,
   },
   faqAnswer: {
     fontSize: 14,
