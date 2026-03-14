@@ -223,7 +223,7 @@ export default function SettingsScreen() {
                     <Text
                       style={[
                         styles.settingLabel,
-                        { color: textColor, fontFamily: FONT_BODY[fontKey] },
+                        { color: textColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' },
                       ]}
                     >
                       {item.label}
@@ -242,7 +242,7 @@ export default function SettingsScreen() {
                         <Text
                           style={[
                             styles.settingValue,
-                            { color: subtextColor, fontFamily: FONT_BODY[fontKey] },
+                            { color: subtextColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' },
                           ]}
                         >
                           {item.value}
@@ -287,7 +287,7 @@ export default function SettingsScreen() {
           onPress={() => setShowThemeModal(false)}
         >
           <Pressable style={[styles.modalContent, { backgroundColor: modalBg }]} onPress={e => e.stopPropagation()}>
-            <Text style={[styles.modalTitle, { color: textColor, fontFamily: FONT_TITLE[fontKey] }]}>
+            <Text style={[styles.modalTitle, { color: textColor, fontFamily: FONT_TITLE[fontKey], textAlign: isRTL ? 'right' : 'center' }]}>
               {isRTL ? 'اختر المظهر' : 'Choose Theme'}
             </Text>
             {themeOptions.map((option) => (
@@ -298,21 +298,22 @@ export default function SettingsScreen() {
                   { borderColor },
                   themeMode === option.value && styles.modalOptionSelected,
                   themeMode === option.value && { borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)' },
+                  isRTL && { flexDirection: 'row-reverse' },
                 ]}
                 onPress={() => handleThemeSelect(option.value)}
               >
-                <View style={styles.modalOptionLeft}>
+                <View style={[styles.modalOptionLeft, isRTL && { flexDirection: 'row-reverse' }]}>
                   <View style={[styles.optionIcon, { backgroundColor: isDark ? '#334155' : '#f1f5f9' }]}>
-                    <Ionicons 
-                      name={option.icon} 
-                      size={20} 
-                      color={themeMode === option.value ? '#2563eb' : subtextColor} 
+                    <Ionicons
+                      name={option.icon}
+                      size={20}
+                      color={themeMode === option.value ? '#2563eb' : subtextColor}
                     />
                   </View>
                   <Text style={[
-                    styles.modalOptionText, 
-                    { color: textColor, fontFamily: FONT_BODY[fontKey] },
-                    themeMode === option.value && { color: '#2563eb', fontFamily: FONT_MEDIUM[fontKey] }
+                    styles.modalOptionText,
+                    { color: textColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' },
+                    themeMode === option.value && { color: '#2563eb', fontFamily: FONT_MEDIUM[fontKey] },
                   ]}>
                     {option.label}
                   </Text>
@@ -346,7 +347,7 @@ export default function SettingsScreen() {
           onPress={() => setShowLanguageModal(false)}
         >
           <Pressable style={[styles.modalContent, { backgroundColor: modalBg }]} onPress={e => e.stopPropagation()}>
-            <Text style={[styles.modalTitle, { color: textColor, fontFamily: FONT_TITLE[fontKey] }]}>
+            <Text style={[styles.modalTitle, { color: textColor, fontFamily: FONT_TITLE[fontKey], textAlign: isRTL ? 'right' : 'center' }]}>
               {isRTL ? 'اختر اللغة' : 'Choose Language'}
             </Text>
             {languageOptions.map((option) => (
@@ -357,15 +358,16 @@ export default function SettingsScreen() {
                   { borderColor },
                   locale === option.value && styles.modalOptionSelected,
                   locale === option.value && { borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)' },
+                  isRTL && { flexDirection: 'row-reverse' },
                 ]}
                 onPress={() => handleLanguageSelect(option.value)}
               >
-                <View style={styles.modalOptionLeft}>
+                <View style={[styles.modalOptionLeft, isRTL && { flexDirection: 'row-reverse' }]}>
                   <Text style={styles.flagEmoji}>{option.flag}</Text>
                   <Text style={[
-                    styles.modalOptionText, 
-                    { color: textColor, fontFamily: option.value === 'ar' ? 'Cairo_400Regular' : 'Inter_400Regular' },
-                    locale === option.value && { color: '#2563eb', fontFamily: option.value === 'ar' ? 'Cairo_600SemiBold' : 'Inter_600SemiBold' }
+                    styles.modalOptionText,
+                    { color: textColor, fontFamily: option.value === 'ar' ? 'Cairo_400Regular' : 'Inter_400Regular', textAlign: isRTL ? 'right' : 'left' },
+                    locale === option.value && { color: '#2563eb', fontFamily: option.value === 'ar' ? 'Cairo_600SemiBold' : 'Inter_600SemiBold' },
                   ]}>
                     {option.label}
                   </Text>
