@@ -76,7 +76,7 @@ export default function HomeScreen() {
             <Text
               style={[
                 styles.postTitle,
-                { color: textColor, fontFamily: FONT_BOLD[fontKey] },
+                { color: textColor, fontFamily: FONT_BOLD[fontKey], textAlign: isRTL ? 'right' : 'left' },
               ]}
               numberOfLines={2}
             >
@@ -85,7 +85,7 @@ export default function HomeScreen() {
             <Text
               style={[
                 styles.postCategory,
-                { color: accentColor, fontFamily: FONT_BODY[fontKey] },
+                { color: accentColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' },
               ]}
             >
               {item.category}
@@ -95,6 +95,7 @@ export default function HomeScreen() {
             style={[
               styles.viewsBadge,
               { backgroundColor: isDark ? '#334155' : '#f1f5f9' },
+              isRTL && { marginLeft: 0, marginRight: 12 },
             ]}
           >
             <Text
@@ -154,7 +155,7 @@ export default function HomeScreen() {
             { backgroundColor: cardBg, borderColor: isDark ? '#334155' : '#e2e8f0' },
           ]}
         >
-          <Text style={{ color: textSecondary, fontFamily: FONT_BODY[fontKey] }}>
+          <Text style={{ color: textSecondary, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }}>
             {isRTL ? '🔍 ابحث...' : '🔍 Search...'}
           </Text>
         </View>

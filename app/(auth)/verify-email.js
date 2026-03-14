@@ -312,7 +312,7 @@ export default function VerifyEmailScreen() {
             </TouchableOpacity>
 
             {/* Resend Code */}
-            <View style={styles.resendContainer}>
+            <View style={[styles.resendContainer, isRTL && { flexDirection: 'row-reverse' }]}>
               <Text
                 style={[
                   styles.resendHint,
@@ -407,6 +407,7 @@ const styles = StyleSheet.create({
   },
   textRTL: {
     writingDirection: 'rtl',
+    textAlign: 'right',
   },
   otpContainer: {
     flexDirection: 'row',

@@ -74,11 +74,11 @@ export default function SearchScreen() {
           from={{ opacity: 0, translateY: -10 }}
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: 'timing', duration: 400 }}
-          style={[styles.searchInputContainer, { backgroundColor: inputBg, borderColor }]}
+          style={[styles.searchInputContainer, { backgroundColor: inputBg, borderColor }, isRTL && { flexDirection: 'row-reverse' }]}
         >
-          <Ionicons name="search" size={20} color={subtextColor} style={{ marginRight: 12 }} />
+          <Ionicons name="search" size={20} color={subtextColor} style={{ marginRight: isRTL ? 0 : 12, marginLeft: isRTL ? 12 : 0 }} />
           <TextInput
-            style={[styles.searchInput, { color: textColor, fontFamily: FONT_BODY[fontKey] }]}
+            style={[styles.searchInput, { color: textColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}
             placeholder={isRTL ? 'ابحث عن مكان...' : 'Search for a place...'}
             placeholderTextColor={subtextColor}
             value={searchQuery}
@@ -201,10 +201,10 @@ export default function SearchScreen() {
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => handleBusinessPress(item)}
-                  style={[styles.resultCard, { backgroundColor: cardBg, borderColor }]}
+                  style={[styles.resultCard, { backgroundColor: cardBg, borderColor }, isRTL && { flexDirection: 'row-reverse' }]}
                 >
                   <Image source={{ uri: item.image }} style={styles.resultImage} />
-                  <View style={styles.resultContent}>
+                  <View style={[styles.resultContent, isRTL && { marginLeft: 0, marginRight: 14 }]}>
                     <Text
                       style={[
                         styles.resultName,

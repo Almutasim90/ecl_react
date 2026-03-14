@@ -199,6 +199,7 @@ export default function SettingsScreen() {
                 styles.sectionTitle,
                 { color: subtextColor, fontFamily: FONT_MEDIUM[fontKey] },
                 isRTL && styles.textRTL,
+                isRTL && { marginLeft: 0, marginRight: 4 },
               ]}
             >
               {section.title}

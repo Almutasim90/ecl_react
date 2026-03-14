@@ -373,6 +373,7 @@ const styles = StyleSheet.create({
   },
   textRTL: {
     writingDirection: 'rtl',
+    textAlign: 'right',
   },
   errorText: {
     fontSize: 13,

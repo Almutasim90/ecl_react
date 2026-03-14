@@ -379,6 +379,7 @@ const styles = StyleSheet.create({
   },
   textRTL: {
     writingDirection: 'rtl',
+    textAlign: 'right',
   },
   dividerRow: {
     flexDirection: 'row',

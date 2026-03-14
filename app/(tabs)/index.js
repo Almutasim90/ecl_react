@@ -56,7 +56,7 @@ export default function HomeScreen() {
           <View style={[styles.headerContent, isRTL && styles.headerContentRTL]}>
             {/* User Info Section */}
             <View style={[styles.userSection, isRTL && styles.userSectionRTL]}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 activeOpacity={0.85}
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -72,12 +72,12 @@ export default function HomeScreen() {
                   </Text>
                 </LinearGradient>
               </TouchableOpacity>
-              
+
               <View style={styles.greetingSection}>
-                <Text style={[styles.greetingSmall, { color: subtextColor, fontFamily: FONT_BODY[fontKey] }]}>
+                <Text style={[styles.greetingSmall, { color: subtextColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
                   {getGreeting()}
                 </Text>
-                <Text style={[styles.userName, { color: textColor, fontFamily: FONT_TITLE[fontKey] }]}>
+                <Text style={[styles.userName, { color: textColor, fontFamily: FONT_TITLE[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
                   {user?.name || (isRTL ? 'ضيف' : 'Guest')}
                 </Text>
               </View>
@@ -117,32 +117,32 @@ export default function HomeScreen() {
               <View style={[styles.welcomeDecor, styles.welcomeDecor2]} />
               <View style={[styles.welcomeDecor, styles.welcomeDecor3]} />
               
-              <View style={styles.welcomeContent}>
+              <View style={[styles.welcomeContent, isRTL && { flexDirection: 'row-reverse' }]}>
                 {/* Brand Icon - Location Pin */}
-                <View style={styles.brandIconContainer}>
+                <View style={[styles.brandIconContainer, isRTL && { marginRight: 0, marginLeft: 14 }]}>
                   <View style={styles.brandIcon}>
                     <Ionicons name="location" size={28} color="#2563eb" />
                   </View>
                 </View>
-                
+
                 <View style={styles.welcomeTextSection}>
                   <View style={styles.brandHeader}>
-                    <Text style={[styles.brandName, { fontFamily: FONT_BOLD[fontKey] }]}>
+                    <Text style={[styles.brandName, { fontFamily: FONT_BOLD[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
                       Daleel<Text style={styles.brandPlus}>+</Text>
                     </Text>
                   </View>
-                  <Text style={[styles.welcomeTitle, { fontFamily: FONT_TITLE[fontKey] }]}>
+                  <Text style={[styles.welcomeTitle, { fontFamily: FONT_TITLE[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
                     {isRTL ? 'استكشف أفضل الأماكن' : 'Explore Best Places'}
                   </Text>
-                  <Text style={[styles.welcomeSubtitle, { fontFamily: FONT_BODY[fontKey] }]}>
+                  <Text style={[styles.welcomeSubtitle, { fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
                     {isRTL ? 'اكتشف المطاعم والمقاهي والمزيد حولك' : 'Discover restaurants, cafes & more around you'}
                   </Text>
                 </View>
               </View>
-              
+
               {/* Search Bar Style Button */}
-              <TouchableOpacity 
-                style={styles.searchButton}
+              <TouchableOpacity
+                style={[styles.searchButton, isRTL && { flexDirection: 'row-reverse' }]}
                 activeOpacity={0.9}
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -150,7 +150,7 @@ export default function HomeScreen() {
                 }}
               >
                 <Ionicons name="search" size={18} color="#64748b" />
-                <Text style={[styles.searchPlaceholder, { fontFamily: FONT_BODY[fontKey] }]}>
+                <Text style={[styles.searchPlaceholder, { fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
                   {isRTL ? 'ابحث عن مطعم، مقهى...' : 'Search restaurants, cafes...'}
                 </Text>
                 <View style={styles.searchArrow}>
@@ -167,13 +167,13 @@ export default function HomeScreen() {
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: 'timing', duration: 400, delay: 200 }}
         >
-          <Text style={[styles.sectionTitle, { color: textColor, fontFamily: FONT_TITLE[fontKey] }]}>
+          <Text style={[styles.sectionTitle, { color: textColor, fontFamily: FONT_TITLE[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
             {isRTL ? 'الفئات' : 'Categories'}
           </Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoriesScroll}
+            contentContainerStyle={[styles.categoriesScroll, isRTL && { paddingLeft: 8, paddingRight: 20 }]}
           >
             {CATEGORIES.map((category, idx) => (
               <CategoryChip
@@ -209,7 +209,7 @@ export default function HomeScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.businessesScroll}
+            contentContainerStyle={[styles.businessesScroll, isRTL && { paddingLeft: 8, paddingRight: 20 }]}
           >
             {FEATURED_BUSINESSES.map((business, idx) => (
               <BusinessCard key={business.id} business={business} index={idx} horizontal />

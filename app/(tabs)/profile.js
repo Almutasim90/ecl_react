@@ -119,7 +119,7 @@ export default function ProfileScreen() {
               <Text style={[styles.userName, { fontFamily: FONT_TITLE[fontKey] }]}>
                 {profile?.full_name || user?.user_metadata?.full_name || (isRTL ? 'ضيف' : 'Guest')}
               </Text>
-              <View style={styles.emailContainer}>
+              <View style={[styles.emailContainer, isRTL && { flexDirection: 'row-reverse' }]}>
                 <Ionicons name="mail-outline" size={14} color="rgba(255,255,255,0.8)" />
                 <Text style={[styles.userEmail, { fontFamily: FONT_BODY[fontKey] }]}>
                   {user?.email || (isRTL ? 'تسجيل الدخول للوصول' : 'Login to access')}
@@ -184,7 +184,7 @@ export default function ProfileScreen() {
 
         {/* Section Title */}
         <View style={styles.sectionTitleContainer}>
-          <Text style={[styles.sectionTitle, { color: subtextColor, fontFamily: FONT_BODY[fontKey] }]}>
+          <Text style={[styles.sectionTitle, { color: subtextColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
             {isRTL ? 'القائمة الرئيسية' : 'Quick Actions'}
           </Text>
         </View>
@@ -211,11 +211,11 @@ export default function ProfileScreen() {
                     <Ionicons name={item.icon} size={20} color={item.color || '#2563eb'} />
                   </View>
                   <View>
-                    <Text style={[styles.menuItemLabel, { color: textColor, fontFamily: FONT_BODY[fontKey] }]}>
+                    <Text style={[styles.menuItemLabel, { color: textColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
                       {item.label}
                     </Text>
                     {item.subtitle && (
-                      <Text style={[styles.menuItemSubtitle, { color: subtextColor, fontFamily: FONT_BODY[fontKey] }]}>
+                      <Text style={[styles.menuItemSubtitle, { color: subtextColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
                         {item.subtitle}
                       </Text>
                     )}
@@ -243,7 +243,7 @@ export default function ProfileScreen() {
             onPress={handleLogout}
             style={[styles.logoutButton, { backgroundColor: 'rgba(239, 68, 68, 0.1)' }]}
           >
-            <Ionicons name="log-out" size={20} color="#ef4444" style={{ marginRight: 10 }} />
+            <Ionicons name="log-out" size={20} color="#ef4444" style={{ marginRight: isRTL ? 0 : 10, marginLeft: isRTL ? 10 : 0 }} />
             <Text style={[styles.logoutText, { color: '#ef4444', fontFamily: FONT_BOLD[fontKey] }]}>
               {isRTL ? 'تسجيل الخروج' : 'Logout'}
             </Text>
