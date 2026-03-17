@@ -13,7 +13,7 @@ import { MotiView } from 'moti';
 import { Link } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../context/ThemeContext';
-import { useI18n } from '../context/I18nContext';
+
 import { useResponsive } from '../utils/useResponsive';
 
 const FONT_TITLE = { en: 'Inter_600SemiBold', ar: 'Cairo_600SemiBold' };
@@ -23,9 +23,9 @@ const FONT_BOLD = { en: 'Inter_600SemiBold', ar: 'Cairo_600SemiBold' };
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
-  const { t, isRTL } = useI18n();
+  const isRTL = false;
   const { horizontalPadding } = useResponsive();
-  const fontKey = isRTL ? 'ar' : 'en';
+  const fontKey = 'en';
 
   const guidePosts = [
     {

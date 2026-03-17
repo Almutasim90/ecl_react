@@ -2,10 +2,6 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../context/ThemeContext';
-import { useI18n } from '../context/I18nContext';
-
-/** Typography: Cairo for Arabic labels, Inter for English. */
-const FONT_BTN = { en: 'Inter_600SemiBold', ar: 'Cairo_600SemiBold' };
 
 const GOOGLE_BG = '#ffffff';
 const GOOGLE_BORDER = '#dadce0';
@@ -17,8 +13,6 @@ const APPLE_TEXT_DARK = '#000000';
 
 export default function SocialAuthButtons({ onGoogle, onApple }) {
   const { isDark } = useTheme();
-  const { t, isRTL } = useI18n();
-  const fontKey = isRTL ? 'ar' : 'en';
 
   const handlePress = (fn) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -29,7 +23,7 @@ export default function SocialAuthButtons({ onGoogle, onApple }) {
   const appleText = isDark ? APPLE_TEXT_DARK : APPLE_TEXT_LIGHT;
 
   return (
-    <View style={[styles.row, isRTL && styles.rowRTL]}>
+    <View style={styles.row}>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => handlePress(onGoogle)}
@@ -40,8 +34,8 @@ export default function SocialAuthButtons({ onGoogle, onApple }) {
         ]}
       >
         <Text style={styles.googleIcon}>G</Text>
-        <Text style={[styles.btnLabel, { fontFamily: FONT_BTN[fontKey], color: isDark ? '#e2e8f0' : GOOGLE_TEXT }, isRTL && styles.labelRTL]}>
-          {t('google')}
+        <Text style={[styles.btnLabel, { fontFamily: 'Inter_600SemiBold', color: isDark ? '#e2e8f0' : GOOGLE_TEXT }]}>
+          Google
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -49,9 +43,9 @@ export default function SocialAuthButtons({ onGoogle, onApple }) {
         onPress={() => handlePress(onApple)}
         style={[styles.btn, { backgroundColor: appleBg }]}
       >
-        <Text style={[styles.appleIcon, { color: appleText }]}></Text>
-        <Text style={[styles.btnLabel, { fontFamily: FONT_BTN[fontKey], color: appleText }, isRTL && styles.labelRTL]}>
-          {t('apple')}
+        <Text style={[styles.appleIcon, { color: appleText }]}></Text>
+        <Text style={[styles.btnLabel, { fontFamily: 'Inter_600SemiBold', color: appleText }]}>
+          Apple
         </Text>
       </TouchableOpacity>
     </View>
@@ -63,9 +57,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     marginTop: 8,
-  },
-  rowRTL: {
-    flexDirection: 'row-reverse',
   },
   btn: {
     flex: 1,
@@ -99,9 +90,5 @@ const styles = StyleSheet.create({
   },
   btnLabel: {
     fontSize: 15,
-  },
-  labelRTL: {
-    writingDirection: 'rtl',
-    textAlign: 'right',
   },
 });

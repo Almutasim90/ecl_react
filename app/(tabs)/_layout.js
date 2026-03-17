@@ -1,31 +1,30 @@
-import { Redirect, Tabs, usePathname } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 
 export default function TabsLayout() {
   const { isDark } = useTheme();
-  const { isAuthenticated, isInitialized } = useAuth();
-  const pathname = usePathname();
+  const { isInitialized } = useAuth();
+  const insets = useSafeAreaInsets();
   const bgColor = isDark ? '#0f172a' : '#ffffff';
-  const activeColor = '#2563eb';
+  const activeColor = '#7c3aed';
   const inactiveColor = isDark ? '#94a3b8' : '#64748b';
+
+  const androidBottom = insets.bottom;
 
   if (!isInitialized) {
     return null;
   }
 
-  if (!isAuthenticated) {
-    return (
-      <Redirect
-        href={{
-          pathname: '/(auth)/login',
-          params: { redirect: pathname },
-        }}
-      />
-    );
-  }
+  // Auth is optional - guests can access the app
+  // Only redirect if explicitly not initialized
+  // Uncomment below to force login:
+  // if (!isAuthenticated) {
+  //   return <Redirect href={{ pathname: '/(auth)/login', params: { redirect: pathname } }} />;
+  // }
 
   return (
     <Tabs
@@ -41,9 +40,9 @@ export default function TabsLayout() {
           backgroundColor: bgColor,
           borderTopColor: isDark ? '#1e293b' : '#e2e8f0',
           borderTopWidth: 1,
-          paddingBottom: Platform.OS === 'ios' ? 20 : 10,
+          paddingBottom: Platform.OS === 'ios' ? 20 : androidBottom + 8,
           paddingTop: 10,
-          height: Platform.OS === 'ios' ? 85 : 70,
+          height: Platform.OS === 'ios' ? 85 : 60 + androidBottom,
           elevation: 8,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -2 },
@@ -51,7 +50,7 @@ export default function TabsLayout() {
           shadowRadius: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 13,
+          fontSize: 12,
           fontWeight: '600',
           marginTop: 4,
         },
@@ -65,23 +64,36 @@ export default function TabsLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons 
-              name={focused ? "home" : "home-outline"} 
-              color={color} 
-              size={26} 
+            <Ionicons
+              name={focused ? 'home' : 'home-outline'}
+              color={color}
+              size={26}
             />
           ),
         }}
       />
       <Tabs.Screen
-        name="search"
+        name="listening"
         options={{
-          title: 'Search',
+          title: 'Listening',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons 
-              name={focused ? "search" : "search-outline"} 
-              color={color} 
-              size={26} 
+            <Ionicons
+              name={focused ? 'headset' : 'headset-outline'}
+              color={color}
+              size={26}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="reading"
+        options={{
+          title: 'Reading',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? 'book' : 'book-outline'}
+              color={color}
+              size={26}
             />
           ),
         }}
@@ -91,10 +103,10 @@ export default function TabsLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons 
-              name={focused ? "person" : "person-outline"} 
-              color={color} 
-              size={26} 
+            <Ionicons
+              name={focused ? 'person' : 'person-outline'}
+              color={color}
+              size={26}
             />
           ),
         }}

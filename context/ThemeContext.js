@@ -11,8 +11,8 @@ export const darkColors = {
   text: '#f1f5f9',
   textSecondary: '#94a3b8',
   border: '#334155',
-  accent: '#3b82f6',
-  accentLight: '#60a5fa',
+  accent: '#8b5cf6',
+  accentLight: '#a78bfa',
 };
 
 // Light theme colors
@@ -23,15 +23,15 @@ export const lightColors = {
   text: '#0f172a',
   textSecondary: '#64748b',
   border: '#e2e8f0',
-  accent: '#2563eb',
-  accentLight: '#3b82f6',
+  accent: '#7c3aed',
+  accentLight: '#8b5cf6',
 };
 
 export function ThemeProvider({ children }) {
   const systemScheme = useRNColorScheme();
   // Default to light theme for better UX
   const [themeMode, setThemeMode] = useState('light'); // 'light', 'dark', 'system'
-  
+
   // Calculate actual theme based on mode
   const getActualTheme = () => {
     if (themeMode === 'system') {
@@ -39,7 +39,7 @@ export function ThemeProvider({ children }) {
     }
     return themeMode;
   };
-  
+
   const colorScheme = getActualTheme();
   const isDark = colorScheme === 'dark';
   const colors = isDark ? darkColors : lightColors;
@@ -58,10 +58,10 @@ export function ThemeProvider({ children }) {
   }, [isDark]);
 
   return (
-    <ThemeContext.Provider 
-      value={{ 
-        colorScheme, 
-        isDark, 
+    <ThemeContext.Provider
+      value={{
+        colorScheme,
+        isDark,
         colors,
         themeMode,
         setTheme,

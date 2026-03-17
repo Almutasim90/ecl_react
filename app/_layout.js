@@ -18,9 +18,8 @@ import {
 } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
 import { ThemeProvider } from '../context/ThemeContext';
-import { I18nProvider } from '../context/I18nContext';
 import { AuthProvider } from '../context/AuthContext';
-import { FavoritesProvider } from '../context/FavoritesContext';
+import { QuizProvider } from '../context/QuizContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,10 +32,10 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
   });
-  
+
   // Fallback timeout for web - show app even if fonts fail
   const [fontTimeout, setFontTimeout] = useState(false);
-  
+
   useEffect(() => {
     // On web, set a timeout to show app even if fonts fail to load
     if (Platform.OS === 'web') {
@@ -55,7 +54,7 @@ export default function RootLayout() {
 
   // Show app if fonts loaded, or on error/timeout (with system fonts fallback)
   const shouldRender = fontsLoaded || fontError || fontTimeout;
-  
+
   if (!shouldRender) {
     return null;
   }
@@ -63,14 +62,12 @@ export default function RootLayout() {
   return (
     <GluestackUIProvider config={config}>
       <ThemeProvider>
-        <I18nProvider>
-          <AuthProvider>
-            <FavoritesProvider>
-              <StatusBar style="auto" />
-              <Slot />
-            </FavoritesProvider>
-          </AuthProvider>
-        </I18nProvider>
+        <AuthProvider>
+          <QuizProvider>
+            <StatusBar style="auto" />
+            <Slot />
+          </QuizProvider>
+        </AuthProvider>
       </ThemeProvider>
     </GluestackUIProvider>
   );

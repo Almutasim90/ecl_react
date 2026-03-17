@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Switch,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MotiView } from 'moti';
@@ -7,37 +14,31 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../context/ThemeContext';
-import { useI18n } from '../../context/I18nContext';
 import { useAuth } from '../../context/AuthContext';
-import { useFavorites } from '../../context/FavoritesContext';
 
-const { width } = Dimensions.get('window');
-
-const FONT_TITLE = { en: 'Inter_600SemiBold', ar: 'Cairo_600SemiBold' };
-const FONT_BODY = { en: 'Inter_400Regular', ar: 'Cairo_400Regular' };
-const FONT_BOLD = { en: 'Inter_600SemiBold', ar: 'Cairo_600SemiBold' };
+const APP_VERSION = '1.0.0';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { isDark } = useTheme();
-  const { isRTL } = useI18n();
+  const { isDark, toggleTheme } = useTheme();
   const { user, profile, signOut } = useAuth();
-  const { getFavoritesCount } = useFavorites();
-  const fontKey = isRTL ? 'ar' : 'en';
 
-  const bgColor = isDark ? '#0f172a' : '#ffffff';
-  const cardBg = isDark ? 'rgba(30,41,59,0.85)' : 'rgba(255,255,255,0.9)';
-  const textColor = isDark ? '#f1f5f9' : '#0f172a';
+  const bg = isDark ? '#0f172a' : '#f5f3ff';
+  const cardBg = isDark ? '#1e293b' : '#ffffff';
+  const textColor = isDark ? '#f1f5f9' : '#1e1b4b';
   const subtextColor = isDark ? '#94a3b8' : '#64748b';
+  const borderColor = isDark ? '#334155' : '#ede9fe';
+
+  const displayName = profile?.full_name || user?.user_metadata?.full_name || 'Student';
+  const displayEmail = user?.email || 'Not signed in';
 
   const handleLogout = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // For web compatibility, use a simple confirm instead of Alert
-    const confirmed = typeof window !== 'undefined' && window.confirm
-      ? window.confirm(isRTL ? 'هل تريد تسجيل الخروج من التطبيق؟' : 'Are you sure you want to logout?')
-      : true;
-    
+    const confirmed =
+      typeof window !== 'undefined' && window.confirm
+        ? window.confirm('Are you sure you want to logout?')
+        : true;
     if (confirmed) {
       const result = await signOut();
       if (result.success) {
@@ -46,450 +47,444 @@ export default function ProfileScreen() {
     }
   };
 
-  const menuItems = [
-    { icon: 'bookmark', label: isRTL ? 'المفضلة' : 'Saved Places', subtitle: isRTL ? 'الأماكن المحفوظة' : 'Your favorite spots', color: '#8b5cf6', action: () => router.push('/saved') },
-    { icon: 'settings', label: isRTL ? 'الإعدادات' : 'Settings', subtitle: isRTL ? 'تخصيص التطبيق' : 'Customize your app', color: '#6366f1', action: () => router.push('/settings') },
-    { icon: 'help-circle', label: isRTL ? 'المساعدة' : 'Help & Support', subtitle: isRTL ? 'احصل على المساعدة' : 'Get help anytime', color: '#14b8a6', action: () => {} },
-    { icon: 'document-text', label: isRTL ? 'الشروط' : 'Terms & Conditions', subtitle: isRTL ? 'السياسات والشروط' : 'Read our policies', color: '#f97316', action: () => {} },
-  ];
-
-  // Gradient colors based on theme
-  const gradientColors = isDark 
-    ? ['#1e3a8a', '#3b82f6', '#60a5fa'] 
-    : ['#2563eb', '#3b82f6', '#60a5fa'];
-
   return (
-    <View style={[styles.container, { backgroundColor: bgColor, paddingTop: insets.top, paddingBottom: 90 }]}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {/* Profile Header with Gradient - Matches App Identity */}
+    <View style={[styles.container, { backgroundColor: bg }]}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.scroll,
+          { paddingTop: insets.top + 16, paddingBottom: 110 },
+        ]}
+      >
+        {/* ── Profile hero card ── */}
         <MotiView
-          from={{ opacity: 0, scale: 0.95 }}
+          from={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: 'spring', damping: 15 }}
-          style={styles.profileCardWrapper}
+          transition={{ type: 'spring', damping: 16 }}
+          style={styles.heroWrap}
         >
           <LinearGradient
-            colors={gradientColors}
+            colors={isDark ? ['#3b1f7a', '#5b21b6', '#7c3aed'] : ['#6d28d9', '#7c3aed', '#a78bfa']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.profileGradient}
+            style={styles.heroGradient}
           >
-            {/* Decorative circles matching app identity */}
-            <View style={[styles.decorCircle, styles.decorCircle1]} />
-            <View style={[styles.decorCircle, styles.decorCircle2]} />
-            <View style={[styles.decorCircle, styles.decorCircle3]} />
-            
-            {/* Edit Profile Button */}
-            <TouchableOpacity 
-              style={styles.editButton}
-              activeOpacity={0.7}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              }}
-            >
-              <Ionicons name="pencil" size={16} color="#fff" />
-            </TouchableOpacity>
+            <View style={styles.heroBlob1} />
+            <View style={styles.heroBlob2} />
+            <View style={styles.heroBlob3} />
 
-            {/* Avatar with Location Icon Badge - Brand Identity */}
+            {/* Avatar */}
             <MotiView
-              from={{ opacity: 0, scale: 0.5 }}
+              from={{ opacity: 0, scale: 0.6 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: 'spring', damping: 12, delay: 100 }}
-              style={styles.avatarContainer}
+              transition={{ type: 'spring', damping: 14, delay: 100 }}
+              style={styles.avatarWrap}
             >
               <View style={styles.avatarRing}>
                 <View style={styles.avatar}>
-                  <Text style={[styles.avatarText, { fontFamily: FONT_BOLD[fontKey] }]}>
-                    {(profile?.full_name || user?.email)?.charAt(0).toUpperCase() || 'G'}
+                  <Text style={[styles.avatarLetter, { fontFamily: 'Inter_600SemiBold' }]}>
+                    {displayName.charAt(0).toUpperCase()}
                   </Text>
                 </View>
               </View>
-              {/* Location Icon Badge - Brand Identity */}
-              <View style={styles.brandBadge}>
-                <Ionicons name="location" size={12} color="#fff" />
+              <View style={styles.roleBadge}>
+                <Ionicons name="school" size={11} color="#fff" />
               </View>
             </MotiView>
 
-            {/* User Info */}
+            {/* Name + email */}
             <MotiView
-              from={{ opacity: 0, translateY: 10 }}
+              from={{ opacity: 0, translateY: 8 }}
               animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: 'timing', duration: 300, delay: 200 }}
+              transition={{ type: 'timing', duration: 320, delay: 180 }}
             >
-              <Text style={[styles.userName, { fontFamily: FONT_TITLE[fontKey] }]}>
-                {profile?.full_name || user?.user_metadata?.full_name || (isRTL ? 'ضيف' : 'Guest')}
+              <Text style={[styles.heroName, { fontFamily: 'Inter_600SemiBold' }]}>
+                {displayName}
               </Text>
-              <View style={[styles.emailContainer, isRTL && { flexDirection: 'row-reverse' }]}>
-                <Ionicons name="mail-outline" size={14} color="rgba(255,255,255,0.8)" />
-                <Text style={[styles.userEmail, { fontFamily: FONT_BODY[fontKey] }]}>
-                  {user?.email || (isRTL ? 'تسجيل الدخول للوصول' : 'Login to access')}
+              <View style={styles.emailRow}>
+                <Ionicons name="mail-outline" size={13} color="rgba(255,255,255,0.7)" />
+                <Text style={[styles.heroEmail, { fontFamily: 'Inter_400Regular' }]}>
+                  {displayEmail}
                 </Text>
               </View>
             </MotiView>
 
-            {/* Member badge with Daleel+ branding */}
+            {/* Membership pill */}
             <MotiView
-              from={{ opacity: 0, scale: 0.8 }}
+              from={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: 'spring', damping: 12, delay: 300 }}
-              style={styles.memberBadge}
+              transition={{ type: 'spring', damping: 14, delay: 260 }}
+              style={styles.memberPill}
             >
-              <Text style={[styles.brandText, { fontFamily: FONT_BOLD[fontKey] }]}>
-                Daleel<Text style={styles.brandPlus}>+</Text>
-              </Text>
-              <View style={styles.badgeDivider} />
-              <Ionicons name="star" size={12} color="#fbbf24" />
-              <Text style={[styles.memberText, { fontFamily: FONT_BODY[fontKey] }]}>
-                {isRTL ? 'عضو متميز' : 'Premium'}
-              </Text>
+              <Text style={[styles.memberBrand, { fontFamily: 'Inter_600SemiBold' }]}>ECL</Text>
+              <View style={styles.pillDivider} />
+              <Ionicons name="star" size={11} color="#fbbf24" />
+              <Text style={[styles.memberRole, { fontFamily: 'Inter_400Regular' }]}>Student</Text>
             </MotiView>
           </LinearGradient>
         </MotiView>
 
-        {/* Stats Section with Icons */}
+        {/* ── Preferences section ── */}
+        <SectionHeader label="Preferences" subtextColor={subtextColor} />
+
         <MotiView
-          from={{ opacity: 0, translateY: 20 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 400, delay: 150 }}
-          style={styles.statsContainer}
+          from={{ opacity: 0, translateX: -14 }}
+          animate={{ opacity: 1, translateX: 0 }}
+          transition={{ type: 'timing', duration: 340, delay: 300 }}
+          style={[styles.menuCard, { backgroundColor: cardBg, borderColor }]}
         >
-          {[
-            { icon: 'location', count: '24', label: isRTL ? 'الزيارات' : 'Visits', color: '#10b981' },
-            { icon: 'heart', count: String(getFavoritesCount()), label: isRTL ? 'المفضلة' : 'Favorites', color: '#ef4444' },
-            { icon: 'star', count: '12', label: isRTL ? 'التقييمات' : 'Reviews', color: '#f59e0b' },
-          ].map((stat, idx) => (
-            <MotiView
-              key={idx}
-              from={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: 'spring', damping: 12, delay: 200 + idx * 80 }}
-            >
-              <TouchableOpacity 
-                activeOpacity={0.85}
-                style={[styles.statItem, { backgroundColor: cardBg }]}
-              >
-                <View style={[styles.statIconWrapper, { backgroundColor: `${stat.color}15` }]}>
-                  <Ionicons name={stat.icon} size={18} color={stat.color} />
-                </View>
-                <Text style={[styles.statCount, { color: textColor, fontFamily: FONT_BOLD[fontKey] }]}>
-                  {stat.count}
-                </Text>
-                <Text style={[styles.statLabel, { color: subtextColor, fontFamily: FONT_BODY[fontKey] }]}>
-                  {stat.label}
-                </Text>
-              </TouchableOpacity>
-            </MotiView>
-          ))}
-        </MotiView>
-
-        {/* Section Title */}
-        <View style={styles.sectionTitleContainer}>
-          <Text style={[styles.sectionTitle, { color: subtextColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
-            {isRTL ? 'القائمة الرئيسية' : 'Quick Actions'}
-          </Text>
-        </View>
-
-        {/* Menu Items */}
-        <View style={styles.menuSection}>
-          {menuItems.map((item, idx) => (
-            <MotiView
-              key={idx}
-              from={{ opacity: 0, translateX: isRTL ? 20 : -20 }}
-              animate={{ opacity: 1, translateX: 0 }}
-              transition={{ type: 'timing', duration: 400, delay: 350 + idx * 50 }}
-            >
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  item.action();
-                }}
-                style={[styles.menuItem, { backgroundColor: cardBg }]}
-              >
-                <View style={[styles.menuItemLeft, isRTL && styles.menuItemLeftRTL]}>
-                  <View style={[styles.menuIconWrapper, { backgroundColor: `${item.color || '#2563eb'}15` }]}>
-                    <Ionicons name={item.icon} size={20} color={item.color || '#2563eb'} />
-                  </View>
-                  <View>
-                    <Text style={[styles.menuItemLabel, { color: textColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
-                      {item.label}
-                    </Text>
-                    {item.subtitle && (
-                      <Text style={[styles.menuItemSubtitle, { color: subtextColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
-                        {item.subtitle}
-                      </Text>
-                    )}
-                  </View>
-                </View>
-                <Ionicons 
-                  name={isRTL ? 'chevron-back' : 'chevron-forward'} 
-                  size={20} 
-                  color={subtextColor} 
-                />
-              </TouchableOpacity>
-            </MotiView>
-          ))}
-        </View>
-
-        {/* Logout Button */}
-        <MotiView
-          from={{ opacity: 0, translateY: 20 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 400, delay: 400 }}
-          style={styles.logoutButtonContainer}
-        >
+          {/* Dark mode — uses Switch, not chevron */}
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={handleLogout}
-            style={[styles.logoutButton, { backgroundColor: 'rgba(239, 68, 68, 0.1)' }]}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              toggleTheme();
+            }}
+            style={styles.menuRow}
           >
-            <Ionicons name="log-out" size={20} color="#ef4444" style={{ marginRight: isRTL ? 0 : 10, marginLeft: isRTL ? 10 : 0 }} />
-            <Text style={[styles.logoutText, { color: '#ef4444', fontFamily: FONT_BOLD[fontKey] }]}>
-              {isRTL ? 'تسجيل الخروج' : 'Logout'}
+            <View style={styles.menuRowLeft}>
+              <View style={[styles.menuIconWrap, { backgroundColor: 'rgba(124,58,237,0.12)' }]}>
+                <Ionicons name="contrast" size={19} color="#7c3aed" />
+              </View>
+              <View>
+                <Text style={[styles.menuLabel, { color: textColor, fontFamily: 'Inter_500Medium' }]}>
+                  Dark Mode
+                </Text>
+                <Text style={[styles.menuSub, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+                  {isDark ? 'On — switch to light' : 'Off — switch to dark'}
+                </Text>
+              </View>
+            </View>
+            <Switch
+              value={isDark}
+              onValueChange={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                toggleTheme();
+              }}
+              trackColor={{ false: '#e2e8f0', true: 'rgba(124,58,237,0.5)' }}
+              thumbColor={isDark ? '#7c3aed' : '#f1f5f9'}
+            />
+          </TouchableOpacity>
+        </MotiView>
+
+        {/* ── Support section ── */}
+        <SectionHeader label="Support" subtextColor={subtextColor} />
+
+        <MotiView
+          from={{ opacity: 0, translateX: -14 }}
+          animate={{ opacity: 1, translateX: 0 }}
+          transition={{ type: 'timing', duration: 340, delay: 360 }}
+          style={[styles.menuCard, { backgroundColor: cardBg, borderColor }]}
+        >
+          <MenuItem
+            icon="help-circle"
+            iconBg="rgba(20,184,166,0.12)"
+            iconColor="#14b8a6"
+            label="Help & Support"
+            sub="FAQs and contact"
+            textColor={textColor}
+            subtextColor={subtextColor}
+            onPress={() => router.push('/support/help')}
+            showDivider
+            borderColor={borderColor}
+          />
+          <MenuItem
+            icon="document-text"
+            iconBg="rgba(249,115,22,0.12)"
+            iconColor="#f97316"
+            label="Terms & Conditions"
+            sub="Read our policies"
+            textColor={textColor}
+            subtextColor={subtextColor}
+            onPress={() => {}}
+          />
+        </MotiView>
+
+        {/* ── Logout ── */}
+        <MotiView
+          from={{ opacity: 0, translateY: 16 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: 'timing', duration: 340, delay: 420 }}
+        >
+          <TouchableOpacity
+            activeOpacity={0.75}
+            onPress={handleLogout}
+            style={[styles.logoutBtn, { borderColor: 'rgba(239,68,68,0.3)' }]}
+          >
+            <View style={[styles.logoutIconWrap, { backgroundColor: 'rgba(239,68,68,0.1)' }]}>
+              <Ionicons name="log-out-outline" size={20} color="#ef4444" />
+            </View>
+            <Text style={[styles.logoutText, { fontFamily: 'Inter_600SemiBold' }]}>
+              Sign Out
             </Text>
           </TouchableOpacity>
+        </MotiView>
+
+        {/* ── Version footer ── */}
+        <MotiView
+          from={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ type: 'timing', duration: 400, delay: 480 }}
+          style={styles.versionWrap}
+        >
+          <Text style={[styles.versionText, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+            ECL · Version {APP_VERSION}
+          </Text>
         </MotiView>
       </ScrollView>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+// ── Sub-components ──────────────────────────────────────────────
+
+function SectionHeader({ label, subtextColor }) {
+  return (
+    <Text style={[sectionStyles.label, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+      {label.toUpperCase()}
+    </Text>
+  );
+}
+
+const sectionStyles = StyleSheet.create({
+  label: {
+    fontSize: 11,
+    letterSpacing: 1.3,
+    marginBottom: 10,
+    marginTop: 20,
+    paddingHorizontal: 4,
   },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 20,
-    paddingTop: 16,
-  },
-  profileCardWrapper: {
-    marginBottom: 20,
-    borderRadius: 24,
-    overflow: 'hidden',
-    shadowColor: '#2563eb',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  profileGradient: {
-    paddingVertical: 32,
-    paddingHorizontal: 24,
+});
+
+function MenuItem({ icon, iconBg, iconColor, label, sub, textColor, subtextColor, onPress, showDivider, borderColor }) {
+  return (
+    <>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          onPress?.();
+        }}
+        style={menuStyles.row}
+      >
+        <View style={menuStyles.left}>
+          <View style={[menuStyles.iconWrap, { backgroundColor: iconBg }]}>
+            <Ionicons name={icon} size={19} color={iconColor} />
+          </View>
+          <View>
+            <Text style={[menuStyles.label, { color: textColor, fontFamily: 'Inter_500Medium' }]}>
+              {label}
+            </Text>
+            {sub && (
+              <Text style={[menuStyles.sub, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+                {sub}
+              </Text>
+            )}
+          </View>
+        </View>
+        <Ionicons name="chevron-forward" size={18} color={subtextColor} />
+      </TouchableOpacity>
+      {showDivider && (
+        <View style={[menuStyles.divider, { backgroundColor: borderColor }]} />
+      )}
+    </>
+  );
+}
+
+const menuStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
     alignItems: 'center',
-    position: 'relative',
-    overflow: 'hidden',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
   },
-  decorCircle: {
-    position: 'absolute',
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-  },
-  decorCircle1: {
-    width: 150,
-    height: 150,
-    top: -50,
-    right: -30,
-  },
-  decorCircle2: {
-    width: 100,
-    height: 100,
-    bottom: -20,
-    left: -20,
-  },
-  decorCircle3: {
-    width: 60,
-    height: 60,
-    top: 20,
-    left: 30,
-  },
-  editButton: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+  left: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  iconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 11,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  avatarContainer: {
+  label: { fontSize: 15 },
+  sub: { fontSize: 12, marginTop: 1 },
+  divider: { height: 1, marginHorizontal: 16 },
+});
+
+// ── Main styles ──────────────────────────────────────────────────
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  scroll: { paddingHorizontal: 20 },
+
+  // Hero card
+  heroWrap: {
+    borderRadius: 24,
+    overflow: 'hidden',
+    marginBottom: 4,
+    shadowColor: '#7c3aed',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.28,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  heroGradient: {
+    paddingVertical: 32,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  heroBlob1: {
+    position: 'absolute',
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    top: -50,
+    right: -30,
+  },
+  heroBlob2: {
+    position: 'absolute',
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    bottom: -25,
+    left: -15,
+  },
+  heroBlob3: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    top: 24,
+    left: 32,
+  },
+  avatarWrap: {
     marginBottom: 16,
     position: 'relative',
   },
   avatarRing: {
     padding: 4,
     borderRadius: 60,
-    borderWidth: 3,
+    borderWidth: 2.5,
     borderColor: 'rgba(255,255,255,0.4)',
   },
   avatar: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
+    width: 88,
+    height: 88,
+    borderRadius: 44,
     backgroundColor: 'rgba(255,255,255,0.95)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  avatarText: {
-    fontSize: 40,
-    color: '#2563eb',
-  },
-  brandBadge: {
+  avatarLetter: { fontSize: 38, color: '#7c3aed' },
+  roleBadge: {
     position: 'absolute',
-    bottom: 8,
-    right: 8,
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: '#2563eb',
-    borderWidth: 3,
+    bottom: 6,
+    right: 6,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#7c3aed',
+    borderWidth: 2.5,
     borderColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
   },
-  userName: {
-    fontSize: 26,
+  heroName: {
+    fontSize: 24,
     color: '#ffffff',
-    marginBottom: 8,
     textAlign: 'center',
+    marginBottom: 6,
   },
-  emailContainer: {
+  emailRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 5,
+    justifyContent: 'center',
     marginBottom: 16,
   },
-  userEmail: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.85)',
-  },
-  memberBadge: {
+  heroEmail: { fontSize: 13, color: 'rgba(255,255,255,0.8)' },
+  memberPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(255,255,255,0.18)',
     paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingVertical: 7,
     borderRadius: 20,
   },
-  brandText: {
-    fontSize: 12,
-    color: '#ffffff',
-  },
-  brandPlus: {
-    color: '#fbbf24',
-  },
-  badgeDivider: {
+  memberBrand: { fontSize: 12, color: '#ffffff', letterSpacing: 2 },
+  pillDivider: {
     width: 1,
     height: 12,
     backgroundColor: 'rgba(255,255,255,0.3)',
-    marginHorizontal: 4,
+    marginHorizontal: 2,
   },
-  memberText: {
-    fontSize: 12,
-    color: '#ffffff',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-    gap: 10,
-  },
-  statItem: {
-    flex: 1,
-    paddingVertical: 16,
-    paddingHorizontal: 8,
-    borderRadius: 18,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-  statIconWrapper: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  statCount: {
-    fontSize: 22,
-    marginBottom: 2,
-  },
-  statLabel: {
-    fontSize: 12,
-  },
-  sectionTitleContainer: {
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  sectionTitle: {
-    fontSize: 13,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  menuSection: {
-    marginBottom: 24,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+  memberRole: { fontSize: 12, color: '#ffffff' },
+
+  // Menu card
+  menuCard: {
     borderRadius: 16,
-    marginBottom: 10,
+    borderWidth: 1,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 2,
   },
-  menuItemLeft: {
+  menuRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  menuRowLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
+    flex: 1,
   },
-  menuItemLeftRTL: {
-    flexDirection: 'row-reverse',
-  },
-  menuIconWrapper: {
-    width: 42,
-    height: 42,
-    borderRadius: 12,
+  menuIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 11,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  menuItemLabel: {
-    fontSize: 16,
-  },
-  menuItemSubtitle: {
-    fontSize: 12,
-    marginTop: 2,
-  },
-  logoutButtonContainer: {
-    marginTop: 8,
-  },
-  logoutButton: {
+  menuLabel: { fontSize: 15 },
+  menuSub: { fontSize: 12, marginTop: 1 },
+
+  // Logout
+  logoutBtn: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 16,
+    justifyContent: 'center',
+    gap: 10,
+    paddingVertical: 15,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.2)',
+    marginTop: 20,
   },
-  logoutText: {
-    fontSize: 16,
+  logoutIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
+  logoutText: { fontSize: 16, color: '#ef4444' },
+
+  // Version
+  versionWrap: {
+    alignItems: 'center',
+    marginTop: 24,
+  },
+  versionText: { fontSize: 12 },
 });

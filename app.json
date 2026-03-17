@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "Daleel+",
-    "slug": "daleel-plus",
+    "name": "ECL",
+    "slug": "ecl-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "scheme": "daleelplus",
+    "scheme": "eclapp",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -22,7 +22,8 @@
         "backgroundColor": "#0f172a"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.almutasimsorganization.daleelplus"
+      "package": "com.almutasimsorganization.ecl",
+      "usesCleartextTraffic": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -30,15 +31,20 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow ECL to access your microphone."
+        }
+      ]
     ],
     "extra": {
-      "supabaseUrl": "https://fifchomryberydljllfq.supabase.co",
-      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpZmNob21yeWJlcnlkbGpsbGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MzA2NDcsImV4cCI6MjA4NTQwNjY0N30.T3veklG74qLY5m4OtBlrDNrxxlFxU_d8DUGZwXqEm3U",
+      "supabaseUrl": "https://ffgtgjonipvrhejwvldw.supabase.co",
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmZ3Rnam9uaXB2cmhland2bGR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MjQ0NjIsImV4cCI6MjA4OTIwMDQ2Mn0.2OcFte21Xp3uwqv0mJjlKoId_DM25o5AHK_JfnXG5qg",
       "router": {},
-      "eas": {
-        "projectId": "867ccb51-51d3-4d3a-b7bf-52e79ca5ac9d"
-      }
+      "eas": {}
+
     },
     "owner": "almutasims-organization"
   }

@@ -13,7 +13,7 @@ import { MotiView } from 'moti';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../context/ThemeContext';
-import { useI18n } from '../../context/I18nContext';
+
 
 const FONT_TITLE = { en: 'Inter_600SemiBold', ar: 'Cairo_600SemiBold' };
 const FONT_BODY = { en: 'Inter_400Regular', ar: 'Cairo_400Regular' };
@@ -23,8 +23,9 @@ export default function HelpSupportScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
-  const { isRTL } = useI18n();
-  const fontKey = isRTL ? 'ar' : 'en';
+  
+  const isRTL = false;
+  const fontKey = 'en';
   const [expandedFaq, setExpandedFaq] = useState(null);
 
   const bgColor = isDark ? '#0f172a' : '#ffffff';

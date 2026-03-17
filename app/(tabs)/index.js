@@ -1,367 +1,401 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import { MotiView } from 'moti';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
-import { useI18n } from '../../context/I18nContext';
 import { useAuth } from '../../context/AuthContext';
-import BusinessCard from '../../components/BusinessCard';
-import CategoryChip from '../../components/CategoryChip';
-import { CATEGORIES, FEATURED_BUSINESSES, NEARBY_BUSINESSES } from '../../data/mockData';
-
-const FONT_TITLE = { en: 'Inter_600SemiBold', ar: 'Cairo_600SemiBold' };
-const FONT_BODY = { en: 'Inter_400Regular', ar: 'Cairo_400Regular' };
-const FONT_BOLD = { en: 'Inter_600SemiBold', ar: 'Cairo_600SemiBold' };
+import { fetchListeningQuestions, fetchReadingQuestions, getFormList } from '../../lib/api';
 
 export default function HomeScreen() {
-  const insets = useSafeAreaInsets();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
-  const { isRTL } = useI18n();
-  const { user } = useAuth();
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const fontKey = isRTL ? 'ar' : 'en';
+  const { user, profile } = useAuth();
 
-  const bgColor = isDark ? '#0f172a' : '#ffffff';
-  const cardBg = isDark ? 'rgba(30,41,59,0.85)' : 'rgba(255,255,255,0.9)';
-  const textColor = isDark ? '#f1f5f9' : '#0f172a';
+  const [listeningForms, setListeningForms] = useState([]);
+  const [readingForms, setReadingForms] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const [lq, rq] = await Promise.all([
+          fetchListeningQuestions(),
+          fetchReadingQuestions(),
+        ]);
+        setListeningForms(getFormList(lq));
+        setReadingForms(getFormList(rq));
+      } catch (e) {
+        console.warn('Failed to load stats:', e.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadStats();
+  }, []);
+
+  const bg = isDark ? '#0f172a' : '#f5f3ff';
+  const cardBg = isDark ? '#1e293b' : '#ffffff';
+  const textColor = isDark ? '#f1f5f9' : '#1e1b4b';
   const subtextColor = isDark ? '#94a3b8' : '#64748b';
+  const borderColor = isDark ? '#334155' : '#ede9fe';
+  const accentColor = '#7c3aed';
 
-  // Get current time greeting
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return isRTL ? 'صباح الخير' : 'Good Morning';
-    if (hour < 18) return isRTL ? 'مساء الخير' : 'Good Afternoon';
-    return isRTL ? 'مساء الخير' : 'Good Evening';
-  };
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const greetingIcon = hour < 12 ? '☀️' : hour < 18 ? '⛅' : '🌙';
+  const userName = profile?.full_name || user?.user_metadata?.full_name || 'Student';
 
-  const handleCategoryPress = (category) => {
-    setSelectedCategory(selectedCategory?.id === category.id ? null : category);
-  };
+  const totalListeningQs = listeningForms.reduce((s, f) => s + f.questions.length, 0);
+  const totalReadingQs = readingForms.reduce((s, f) => s + f.questions.length, 0);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {/* Enhanced Header with User Welcome */}
+    <View style={[styles.container, { backgroundColor: bg }]}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 16, paddingBottom: 100 }]}
+      >
+        {/* ── Header ── */}
         <MotiView
-          from={{ opacity: 0, translateY: -20 }}
+          from={{ opacity: 0, translateY: -16 }}
           animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'spring', damping: 15 }}
+          transition={{ type: 'spring', damping: 18 }}
           style={styles.header}
         >
-          <View style={[styles.headerContent, isRTL && styles.headerContentRTL]}>
-            {/* User Info Section */}
-            <View style={[styles.userSection, isRTL && styles.userSectionRTL]}>
-              <TouchableOpacity
-                activeOpacity={0.85}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.push('/(tabs)/profile');
-                }}
-              >
-                <LinearGradient
-                  colors={isDark ? ['#3b82f6', '#2563eb'] : ['#2563eb', '#1d4ed8']}
-                  style={styles.avatarSmall}
-                >
-                  <Text style={[styles.avatarSmallText, { fontFamily: FONT_BOLD[fontKey] }]}>
-                    {user?.name?.charAt(0).toUpperCase() || 'G'}
-                  </Text>
-                </LinearGradient>
-              </TouchableOpacity>
+          <View style={styles.headerLeft}>
+            <Text style={[styles.greetingText, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+              {greetingIcon}  {greeting}
+            </Text>
+            <Text style={[styles.userName, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+              {userName}
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push('/(tabs)/profile');
+            }}
+            activeOpacity={0.85}
+            style={[styles.avatar, { backgroundColor: accentColor }]}
+          >
+            <Text style={[styles.avatarLetter, { fontFamily: 'Inter_600SemiBold' }]}>
+              {userName.charAt(0).toUpperCase()}
+            </Text>
+          </TouchableOpacity>
+        </MotiView>
 
-              <View style={styles.greetingSection}>
-                <Text style={[styles.greetingSmall, { color: subtextColor, fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
-                  {getGreeting()}
+        {/* ── Hero card ── */}
+        <MotiView
+          from={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', damping: 16, delay: 80 }}
+          style={styles.heroWrap}
+        >
+          <LinearGradient
+            colors={isDark ? ['#3b1f7a', '#5b21b6'] : ['#6d28d9', '#7c3aed']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.hero}
+          >
+            {/* decorative blobs */}
+            <View style={styles.heroBlob1} />
+            <View style={styles.heroBlob2} />
+
+            <View style={styles.heroContent}>
+              <View style={styles.heroLeft}>
+                <Text style={[styles.heroEyebrow, { fontFamily: 'Inter_400Regular' }]}>
+                  Daily Practice
                 </Text>
-                <Text style={[styles.userName, { color: textColor, fontFamily: FONT_TITLE[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
-                  {user?.name || (isRTL ? 'ضيف' : 'Guest')}
+                <Text style={[styles.heroTitle, { fontFamily: 'Inter_600SemiBold' }]}>
+                  Ready to{'\n'}practice today?
+                </Text>
+                <Text style={[styles.heroSub, { fontFamily: 'Inter_400Regular' }]}>
+                  Listening &amp; Reading{'\n'}comprehension forms
                 </Text>
               </View>
-            </View>
-
-            {/* Action Buttons */}
-            <View style={[styles.headerActions, isRTL && styles.headerActionsRTL]}>
-              <TouchableOpacity 
-                style={[styles.iconButton, { backgroundColor: isDark ? 'rgba(59,130,246,0.15)' : 'rgba(37,99,235,0.1)' }]}
-                activeOpacity={0.7}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                }}
-              >
-                <Ionicons name="notifications-outline" size={22} color={isDark ? '#60a5fa' : '#2563eb'} />
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.badgeText}>3</Text>
+              <View style={styles.heroRight}>
+                <View style={styles.heroIconCircle}>
+                  <Ionicons name="school" size={32} color="#7c3aed" />
                 </View>
-              </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          </LinearGradient>
+        </MotiView>
 
-          {/* Welcome Message Card - Matches App Identity */}
+        {/* ── Section: Start a Quiz ── */}
+        <View style={styles.sectionRow}>
+          <Text style={[styles.sectionTitle, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+            Start a Quiz
+          </Text>
+        </View>
+
+        <View style={styles.quizRow}>
+          {/* Listening card */}
           <MotiView
-            from={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: 'spring', damping: 15, delay: 150 }}
+            from={{ opacity: 0, translateX: -16 }}
+            animate={{ opacity: 1, translateX: 0 }}
+            transition={{ type: 'timing', duration: 380, delay: 200 }}
+            style={styles.quizCardWrap}
           >
-            <LinearGradient
-              colors={isDark ? ['#1e3a8a', '#3b82f6'] : ['#2563eb', '#3b82f6']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.welcomeCard}
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                router.push('/(tabs)/listening');
+              }}
+              style={styles.quizCard}
             >
-              {/* Decorative elements matching splash screen */}
-              <View style={[styles.welcomeDecor, styles.welcomeDecor1]} />
-              <View style={[styles.welcomeDecor, styles.welcomeDecor2]} />
-              <View style={[styles.welcomeDecor, styles.welcomeDecor3]} />
-              
-              <View style={[styles.welcomeContent, isRTL && { flexDirection: 'row-reverse' }]}>
-                {/* Brand Icon - Location Pin */}
-                <View style={[styles.brandIconContainer, isRTL && { marginRight: 0, marginLeft: 14 }]}>
-                  <View style={styles.brandIcon}>
-                    <Ionicons name="location" size={28} color="#2563eb" />
-                  </View>
+              <LinearGradient
+                colors={['#7c3aed', '#5b21b6']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.quizGradient}
+              >
+                <View style={styles.quizDecor} />
+                <View style={[styles.quizIconBg, { backgroundColor: 'rgba(255,255,255,0.18)' }]}>
+                  <Ionicons name="headset" size={28} color="#ffffff" />
                 </View>
-
-                <View style={styles.welcomeTextSection}>
-                  <View style={styles.brandHeader}>
-                    <Text style={[styles.brandName, { fontFamily: FONT_BOLD[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
-                      Daleel<Text style={styles.brandPlus}>+</Text>
+                <Text style={[styles.quizLabel, { fontFamily: 'Inter_600SemiBold' }]}>
+                  Listening
+                </Text>
+                <Text style={[styles.quizCaption, { fontFamily: 'Inter_400Regular' }]}>
+                  Audio comprehension
+                </Text>
+                {!loading && (
+                  <View style={styles.quizMeta}>
+                    <Text style={[styles.quizMetaText, { fontFamily: 'Inter_400Regular' }]}>
+                      {listeningForms.length} forms · {totalListeningQs} Qs
                     </Text>
                   </View>
-                  <Text style={[styles.welcomeTitle, { fontFamily: FONT_TITLE[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
-                    {isRTL ? 'استكشف أفضل الأماكن' : 'Explore Best Places'}
-                  </Text>
-                  <Text style={[styles.welcomeSubtitle, { fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
-                    {isRTL ? 'اكتشف المطاعم والمقاهي والمزيد حولك' : 'Discover restaurants, cafes & more around you'}
-                  </Text>
+                )}
+                <View style={styles.quizArrow}>
+                  <Ionicons name="arrow-forward" size={16} color="#7c3aed" />
                 </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </MotiView>
+
+          {/* Reading card */}
+          <MotiView
+            from={{ opacity: 0, translateX: 16 }}
+            animate={{ opacity: 1, translateX: 0 }}
+            transition={{ type: 'timing', duration: 380, delay: 260 }}
+            style={styles.quizCardWrap}
+          >
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                router.push('/(tabs)/reading');
+              }}
+              style={styles.quizCard}
+            >
+              <LinearGradient
+                colors={['#4f46e5', '#3730a3']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.quizGradient}
+              >
+                <View style={styles.quizDecor} />
+                <View style={[styles.quizIconBg, { backgroundColor: 'rgba(255,255,255,0.18)' }]}>
+                  <Ionicons name="book" size={28} color="#ffffff" />
+                </View>
+                <Text style={[styles.quizLabel, { fontFamily: 'Inter_600SemiBold' }]}>
+                  Reading
+                </Text>
+                <Text style={[styles.quizCaption, { fontFamily: 'Inter_400Regular' }]}>
+                  Text comprehension
+                </Text>
+                {!loading && (
+                  <View style={styles.quizMeta}>
+                    <Text style={[styles.quizMetaText, { fontFamily: 'Inter_400Regular' }]}>
+                      {readingForms.length} forms · {totalReadingQs} Qs
+                    </Text>
+                  </View>
+                )}
+                <View style={styles.quizArrow}>
+                  <Ionicons name="arrow-forward" size={16} color="#4f46e5" />
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </MotiView>
+        </View>
+
+        {/* ── Stats strip ── */}
+        <MotiView
+          from={{ opacity: 0, translateY: 16 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: 'timing', duration: 380, delay: 320 }}
+          style={[styles.statsStrip, { backgroundColor: cardBg, borderColor }]}
+        >
+          {loading ? (
+            <ActivityIndicator color={accentColor} size="small" style={{ paddingVertical: 14 }} />
+          ) : (
+            <>
+              <View style={styles.statItem}>
+                <View style={[styles.statIcon, { backgroundColor: 'rgba(124,58,237,0.12)' }]}>
+                  <Ionicons name="headset" size={18} color={accentColor} />
+                </View>
+                <Text style={[styles.statNum, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+                  {listeningForms.length}
+                </Text>
+                <Text style={[styles.statLabel, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+                  Listening
+                </Text>
               </View>
 
-              {/* Search Bar Style Button */}
-              <TouchableOpacity
-                style={[styles.searchButton, isRTL && { flexDirection: 'row-reverse' }]}
-                activeOpacity={0.9}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                  router.push('/(tabs)/search');
-                }}
-              >
-                <Ionicons name="search" size={18} color="#64748b" />
-                <Text style={[styles.searchPlaceholder, { fontFamily: FONT_BODY[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
-                  {isRTL ? 'ابحث عن مطعم، مقهى...' : 'Search restaurants, cafes...'}
-                </Text>
-                <View style={styles.searchArrow}>
-                  <Ionicons name={isRTL ? 'arrow-back' : 'arrow-forward'} size={14} color="#fff" />
+              <View style={[styles.statDivider, { backgroundColor: borderColor }]} />
+
+              <View style={styles.statItem}>
+                <View style={[styles.statIcon, { backgroundColor: 'rgba(79,70,229,0.12)' }]}>
+                  <Ionicons name="book" size={18} color="#4f46e5" />
                 </View>
-              </TouchableOpacity>
-            </LinearGradient>
-          </MotiView>
+                <Text style={[styles.statNum, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+                  {readingForms.length}
+                </Text>
+                <Text style={[styles.statLabel, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+                  Reading
+                </Text>
+              </View>
+
+              <View style={[styles.statDivider, { backgroundColor: borderColor }]} />
+
+              <View style={styles.statItem}>
+                <View style={[styles.statIcon, { backgroundColor: 'rgba(124,58,237,0.12)' }]}>
+                  <Ionicons name="help-circle" size={18} color={accentColor} />
+                </View>
+                <Text style={[styles.statNum, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+                  {totalListeningQs + totalReadingQs}
+                </Text>
+                <Text style={[styles.statLabel, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+                  Questions
+                </Text>
+              </View>
+            </>
+          )}
         </MotiView>
 
-        {/* Categories */}
+        {/* ── Tip card ── */}
         <MotiView
-          from={{ opacity: 0, translateY: 20 }}
+          from={{ opacity: 0, translateY: 16 }}
           animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 400, delay: 200 }}
+          transition={{ type: 'timing', duration: 380, delay: 380 }}
+          style={[styles.tipCard, { backgroundColor: cardBg, borderColor }]}
         >
-          <Text style={[styles.sectionTitle, { color: textColor, fontFamily: FONT_TITLE[fontKey], textAlign: isRTL ? 'right' : 'left' }]}>
-            {isRTL ? 'الفئات' : 'Categories'}
-          </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[styles.categoriesScroll, isRTL && { paddingLeft: 8, paddingRight: 20 }]}
-          >
-            {CATEGORIES.map((category, idx) => (
-              <CategoryChip
-                key={category.id}
-                category={category}
-                selected={selectedCategory?.id === category.id}
-                onPress={handleCategoryPress}
-                index={idx}
-              />
-            ))}
-          </ScrollView>
-        </MotiView>
-
-        {/* Featured Businesses */}
-        <MotiView
-          from={{ opacity: 0, translateY: 20 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 400, delay: 300 }}
-        >
-          <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-            <Text style={[styles.sectionTitle, { color: textColor, fontFamily: FONT_TITLE[fontKey] }]}>
-              {isRTL ? 'مميز' : 'Featured'}
-            </Text>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
-            >
-              <Text style={[styles.seeAll, { color: '#2563eb', fontFamily: FONT_BODY[fontKey] }]}>
-                {isRTL ? 'عرض الكل' : 'See All'}
-              </Text>
-            </TouchableOpacity>
+          <View style={[styles.tipIconBg, { backgroundColor: 'rgba(124,58,237,0.1)' }]}>
+            <Ionicons name="bulb-outline" size={22} color={accentColor} />
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[styles.businessesScroll, isRTL && { paddingLeft: 8, paddingRight: 20 }]}
-          >
-            {FEATURED_BUSINESSES.map((business, idx) => (
-              <BusinessCard key={business.id} business={business} index={idx} horizontal />
-            ))}
-          </ScrollView>
-        </MotiView>
-
-        {/* Nearby Businesses */}
-        <MotiView
-          from={{ opacity: 0, translateY: 20 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 400, delay: 400 }}
-        >
-          <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-            <Text style={[styles.sectionTitle, { color: textColor, fontFamily: FONT_TITLE[fontKey] }]}>
-              {isRTL ? 'قريب منك' : 'Nearby'}
+          <View style={styles.tipText}>
+            <Text style={[styles.tipTitle, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+              Exam Tip
+            </Text>
+            <Text style={[styles.tipBody, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+              Listen to each audio clip at least twice before selecting your answer.
             </Text>
           </View>
-          {NEARBY_BUSINESSES.map((business, idx) => (
-            <BusinessCard key={business.id} business={business} index={idx} />
-          ))}
         </MotiView>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 90,
-  },
+  container: { flex: 1 },
+  scroll: { paddingHorizontal: 20 },
+
+  // Header
   header: {
-    paddingTop: 50,
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-  },
-  headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
   },
-  headerContentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  userSection: {
-    flexDirection: 'row',
+  headerLeft: { gap: 2 },
+  greetingText: { fontSize: 13 },
+  userName: { fontSize: 22, marginTop: 2 },
+  avatar: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 12,
   },
-  userSectionRTL: {
-    flexDirection: 'row-reverse',
-  },
-  avatarSmall: {
-    width: 48,
-    height: 48,
+  avatarLetter: { color: '#fff', fontSize: 20 },
+
+  // Hero
+  heroWrap: {
     borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#2563eb',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  avatarSmallText: {
-    fontSize: 20,
-    color: '#ffffff',
-  },
-  greetingSection: {
-    gap: 2,
-  },
-  greetingSmall: {
-    fontSize: 13,
-  },
-  userName: {
-    fontSize: 18,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  headerActionsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  iconButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: '#ef4444',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  badgeText: {
-    fontSize: 10,
-    color: '#ffffff',
-  },
-  welcomeCard: {
-    borderRadius: 24,
-    padding: 20,
     overflow: 'hidden',
-    position: 'relative',
+    marginBottom: 24,
+    shadowColor: '#7c3aed',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
   },
-  welcomeDecor: {
+  hero: {
+    borderRadius: 24,
+    overflow: 'hidden',
+    padding: 24,
+  },
+  heroBlob1: {
     position: 'absolute',
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-  },
-  welcomeDecor1: {
-    width: 150,
-    height: 150,
-    top: -50,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    top: -40,
     right: -30,
   },
-  welcomeDecor2: {
-    width: 100,
-    height: 100,
-    bottom: -40,
-    left: -30,
+  heroBlob2: {
+    position: 'absolute',
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    bottom: -20,
+    left: 10,
   },
-  welcomeDecor3: {
-    width: 60,
-    height: 60,
-    top: 60,
-    right: 60,
-  },
-  welcomeContent: {
+  heroContent: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  brandIconContainer: {
-    marginRight: 14,
+  heroLeft: { flex: 1, gap: 4 },
+  heroEyebrow: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.65)',
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+    marginBottom: 4,
   },
-  brandIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
+  heroTitle: {
+    fontSize: 24,
+    color: '#ffffff',
+    lineHeight: 32,
+    marginBottom: 8,
+  },
+  heroSub: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.7)',
+    lineHeight: 19,
+  },
+  heroRight: { marginLeft: 16 },
+  heroIconCircle: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
     backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
@@ -371,80 +405,136 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
-  welcomeTextSection: {
-    flex: 1,
+
+  // Section label
+  sectionRow: {
+    marginBottom: 14,
   },
-  brandHeader: {
-    marginBottom: 4,
-  },
-  brandName: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.9)',
-    letterSpacing: 0.5,
-  },
-  brandPlus: {
-    color: '#fbbf24',
-  },
-  welcomeTitle: {
-    fontSize: 20,
-    color: '#ffffff',
-    marginBottom: 6,
-  },
-  welcomeSubtitle: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.8)',
-    lineHeight: 18,
-  },
-  searchButton: {
+  sectionTitle: { fontSize: 18 },
+
+  // Quiz cards
+  quizRow: {
     flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
+  quizCardWrap: { flex: 1 },
+  quizCard: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#7c3aed',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.22,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  quizGradient: {
+    padding: 18,
+    borderRadius: 20,
+    minHeight: 180,
+    overflow: 'hidden',
+    position: 'relative',
+    justifyContent: 'flex-start',
+  },
+  quizDecor: {
+    position: 'absolute',
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    top: -28,
+    right: -28,
+  },
+  quizIconBg: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 14,
-    gap: 10,
+    marginBottom: 12,
   },
-  searchPlaceholder: {
-    flex: 1,
-    fontSize: 14,
-    color: '#94a3b8',
+  quizLabel: {
+    fontSize: 17,
+    color: '#ffffff',
+    marginBottom: 3,
   },
-  searchArrow: {
+  quizCaption: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.75)',
+    marginBottom: 12,
+  },
+  quizMeta: {
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    alignSelf: 'flex-start',
+    marginBottom: 10,
+  },
+  quizMetaText: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.9)',
+  },
+  quizArrow: {
     width: 28,
     height: 28,
-    borderRadius: 8,
-    backgroundColor: '#2563eb',
+    borderRadius: 14,
+    backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  sectionTitle: {
-    fontSize: 20,
-    marginBottom: 16,
-    paddingHorizontal: 20,
-  },
-  sectionHeader: {
+
+  // Stats strip
+  statsStrip: {
     flexDirection: 'row',
+    borderRadius: 18,
+    borderWidth: 1,
+    padding: 16,
+    marginBottom: 16,
+    justifyContent: 'space-around',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  sectionHeaderRTL: {
-    flexDirection: 'row-reverse',
+  statItem: { alignItems: 'center', gap: 4, flex: 1 },
+  statIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 4,
   },
-  seeAll: {
-    fontSize: 14,
-  },
-  categoriesScroll: {
-    paddingLeft: 20,
-    paddingRight: 8,
-    paddingBottom: 20,
+  statNum: { fontSize: 22 },
+  statLabel: { fontSize: 12 },
+  statDivider: { width: 1, height: 48 },
+
+  // Tip card
+  tipCard: {
     flexDirection: 'row',
+    alignItems: 'flex-start',
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 16,
+    gap: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  businessesScroll: {
-    paddingLeft: 20,
-    paddingRight: 8,
-    paddingBottom: 20,
-    flexDirection: 'row',
+  tipIconBg: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexShrink: 0,
   },
+  tipText: { flex: 1, gap: 4 },
+  tipTitle: { fontSize: 14 },
+  tipBody: { fontSize: 13, lineHeight: 19 },
 });
