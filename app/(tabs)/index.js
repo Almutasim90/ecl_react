@@ -20,7 +20,7 @@ import { fetchListeningQuestions, fetchReadingQuestions, getFormList } from '../
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { isDark } = useTheme();
+  const { colors } = useTheme();
   const { user, profile } = useAuth();
 
   const [listeningForms, setListeningForms] = useState([]);
@@ -45,13 +45,6 @@ export default function HomeScreen() {
     loadStats();
   }, []);
 
-  const bg = isDark ? '#0f172a' : '#f5f3ff';
-  const cardBg = isDark ? '#1e293b' : '#ffffff';
-  const textColor = isDark ? '#f1f5f9' : '#1e1b4b';
-  const subtextColor = isDark ? '#94a3b8' : '#64748b';
-  const borderColor = isDark ? '#334155' : '#ede9fe';
-  const accentColor = '#7c3aed';
-
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
   const greetingIcon = hour < 12 ? '☀️' : hour < 18 ? '⛅' : '🌙';
@@ -61,10 +54,10 @@ export default function HomeScreen() {
   const totalReadingQs = readingForms.reduce((s, f) => s + f.questions.length, 0);
 
   return (
-    <View style={[styles.container, { backgroundColor: bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 16, paddingBottom: 100 }]}
+        contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 24, paddingBottom: 120 }]}
       >
         {/* ── Header ── */}
         <MotiView
@@ -74,10 +67,10 @@ export default function HomeScreen() {
           style={styles.header}
         >
           <View style={styles.headerLeft}>
-            <Text style={[styles.greetingText, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.greetingText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
               {greetingIcon}  {greeting}
             </Text>
-            <Text style={[styles.userName, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+            <Text style={[styles.userName, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
               {userName}
             </Text>
           </View>
@@ -87,7 +80,7 @@ export default function HomeScreen() {
               router.push('/(tabs)/profile');
             }}
             activeOpacity={0.85}
-            style={[styles.avatar, { backgroundColor: accentColor }]}
+            style={[styles.avatar, { backgroundColor: colors.accent }]}
           >
             <Text style={[styles.avatarLetter, { fontFamily: 'Inter_600SemiBold' }]}>
               {userName.charAt(0).toUpperCase()}
@@ -103,15 +96,13 @@ export default function HomeScreen() {
           style={styles.heroWrap}
         >
           <LinearGradient
-            colors={isDark ? ['#3b1f7a', '#5b21b6'] : ['#6d28d9', '#7c3aed']}
+            colors={colors.gradientHero}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.hero}
           >
-            {/* decorative blobs */}
             <View style={styles.heroBlob1} />
             <View style={styles.heroBlob2} />
-
             <View style={styles.heroContent}>
               <View style={styles.heroLeft}>
                 <Text style={[styles.heroEyebrow, { fontFamily: 'Inter_400Regular' }]}>
@@ -126,7 +117,7 @@ export default function HomeScreen() {
               </View>
               <View style={styles.heroRight}>
                 <View style={styles.heroIconCircle}>
-                  <Ionicons name="school" size={32} color="#7c3aed" />
+                  <Ionicons name="school" size={32} color={colors.accent} />
                 </View>
               </View>
             </View>
@@ -135,7 +126,7 @@ export default function HomeScreen() {
 
         {/* ── Section: Start a Quiz ── */}
         <View style={styles.sectionRow}>
-          <Text style={[styles.sectionTitle, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
             Start a Quiz
           </Text>
         </View>
@@ -237,48 +228,48 @@ export default function HomeScreen() {
           from={{ opacity: 0, translateY: 16 }}
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: 'timing', duration: 380, delay: 320 }}
-          style={[styles.statsStrip, { backgroundColor: cardBg, borderColor }]}
+          style={[styles.statsStrip, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
           {loading ? (
-            <ActivityIndicator color={accentColor} size="small" style={{ paddingVertical: 14 }} />
+            <ActivityIndicator color={colors.accent} size="small" style={{ paddingVertical: 14 }} />
           ) : (
             <>
               <View style={styles.statItem}>
-                <View style={[styles.statIcon, { backgroundColor: 'rgba(124,58,237,0.12)' }]}>
-                  <Ionicons name="headset" size={18} color={accentColor} />
+                <View style={[styles.statIcon, { backgroundColor: colors.accentIcon }]}>
+                  <Ionicons name="headset" size={18} color={colors.accent} />
                 </View>
-                <Text style={[styles.statNum, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+                <Text style={[styles.statNum, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
                   {listeningForms.length}
                 </Text>
-                <Text style={[styles.statLabel, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+                <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
                   Listening
                 </Text>
               </View>
 
-              <View style={[styles.statDivider, { backgroundColor: borderColor }]} />
+              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
 
               <View style={styles.statItem}>
                 <View style={[styles.statIcon, { backgroundColor: 'rgba(79,70,229,0.12)' }]}>
                   <Ionicons name="book" size={18} color="#4f46e5" />
                 </View>
-                <Text style={[styles.statNum, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+                <Text style={[styles.statNum, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
                   {readingForms.length}
                 </Text>
-                <Text style={[styles.statLabel, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+                <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
                   Reading
                 </Text>
               </View>
 
-              <View style={[styles.statDivider, { backgroundColor: borderColor }]} />
+              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
 
               <View style={styles.statItem}>
-                <View style={[styles.statIcon, { backgroundColor: 'rgba(124,58,237,0.12)' }]}>
-                  <Ionicons name="help-circle" size={18} color={accentColor} />
+                <View style={[styles.statIcon, { backgroundColor: colors.accentIcon }]}>
+                  <Ionicons name="help-circle" size={18} color={colors.accent} />
                 </View>
-                <Text style={[styles.statNum, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+                <Text style={[styles.statNum, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
                   {totalListeningQs + totalReadingQs}
                 </Text>
-                <Text style={[styles.statLabel, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+                <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
                   Questions
                 </Text>
               </View>
@@ -291,16 +282,16 @@ export default function HomeScreen() {
           from={{ opacity: 0, translateY: 16 }}
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: 'timing', duration: 380, delay: 380 }}
-          style={[styles.tipCard, { backgroundColor: cardBg, borderColor }]}
+          style={[styles.tipCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
-          <View style={[styles.tipIconBg, { backgroundColor: 'rgba(124,58,237,0.1)' }]}>
-            <Ionicons name="bulb-outline" size={22} color={accentColor} />
+          <View style={[styles.tipIconBg, { backgroundColor: colors.accentIcon }]}>
+            <Ionicons name="bulb-outline" size={22} color={colors.accent} />
           </View>
           <View style={styles.tipText}>
-            <Text style={[styles.tipTitle, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+            <Text style={[styles.tipTitle, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
               Exam Tip
             </Text>
-            <Text style={[styles.tipBody, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.tipBody, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
               Listen to each audio clip at least twice before selecting your answer.
             </Text>
           </View>
@@ -314,7 +305,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   scroll: { paddingHorizontal: 20 },
 
-  // Header
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -333,7 +323,6 @@ const styles = StyleSheet.create({
   },
   avatarLetter: { color: '#fff', fontSize: 20 },
 
-  // Hero
   heroWrap: {
     borderRadius: 24,
     overflow: 'hidden',
@@ -344,28 +333,18 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 8,
   },
-  hero: {
-    borderRadius: 24,
-    overflow: 'hidden',
-    padding: 24,
-  },
+  hero: { borderRadius: 24, overflow: 'hidden', padding: 24 },
   heroBlob1: {
     position: 'absolute',
-    width: 140,
-    height: 140,
-    borderRadius: 70,
+    width: 140, height: 140, borderRadius: 70,
     backgroundColor: 'rgba(255,255,255,0.07)',
-    top: -40,
-    right: -30,
+    top: -40, right: -30,
   },
   heroBlob2: {
     position: 'absolute',
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 90, height: 90, borderRadius: 45,
     backgroundColor: 'rgba(255,255,255,0.05)',
-    bottom: -20,
-    left: 10,
+    bottom: -20, left: 10,
   },
   heroContent: {
     flexDirection: 'row',
@@ -374,165 +353,87 @@ const styles = StyleSheet.create({
   },
   heroLeft: { flex: 1, gap: 4 },
   heroEyebrow: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.65)',
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    marginBottom: 4,
+    fontSize: 12, color: 'rgba(255,255,255,0.65)',
+    textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 4,
   },
-  heroTitle: {
-    fontSize: 24,
-    color: '#ffffff',
-    lineHeight: 32,
-    marginBottom: 8,
-  },
-  heroSub: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.7)',
-    lineHeight: 19,
-  },
+  heroTitle: { fontSize: 24, color: '#ffffff', lineHeight: 32, marginBottom: 8 },
+  heroSub: { fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 19 },
   heroRight: { marginLeft: 16 },
   heroIconCircle: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
+    width: 68, height: 68, borderRadius: 34,
     backgroundColor: '#ffffff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center', alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.15, shadowRadius: 8, elevation: 4,
   },
 
-  // Section label
-  sectionRow: {
-    marginBottom: 14,
-  },
+  sectionRow: { marginBottom: 14 },
   sectionTitle: { fontSize: 18 },
 
-  // Quiz cards
-  quizRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 16,
-  },
+  quizRow: { flexDirection: 'row', gap: 12, marginBottom: 16 },
   quizCardWrap: { flex: 1 },
   quizCard: {
-    borderRadius: 20,
-    overflow: 'hidden',
+    borderRadius: 20, overflow: 'hidden',
     shadowColor: '#7c3aed',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.22,
-    shadowRadius: 10,
-    elevation: 5,
+    shadowOpacity: 0.22, shadowRadius: 10, elevation: 5,
   },
   quizGradient: {
-    padding: 18,
-    borderRadius: 20,
-    minHeight: 180,
-    overflow: 'hidden',
-    position: 'relative',
-    justifyContent: 'flex-start',
+    padding: 18, borderRadius: 20, minHeight: 180,
+    overflow: 'hidden', position: 'relative', justifyContent: 'flex-start',
   },
   quizDecor: {
     position: 'absolute',
-    width: 110,
-    height: 110,
-    borderRadius: 55,
+    width: 110, height: 110, borderRadius: 55,
     backgroundColor: 'rgba(255,255,255,0.07)',
-    top: -28,
-    right: -28,
+    top: -28, right: -28,
   },
   quizIconBg: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
+    width: 52, height: 52, borderRadius: 16,
+    justifyContent: 'center', alignItems: 'center', marginBottom: 12,
   },
-  quizLabel: {
-    fontSize: 17,
-    color: '#ffffff',
-    marginBottom: 3,
-  },
-  quizCaption: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.75)',
-    marginBottom: 12,
-  },
+  quizLabel: { fontSize: 17, color: '#ffffff', marginBottom: 3 },
+  quizCaption: { fontSize: 12, color: 'rgba(255,255,255,0.75)', marginBottom: 12 },
   quizMeta: {
     backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    alignSelf: 'flex-start',
-    marginBottom: 10,
+    borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4,
+    alignSelf: 'flex-start', marginBottom: 10,
   },
-  quizMetaText: {
-    fontSize: 11,
-    color: 'rgba(255,255,255,0.9)',
-  },
+  quizMetaText: { fontSize: 11, color: 'rgba(255,255,255,0.9)' },
   quizArrow: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 28, height: 28, borderRadius: 14,
     backgroundColor: '#ffffff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center', alignItems: 'center',
   },
 
-  // Stats strip
   statsStrip: {
-    flexDirection: 'row',
-    borderRadius: 18,
-    borderWidth: 1,
-    padding: 16,
-    marginBottom: 16,
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    flexDirection: 'row', borderRadius: 18, borderWidth: 1,
+    padding: 16, marginBottom: 16,
+    justifyContent: 'space-around', alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   statItem: { alignItems: 'center', gap: 4, flex: 1 },
   statIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 4,
+    width: 36, height: 36, borderRadius: 10,
+    justifyContent: 'center', alignItems: 'center', marginBottom: 4,
   },
   statNum: { fontSize: 22 },
   statLabel: { fontSize: 12 },
   statDivider: { width: 1, height: 48 },
 
-  // Tip card
   tipCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
-    gap: 14,
+    flexDirection: 'row', alignItems: 'flex-start',
+    borderRadius: 16, borderWidth: 1, padding: 16, gap: 14,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   tipIconBg: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexShrink: 0,
+    width: 44, height: 44, borderRadius: 12,
+    justifyContent: 'center', alignItems: 'center', flexShrink: 0,
   },
   tipText: { flex: 1, gap: 4 },
   tipTitle: { fontSize: 14 },

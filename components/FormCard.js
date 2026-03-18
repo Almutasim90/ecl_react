@@ -6,23 +6,16 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context/ThemeContext';
 
-export default function FormCard({ formNumber, questionCount, type, onPress, index = 0 }) {
-  const { isDark } = useTheme();
+export default function FormCard({ formNumber, questionCount, type, onPress, index = 0, progress = null }) {
+  const { colors } = useTheme();
   const isListening = type === 'listening';
 
-  const cardBg = isDark ? '#1e293b' : '#ffffff';
-  const borderColor = isDark ? '#334155' : '#ede9fe';
-  const textColor = isDark ? '#f1f5f9' : '#1e1b4b';
-  const subtextColor = isDark ? '#94a3b8' : '#6b7280';
-  const accentColor = isListening ? '#7c3aed' : '#4f46e5';
-  const badgeColors = isListening
-    ? ['#7c3aed', '#5b21b6']
-    : ['#4f46e5', '#3730a3'];
+  const accentColor = isListening ? colors.accent : '#4f46e5';
+  const badgeColors = isListening ? ['#7c3aed', '#5b21b6'] : ['#4f46e5', '#3730a3'];
+  const estimatedMinutes = isListening ? Math.round(questionCount * 1.5) : questionCount;
 
-  // Listening: avg 1.5 min/question — Reading: avg 1 min/question
-  const estimatedMinutes = isListening
-    ? Math.round(questionCount * 1.5)
-    : questionCount;
+  const answeredCount = progress ? Object.keys(progress.answers).length : 0;
+  const progressPct = progress ? answeredCount / questionCount : 0;
 
   return (
     <MotiView
@@ -36,7 +29,11 @@ export default function FormCard({ formNumber, questionCount, type, onPress, ind
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           onPress?.();
         }}
-        style={[styles.card, { backgroundColor: cardBg, borderColor }]}
+        style={[
+          styles.card,
+          { backgroundColor: colors.surface, borderColor: progress ? accentColor : colors.border },
+          progress && { borderWidth: 1.5 },
+        ]}
       >
         {/* Gradient number badge */}
         <LinearGradient
@@ -58,25 +55,45 @@ export default function FormCard({ formNumber, questionCount, type, onPress, ind
 
         {/* Info */}
         <View style={styles.content}>
-          <Text style={[styles.title, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
-            Form {formNumber}
-          </Text>
+          <View style={styles.titleRow}>
+            <Text style={[styles.title, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
+              Form {formNumber}
+            </Text>
+            {progress && (
+              <View style={[styles.resumeBadge, { backgroundColor: `${accentColor}18` }]}>
+                <Ionicons name="time-outline" size={11} color={accentColor} />
+                <Text style={[styles.resumeText, { color: accentColor, fontFamily: 'Inter_600SemiBold' }]}>
+                  {answeredCount}/{questionCount}
+                </Text>
+              </View>
+            )}
+          </View>
           <View style={styles.metaRow}>
-            <Ionicons name="help-circle-outline" size={13} color={subtextColor} />
-            <Text style={[styles.metaText, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+            <Ionicons name="help-circle-outline" size={13} color={colors.textSecondary} />
+            <Text style={[styles.metaText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
               {questionCount} questions
             </Text>
-            <View style={[styles.dot, { backgroundColor: subtextColor }]} />
-            <Ionicons name="time-outline" size={13} color={subtextColor} />
-            <Text style={[styles.metaText, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+            <View style={[styles.dot, { backgroundColor: colors.textSecondary }]} />
+            <Ionicons name="time-outline" size={13} color={colors.textSecondary} />
+            <Text style={[styles.metaText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
               ~{estimatedMinutes} min
             </Text>
           </View>
+          {progress && (
+            <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
+              <View style={[styles.progressFill, { backgroundColor: accentColor, width: `${progressPct * 100}%` }]} />
+            </View>
+          )}
         </View>
 
-        {/* Play CTA */}
+        {/* CTA icon */}
         <View style={[styles.playBtn, { backgroundColor: `${accentColor}18` }]}>
-          <Ionicons name="play" size={16} color={accentColor} style={{ marginLeft: 2 }} />
+          <Ionicons
+            name={progress ? 'arrow-forward-circle' : 'play'}
+            size={progress ? 22 : 16}
+            color={accentColor}
+            style={!progress && { marginLeft: 2 }}
+          />
         </View>
       </TouchableOpacity>
     </MotiView>
@@ -108,44 +125,30 @@ const styles = StyleSheet.create({
   },
   badgeDecor: {
     position: 'absolute',
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 64, height: 64, borderRadius: 32,
     backgroundColor: 'rgba(255,255,255,0.09)',
-    top: -18,
-    right: -18,
+    top: -18, right: -18,
   },
-  badgeNum: {
-    fontSize: 22,
-    color: '#ffffff',
-    letterSpacing: 0.5,
+  badgeNum: { fontSize: 22, color: '#ffffff', letterSpacing: 0.5 },
+  content: { flex: 1, paddingVertical: 14, paddingHorizontal: 14 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 5 },
+  title: { fontSize: 16 },
+  resumeBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+    paddingHorizontal: 7, paddingVertical: 2, borderRadius: 6,
   },
-  content: {
-    flex: 1,
-    paddingVertical: 18,
-    paddingHorizontal: 14,
-  },
-  title: { fontSize: 16, marginBottom: 5 },
+  resumeText: { fontSize: 11 },
   metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    flexWrap: 'nowrap',
+    flexDirection: 'row', alignItems: 'center', gap: 4, flexWrap: 'nowrap',
   },
   metaText: { fontSize: 12 },
-  dot: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    opacity: 0.45,
-    marginHorizontal: 2,
+  dot: { width: 3, height: 3, borderRadius: 1.5, opacity: 0.45, marginHorizontal: 2 },
+  progressTrack: {
+    height: 3, borderRadius: 2, marginTop: 8, overflow: 'hidden',
   },
+  progressFill: { height: 3, borderRadius: 2 },
   playBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
+    width: 36, height: 36, borderRadius: 18,
+    justifyContent: 'center', alignItems: 'center', marginRight: 16,
   },
 });

@@ -6,47 +6,34 @@ import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 
 export default function TabsLayout() {
-  const { isDark } = useTheme();
+  const { colors, isDark } = useTheme();
   const { isInitialized } = useAuth();
   const insets = useSafeAreaInsets();
-  const bgColor = isDark ? '#0f172a' : '#ffffff';
-  const activeColor = '#7c3aed';
-  const inactiveColor = isDark ? '#94a3b8' : '#64748b';
-
   const androidBottom = insets.bottom;
 
-  if (!isInitialized) {
-    return null;
-  }
-
-  // Auth is optional - guests can access the app
-  // Only redirect if explicitly not initialized
-  // Uncomment below to force login:
-  // if (!isAuthenticated) {
-  //   return <Redirect href={{ pathname: '/(auth)/login', params: { redirect: pathname } }} />;
-  // }
+  if (!isInitialized) return null;
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: activeColor,
-        tabBarInactiveTintColor: inactiveColor,
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
           position: 'absolute',
           bottom: 0,
           left: 0,
           right: 0,
-          backgroundColor: bgColor,
-          borderTopColor: isDark ? '#1e293b' : '#e2e8f0',
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
           borderTopWidth: 1,
-          paddingBottom: Platform.OS === 'ios' ? 20 : androidBottom + 8,
-          paddingTop: 10,
-          height: Platform.OS === 'ios' ? 85 : 60 + androidBottom,
+          paddingBottom: Platform.OS === 'ios' ? 24 : Math.max(12, androidBottom + 8),
+          paddingTop: 12,
+          height: Platform.OS === 'ios' ? 88 : Math.max(68, 60 + androidBottom),
           elevation: 8,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.1,
+          shadowOpacity: isDark ? 0.4 : 0.08,
           shadowRadius: 8,
         },
         tabBarLabelStyle: {
@@ -64,11 +51,7 @@ export default function TabsLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'home' : 'home-outline'}
-              color={color}
-              size={26}
-            />
+            <Ionicons name={focused ? 'home' : 'home-outline'} color={color} size={26} />
           ),
         }}
       />
@@ -77,11 +60,7 @@ export default function TabsLayout() {
         options={{
           title: 'Listening',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'headset' : 'headset-outline'}
-              color={color}
-              size={26}
-            />
+            <Ionicons name={focused ? 'headset' : 'headset-outline'} color={color} size={26} />
           ),
         }}
       />
@@ -90,11 +69,7 @@ export default function TabsLayout() {
         options={{
           title: 'Reading',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'book' : 'book-outline'}
-              color={color}
-              size={26}
-            />
+            <Ionicons name={focused ? 'book' : 'book-outline'} color={color} size={26} />
           ),
         }}
       />
@@ -103,11 +78,7 @@ export default function TabsLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'person' : 'person-outline'}
-              color={color}
-              size={26}
-            />
+            <Ionicons name={focused ? 'person' : 'person-outline'} color={color} size={26} />
           ),
         }}
       />

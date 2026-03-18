@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,28 +6,28 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { MotiView } from 'moti';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
 import { useQuiz } from '../../context/QuizContext';
-import { fetchReadingQuestions, getFormList } from '../../lib/api';
+import { fetchReadingQuestions, getFormList, fetchQuizProgress } from '../../lib/api';
+import { useAuth } from '../../context/AuthContext';
 import FormCard from '../../components/FormCard';
 
 export default function ReadingScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { isDark } = useTheme();
+  const { colors } = useTheme();
   const { startQuiz } = useQuiz();
 
+  const { user } = useAuth();
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const bg = isDark ? '#0f172a' : '#f5f3ff';
-  const subtextColor = isDark ? '#94a3b8' : '#64748b';
+  const [progressMap, setProgressMap] = useState({});
 
   const totalQuestions = forms.reduce((s, f) => s + f.questions.length, 0);
 
@@ -45,13 +45,31 @@ export default function ReadingScreen() {
     load();
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (!user) return;
+      fetchQuizProgress(user.id, 'reading').then(({ data }) => {
+        console.log('[Reading] progress fetched:', data);
+        const map = {};
+        data.forEach(p => { map[p.form_number] = p; });
+        setProgressMap(map);
+      });
+    }, [user])
+  );
+
   const handleFormPress = (formNumber, questions) => {
-    startQuiz({ type: 'reading', formNumber, questions });
+    const saved = progressMap[formNumber];
+    if (saved) {
+      const resumeIndex = Math.min(Object.keys(saved.answers).length, questions.length - 1);
+      startQuiz({ type: 'reading', formNumber, questions, currentIndex: resumeIndex, answers: saved.answers });
+    } else {
+      startQuiz({ type: 'reading', formNumber, questions });
+    }
     router.push({ pathname: '/quiz/reading', params: { form: formNumber } });
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* ── Gradient hero header (indigo for reading) ── */}
       <MotiView
         from={{ opacity: 0, translateY: -12 }}
@@ -59,7 +77,7 @@ export default function ReadingScreen() {
         transition={{ type: 'spring', damping: 18 }}
       >
         <LinearGradient
-          colors={isDark ? ['#1e1b4b', '#3730a3'] : ['#4338ca', '#4f46e5']}
+          colors={colors.gradientReading}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.heroGradient, { paddingTop: insets.top + 20 }]}
@@ -84,7 +102,6 @@ export default function ReadingScreen() {
             </View>
           </View>
 
-          {/* Stats pills */}
           {!loading && forms.length > 0 && (
             <View style={styles.pillsRow}>
               <View style={styles.pill}>
@@ -108,22 +125,22 @@ export default function ReadingScreen() {
       {/* ── Content ── */}
       {loading ? (
         <View style={styles.centered}>
-          <ActivityIndicator color="#4f46e5" size="large" />
-          <Text style={[styles.stateText, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+          <ActivityIndicator color={colors.accent} size="large" />
+          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
             Loading forms...
           </Text>
         </View>
       ) : error ? (
         <View style={styles.centered}>
-          <Ionicons name="cloud-offline-outline" size={52} color={subtextColor} />
-          <Text style={[styles.stateText, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+          <Ionicons name="cloud-offline-outline" size={52} color={colors.textSecondary} />
+          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
             {error}
           </Text>
         </View>
       ) : forms.length === 0 ? (
         <View style={styles.centered}>
-          <Ionicons name="book-outline" size={52} color={subtextColor} />
-          <Text style={[styles.stateText, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+          <Ionicons name="book-outline" size={52} color={colors.textSecondary} />
+          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
             No reading forms available.
           </Text>
         </View>
@@ -132,7 +149,7 @@ export default function ReadingScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.list}
         >
-          <Text style={[styles.listLabel, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+          <Text style={[styles.listLabel, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
             {forms.length} FORM{forms.length !== 1 ? 'S' : ''} AVAILABLE
           </Text>
           {forms.map((form, idx) => (
@@ -142,6 +159,7 @@ export default function ReadingScreen() {
               questionCount={form.questions.length}
               type="reading"
               index={idx}
+              progress={progressMap[form.formNumber] || null}
               onPress={() => handleFormPress(form.formNumber, form.questions)}
             />
           ))}
@@ -162,21 +180,15 @@ const styles = StyleSheet.create({
   },
   heroBlob1: {
     position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
+    width: 180, height: 180, borderRadius: 90,
     backgroundColor: 'rgba(255,255,255,0.06)',
-    top: -60,
-    right: -40,
+    top: -60, right: -40,
   },
   heroBlob2: {
     position: 'absolute',
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 100, height: 100, borderRadius: 50,
     backgroundColor: 'rgba(255,255,255,0.05)',
-    bottom: -30,
-    left: 20,
+    bottom: -30, left: 20,
   },
   heroRow: {
     flexDirection: 'row',
@@ -186,70 +198,34 @@ const styles = StyleSheet.create({
   },
   heroTextBlock: { flex: 1, gap: 3 },
   heroEyebrow: {
-    fontSize: 11,
-    color: 'rgba(255,255,255,0.6)',
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
+    fontSize: 11, color: 'rgba(255,255,255,0.6)',
+    textTransform: 'uppercase', letterSpacing: 1.5,
   },
-  heroTitle: {
-    fontSize: 26,
-    color: '#ffffff',
-  },
-  heroSub: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.75)',
-  },
+  heroTitle: { fontSize: 26, color: '#ffffff' },
+  heroSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)' },
   heroIconWrap: {
-    width: 64,
-    height: 64,
-    borderRadius: 20,
+    width: 64, height: 64, borderRadius: 20,
     backgroundColor: 'rgba(255,255,255,0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 16,
+    justifyContent: 'center', alignItems: 'center', marginLeft: 16,
   },
-  pillsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
+  pillsRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   pill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
+    flexDirection: 'row', alignItems: 'center', gap: 5,
     backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5,
   },
-  pillText: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.9)',
-  },
+  pillText: { fontSize: 12, color: 'rgba(255,255,255,0.9)' },
   pillDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
+    width: 4, height: 4, borderRadius: 2,
     backgroundColor: 'rgba(255,255,255,0.4)',
   },
 
   centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 32,
-    gap: 14,
+    flex: 1, justifyContent: 'center', alignItems: 'center',
+    paddingHorizontal: 32, gap: 14,
   },
   stateText: { fontSize: 14, textAlign: 'center', lineHeight: 21 },
 
-  list: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 110,
-  },
-  listLabel: {
-    fontSize: 11,
-    letterSpacing: 1.2,
-    marginBottom: 16,
-  },
+  list: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 110 },
+  listLabel: { fontSize: 11, letterSpacing: 1.2, marginBottom: 16 },
 });

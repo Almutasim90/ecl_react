@@ -13,6 +13,7 @@ const I18nContext = createContext({
 
 const translations = {
   en: {
+    // Auth
     login: 'Login',
     signUp: 'Sign Up',
     email: 'Email',
@@ -22,8 +23,21 @@ const translations = {
     orContinueWith: 'Or continue with',
     google: 'Google',
     apple: 'Apple',
+    
+    // Settings
+    settings: 'Settings',
+    general: 'General',
+    account: 'Account',
+    support: 'Support',
+    profile: 'Profile',
+    language: 'Language',
+    dark_mode: 'Dark Mode',
+    notifications: 'Notifications',
+    help_support: 'Help & Support',
+    about: 'About',
   },
   ar: {
+    // Auth
     login: 'تسجيل الدخول',
     signUp: 'إنشاء حساب',
     email: 'البريد الإلكتروني',
@@ -33,6 +47,18 @@ const translations = {
     orContinueWith: 'أو تابع باستخدام',
     google: 'جوجل',
     apple: 'آبل',
+    
+    // Settings
+    settings: 'الإعدادات',
+    general: 'عام',
+    account: 'الحساب',
+    support: 'الدعم',
+    profile: 'الملف الشخصي',
+    language: 'اللغة',
+    dark_mode: 'الوضع الداكن',
+    notifications: 'الإشعارات',
+    help_support: 'المساعدة والدعم',
+    about: 'حول',
   },
 };
 

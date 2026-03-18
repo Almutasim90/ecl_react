@@ -14,25 +14,18 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../context/ThemeContext';
 
-
-const FONT_TITLE = { en: 'Inter_600SemiBold', ar: 'Cairo_600SemiBold' };
-const FONT_BODY = { en: 'Inter_400Regular', ar: 'Cairo_400Regular' };
-const FONT_MEDIUM = { en: 'Inter_500Medium', ar: 'Cairo_600SemiBold' };
+const FONT_TITLE  = { en: 'Inter_600SemiBold',  ar: 'Cairo_600SemiBold' };
+const FONT_BODY   = { en: 'Inter_400Regular',   ar: 'Cairo_400Regular' };
+const FONT_MEDIUM = { en: 'Inter_500Medium',    ar: 'Cairo_600SemiBold' };
 
 export default function HelpSupportScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { isDark } = useTheme();
-  
+  const { colors } = useTheme();
+
   const isRTL = false;
   const fontKey = 'en';
   const [expandedFaq, setExpandedFaq] = useState(null);
-
-  const bgColor = isDark ? '#0f172a' : '#ffffff';
-  const cardBg = isDark ? 'rgba(30,41,59,0.95)' : '#ffffff';
-  const textColor = isDark ? '#f1f5f9' : '#0f172a';
-  const subtextColor = isDark ? '#94a3b8' : '#64748b';
-  const borderColor = isDark ? '#334155' : '#e2e8f0';
 
   const handleBack = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -41,53 +34,38 @@ export default function HelpSupportScreen() {
 
   const faqs = [
     {
-      question: {
-        en: 'How do I search for businesses?',
-        ar: 'كيف أبحث عن الأعمال التجارية؟',
-      },
+      question: { en: 'How do I start an English quiz?', ar: 'كيف أبدأ اختباراً إنجليزياً؟' },
       answer: {
-        en: 'Use the search tab at the bottom of the screen. You can search by business name, category, or location. Use filters to narrow down your results.',
-        ar: 'استخدم علامة تبويب البحث في أسفل الشاشة. يمكنك البحث باسم النشاط التجاري أو الفئة أو الموقع. استخدم الفلاتر لتضييق نتائج البحث.',
+        en: 'Navigate to the Quiz tab from the bottom navigation bar. Choose from Reading, Listening, or other quiz types to begin practicing your English skills.',
+        ar: 'انتقل إلى علامة التبويب الاختبار من شريط التنقل السفلي. اختر من أنواع الاختبارات المختلفة لبدء تدريب مهاراتك الإنجليزية.',
       },
     },
     {
-      question: {
-        en: 'How do I save my favorite places?',
-        ar: 'كيف أحفظ أماكني المفضلة؟',
-      },
+      question: { en: 'How do I track my learning progress?', ar: 'كيف أتتبع تقدمي في التعلم؟' },
       answer: {
-        en: 'Tap the heart icon on any business card or detail page to save it to your favorites. Access your saved places from your profile.',
-        ar: 'اضغط على أيقونة القلب في أي بطاقة عمل أو صفحة تفاصيل لحفظها في المفضلة. يمكنك الوصول إلى الأماكن المحفوظة من ملفك الشخصي.',
+        en: 'Your progress is automatically saved. Check your profile to view completed quizzes, scores, and learning statistics.',
+        ar: 'يتم حفظ تقدمك تلقائيًا. تحقق من ملفك الشخصي لعرض الاختبارات المكتملة والدرجات والإحصائيات.',
       },
     },
     {
-      question: {
-        en: 'How do I contact a business?',
-        ar: 'كيف أتواصل مع نشاط تجاري؟',
-      },
+      question: { en: 'What types of English quizzes are available?', ar: 'ما أنواع الاختبارات الإنجليزية المتاحة؟' },
       answer: {
-        en: 'Open the business detail page and use the contact buttons: Call, WhatsApp, Instagram, or Website. You can also get directions to visit in person.',
-        ar: 'افتح صفحة تفاصيل النشاط التجاري واستخدم أزرار التواصل: اتصال، واتساب، انستقرام، أو الموقع الإلكتروني. يمكنك أيضًا الحصول على الاتجاهات للزيارة شخصيًا.',
+        en: 'ECL offers Reading comprehension, Listening exercises, Grammar tests, and Vocabulary quizzes to help you improve all aspects of English.',
+        ar: 'تقدم ECL مهام فهم القراءة، وتمارين الاستماع، واختبارات القواعد، واختبارات المفردات لمساعدتك على تحسين جميع جوانب اللغة الإنجليزية.',
       },
     },
     {
-      question: {
-        en: 'How do I change the app language?',
-        ar: 'كيف أغير لغة التطبيق؟',
-      },
+      question: { en: 'How do I change the app language?', ar: 'كيف أغير لغة التطبيق؟' },
       answer: {
-        en: 'Go to Profile > Settings > Language and select your preferred language (English or Arabic).',
-        ar: 'انتقل إلى الملف الشخصي > الإعدادات > اللغة واختر لغتك المفضلة (الإنجليزية أو العربية).',
+        en: 'Go to Settings > Language and select your preferred language (English or Arabic).',
+        ar: 'انتقل إلى الإعدادات > اللغة واختر لغتك المفضلة (الإنجليزية أو العربية).',
       },
     },
     {
-      question: {
-        en: 'How do I write a review?',
-        ar: 'كيف أكتب تقييمًا؟',
-      },
+      question: { en: 'How do I enable dark mode?', ar: 'كيف أفعّل الوضع الداكن؟' },
       answer: {
-        en: 'Open any business detail page and scroll to the Reviews section. Tap "Write a Review" to share your experience.',
-        ar: 'افتح أي صفحة تفاصيل نشاط تجاري وانتقل إلى قسم التقييمات. اضغط على "اكتب تقييم" لمشاركة تجربتك.',
+        en: 'Go to Settings and toggle the Dark Mode switch to enable or disable dark theme.',
+        ar: 'انتقل إلى الإعدادات وقم بتفعيل خيار الوضع الداكن أو إلغائه.',
       },
     },
   ];
@@ -96,74 +74,75 @@ export default function HelpSupportScreen() {
     {
       icon: 'mail',
       title: { en: 'Email Us', ar: 'راسلنا' },
-      subtitle: { en: 'support@daleelplus.ae', ar: 'support@daleelplus.ae' },
-      action: () => Linking.openURL('mailto:support@daleelplus.ae'),
+      subtitle: { en: 'support@ecl-learn.com', ar: 'support@ecl-learn.com' },
+      action: () => Linking.openURL('mailto:support@ecl-learn.com'),
     },
     {
       icon: 'logo-whatsapp',
       title: { en: 'WhatsApp', ar: 'واتساب' },
-      subtitle: { en: '+971 50 123 4567', ar: '+971 50 123 4567' },
-      action: () => Linking.openURL('whatsapp://send?phone=971501234567'),
+      subtitle: { en: '+1 234 567 890', ar: '+1 234 567 890' },
+      action: () => Linking.openURL('whatsapp://send?phone=1234567890'),
     },
     {
       icon: 'call',
       title: { en: 'Call Us', ar: 'اتصل بنا' },
-      subtitle: { en: '+971 4 123 4567', ar: '+971 4 123 4567' },
-      action: () => Linking.openURL('tel:+97141234567'),
+      subtitle: { en: '+1 234 567 890', ar: '+1 234 567 890' },
+      action: () => Linking.openURL('tel:+1234567890'),
     },
   ];
 
   return (
-    <View style={[styles.container, { backgroundColor: bgColor, paddingTop: insets.top }]}>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       <Stack.Screen options={{ headerShown: false }} />
-      
+
       {/* Header */}
       <View style={[styles.header, isRTL && styles.headerRTL]}>
         <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
           <Ionicons
             name={isRTL ? 'chevron-forward' : 'chevron-back'}
             size={28}
-            color={textColor}
+            color={colors.text}
           />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: textColor, fontFamily: FONT_TITLE[fontKey] }]}>
+        <Text style={[styles.headerTitle, { color: colors.text, fontFamily: FONT_TITLE[fontKey] }]}>
           {isRTL ? 'المساعدة والدعم' : 'Help & Support'}
         </Text>
         <View style={styles.headerPlaceholder} />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {/* Hero Section */}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: 40 + insets.bottom }]}
+      >
+        {/* Hero */}
         <MotiView
           from={{ opacity: 0, translateY: 20 }}
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: 'timing', duration: 400 }}
-          style={[styles.heroSection, { backgroundColor: '#2563eb' }]}
+          style={[styles.heroSection, { backgroundColor: colors.accent }]}
         >
-          <View style={styles.heroIcon}>
+          <View style={[styles.heroIcon, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
             <Ionicons name="help-buoy" size={40} color="#ffffff" />
           </View>
           <Text style={[styles.heroTitle, { fontFamily: FONT_TITLE[fontKey] }]}>
             {isRTL ? 'كيف يمكننا مساعدتك؟' : 'How can we help you?'}
           </Text>
           <Text style={[styles.heroSubtitle, { fontFamily: FONT_BODY[fontKey] }]}>
-            {isRTL 
-              ? 'نحن هنا لمساعدتك على مدار الساعة طوال أيام الأسبوع'
-              : 'We are here to help you 24/7'}
+            {isRTL ? 'نحن هنا لمساعدتك على مدار الساعة طوال أيام الأسبوع' : 'We are here to help you 24/7'}
           </Text>
         </MotiView>
 
-        {/* FAQ Section */}
+        {/* FAQ */}
         <MotiView
           from={{ opacity: 0, translateY: 20 }}
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: 'timing', duration: 400, delay: 100 }}
           style={styles.section}
         >
-          <Text style={[styles.sectionTitle, { color: textColor, fontFamily: FONT_TITLE[fontKey] }, isRTL && styles.textRTL]}>
+          <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: FONT_TITLE[fontKey] }, isRTL && styles.textRTL]}>
             {isRTL ? 'الأسئلة الشائعة' : 'Frequently Asked Questions'}
           </Text>
-          
+
           {faqs.map((faq, idx) => (
             <TouchableOpacity
               key={idx}
@@ -172,16 +151,20 @@ export default function HelpSupportScreen() {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setExpandedFaq(expandedFaq === idx ? null : idx);
               }}
-              style={[styles.faqItem, { backgroundColor: cardBg, borderColor }]}
+              style={[styles.faqItem, { backgroundColor: colors.surface, borderColor: colors.border }]}
             >
               <View style={[styles.faqHeader, isRTL && styles.faqHeaderRTL]}>
-                <Text style={[styles.faqQuestion, { color: textColor, fontFamily: FONT_MEDIUM[fontKey], marginRight: isRTL ? 0 : 12, marginLeft: isRTL ? 12 : 0 }, isRTL && styles.textRTL]}>
+                <Text style={[
+                  styles.faqQuestion,
+                  { color: colors.text, fontFamily: FONT_MEDIUM[fontKey], marginRight: isRTL ? 0 : 12, marginLeft: isRTL ? 12 : 0 },
+                  isRTL && styles.textRTL,
+                ]}>
                   {faq.question[isRTL ? 'ar' : 'en']}
                 </Text>
                 <Ionicons
                   name={expandedFaq === idx ? 'chevron-up' : 'chevron-down'}
                   size={20}
-                  color={subtextColor}
+                  color={colors.textSecondary}
                 />
               </View>
               {expandedFaq === idx && (
@@ -190,7 +173,11 @@ export default function HelpSupportScreen() {
                   animate={{ opacity: 1, height: 'auto' }}
                   transition={{ type: 'timing', duration: 200 }}
                 >
-                  <Text style={[styles.faqAnswer, { color: subtextColor, fontFamily: FONT_BODY[fontKey] }, isRTL && styles.textRTL]}>
+                  <Text style={[
+                    styles.faqAnswer,
+                    { color: colors.textSecondary, fontFamily: FONT_BODY[fontKey], borderTopColor: colors.border },
+                    isRTL && styles.textRTL,
+                  ]}>
                     {faq.answer[isRTL ? 'ar' : 'en']}
                   </Text>
                 </MotiView>
@@ -199,17 +186,17 @@ export default function HelpSupportScreen() {
           ))}
         </MotiView>
 
-        {/* Contact Section */}
+        {/* Contact */}
         <MotiView
           from={{ opacity: 0, translateY: 20 }}
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: 'timing', duration: 400, delay: 200 }}
           style={styles.section}
         >
-          <Text style={[styles.sectionTitle, { color: textColor, fontFamily: FONT_TITLE[fontKey] }, isRTL && styles.textRTL]}>
+          <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: FONT_TITLE[fontKey] }, isRTL && styles.textRTL]}>
             {isRTL ? 'تواصل معنا' : 'Contact Us'}
           </Text>
-          
+
           {contactOptions.map((option, idx) => (
             <TouchableOpacity
               key={idx}
@@ -218,23 +205,23 @@ export default function HelpSupportScreen() {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 option.action();
               }}
-              style={[styles.contactItem, { backgroundColor: cardBg, borderColor }, isRTL && styles.contactItemRTL]}
+              style={[styles.contactItem, { backgroundColor: colors.surface, borderColor: colors.border }, isRTL && styles.contactItemRTL]}
             >
-              <View style={[styles.contactIcon, { backgroundColor: isDark ? '#334155' : '#f1f5f9' }]}>
-                <Ionicons name={option.icon} size={24} color="#2563eb" />
+              <View style={[styles.contactIcon, { backgroundColor: colors.accentIcon }]}>
+                <Ionicons name={option.icon} size={24} color={colors.accent} />
               </View>
               <View style={[styles.contactInfo, isRTL && styles.contactInfoRTL]}>
-                <Text style={[styles.contactTitle, { color: textColor, fontFamily: FONT_MEDIUM[fontKey] }, isRTL && styles.textRTL]}>
+                <Text style={[styles.contactTitle, { color: colors.text, fontFamily: FONT_MEDIUM[fontKey] }, isRTL && styles.textRTL]}>
                   {option.title[isRTL ? 'ar' : 'en']}
                 </Text>
-                <Text style={[styles.contactSubtitle, { color: subtextColor, fontFamily: FONT_BODY[fontKey] }]}>
+                <Text style={[styles.contactSubtitle, { color: colors.textSecondary, fontFamily: FONT_BODY[fontKey] }]}>
                   {option.subtitle[isRTL ? 'ar' : 'en']}
                 </Text>
               </View>
               <Ionicons
                 name={isRTL ? 'chevron-back' : 'chevron-forward'}
                 size={20}
-                color={subtextColor}
+                color={colors.textSecondary}
               />
             </TouchableOpacity>
           ))}
@@ -245,130 +232,53 @@ export default function HelpSupportScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row', alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 16, paddingVertical: 12,
   },
-  headerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  backBtn: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 20,
-  },
-  headerPlaceholder: {
-    width: 44,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 40,
-  },
-  heroSection: {
-    borderRadius: 20,
-    padding: 24,
-    alignItems: 'center',
-    marginBottom: 24,
-  },
+  headerRTL: { flexDirection: 'row-reverse' },
+  backBtn: { width: 44, height: 44, justifyContent: 'center', alignItems: 'center' },
+  headerTitle: { fontSize: 20 },
+  headerPlaceholder: { width: 44 },
+  scrollContent: { paddingHorizontal: 16 },
+
+  heroSection: { borderRadius: 20, padding: 24, alignItems: 'center', marginBottom: 24 },
   heroIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
+    width: 80, height: 80, borderRadius: 40,
+    justifyContent: 'center', alignItems: 'center', marginBottom: 16,
   },
-  heroTitle: {
-    fontSize: 22,
-    color: '#ffffff',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  heroSubtitle: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    textAlign: 'center',
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    marginBottom: 16,
-  },
-  faqItem: {
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 16,
-    marginBottom: 12,
-  },
+  heroTitle: { fontSize: 22, color: '#ffffff', marginBottom: 8, textAlign: 'center' },
+  heroSubtitle: { fontSize: 14, color: 'rgba(255,255,255,0.8)', textAlign: 'center' },
+
+  section: { marginBottom: 24 },
+  sectionTitle: { fontSize: 18, marginBottom: 16 },
+
+  faqItem: { borderRadius: 14, borderWidth: 1, padding: 16, marginBottom: 12 },
   faqHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
   },
-  faqHeaderRTL: {
-    flexDirection: 'row-reverse',
-  },
-  faqQuestion: {
-    fontSize: 15,
-    flex: 1,
-  },
+  faqHeaderRTL: { flexDirection: 'row-reverse' },
+  faqQuestion: { fontSize: 15, flex: 1 },
   faqAnswer: {
-    fontSize: 14,
-    lineHeight: 22,
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.1)',
+    fontSize: 14, lineHeight: 22, marginTop: 12,
+    paddingTop: 12, borderTopWidth: 1,
   },
+
   contactItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 16,
-    marginBottom: 12,
+    flexDirection: 'row', alignItems: 'center',
+    borderRadius: 14, borderWidth: 1, padding: 16, marginBottom: 12,
   },
-  contactItemRTL: {
-    flexDirection: 'row-reverse',
-  },
+  contactItemRTL: { flexDirection: 'row-reverse' },
   contactIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 48, height: 48, borderRadius: 14,
+    justifyContent: 'center', alignItems: 'center',
   },
-  contactInfo: {
-    flex: 1,
-    marginLeft: 14,
-  },
-  contactInfoRTL: {
-    marginLeft: 0,
-    marginRight: 14,
-    alignItems: 'flex-end',
-  },
-  contactTitle: {
-    fontSize: 16,
-    marginBottom: 2,
-  },
-  contactSubtitle: {
-    fontSize: 14,
-  },
-  textRTL: {
-    textAlign: 'right',
-    writingDirection: 'rtl',
-  },
+  contactInfo: { flex: 1, marginLeft: 14 },
+  contactInfoRTL: { marginLeft: 0, marginRight: 14, alignItems: 'flex-end' },
+  contactTitle: { fontSize: 16, marginBottom: 2 },
+  contactSubtitle: { fontSize: 14 },
+
+  textRTL: { textAlign: 'right', writingDirection: 'rtl' },
 });

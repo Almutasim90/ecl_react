@@ -11,59 +11,57 @@ const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
  * states: 'default' | 'selected' | 'correct' | 'wrong'
  */
 export default function QuizOption({ optionNumber, text, state = 'default', onPress, disabled = false }) {
-  const { isDark } = useTheme();
+  const { colors } = useTheme();
   const letter = OPTION_LETTERS[optionNumber - 1] || String(optionNumber);
 
   const getColors = () => {
     switch (state) {
       case 'selected':
         return {
-          border: '#7c3aed',
-          bg: isDark ? 'rgba(124,58,237,0.2)' : 'rgba(124,58,237,0.1)',
-          letterBg: '#7c3aed',
+          border: colors.accent,
+          bg: colors.accentSoft,
+          letterBg: colors.accent,
           letterColor: '#ffffff',
-          text: isDark ? '#f1f5f9' : '#1e1b4b',
+          text: colors.text,
         };
       case 'correct':
         return {
-          border: '#10b981',
-          bg: isDark ? 'rgba(16,185,129,0.2)' : 'rgba(16,185,129,0.1)',
-          letterBg: '#10b981',
+          border: colors.success,
+          bg: colors.successSoft,
+          letterBg: colors.success,
           letterColor: '#ffffff',
-          text: isDark ? '#f1f5f9' : '#1e1b4b',
+          text: colors.text,
         };
       case 'wrong':
         return {
-          border: '#ef4444',
-          bg: isDark ? 'rgba(239,68,68,0.2)' : 'rgba(239,68,68,0.1)',
-          letterBg: '#ef4444',
+          border: colors.error,
+          bg: colors.errorSoft,
+          letterBg: colors.error,
           letterColor: '#ffffff',
-          text: isDark ? '#f1f5f9' : '#1e1b4b',
+          text: colors.text,
         };
       default:
         return {
-          border: isDark ? '#334155' : '#e2e8f0',
-          bg: isDark ? 'rgba(30,41,59,0.5)' : '#ffffff',
-          letterBg: isDark ? '#1e293b' : '#f1f5f9',
-          letterColor: isDark ? '#94a3b8' : '#64748b',
-          text: isDark ? '#f1f5f9' : '#1e1b4b',
+          border: colors.border,
+          bg: colors.surface,
+          letterBg: colors.surfaceAlt,
+          letterColor: colors.textSecondary,
+          text: colors.text,
         };
     }
   };
 
-  const colors = getColors();
+  const c = getColors();
 
   const getStatusIcon = () => {
-    if (state === 'correct') return <Ionicons name="checkmark-circle" size={20} color="#10b981" />;
-    if (state === 'wrong') return <Ionicons name="close-circle" size={20} color="#ef4444" />;
+    if (state === 'correct') return <Ionicons name="checkmark-circle" size={20} color={colors.success} />;
+    if (state === 'wrong') return <Ionicons name="close-circle" size={20} color={colors.error} />;
     return null;
   };
 
   return (
     <MotiView
-      animate={{
-        scale: state === 'selected' ? 1.01 : 1,
-      }}
+      animate={{ scale: state === 'selected' ? 1.01 : 1 }}
       transition={{ type: 'spring', damping: 15 }}
     >
       <TouchableOpacity
@@ -77,23 +75,20 @@ export default function QuizOption({ optionNumber, text, state = 'default', onPr
         style={[
           styles.option,
           {
-            borderColor: colors.border,
-            backgroundColor: colors.bg,
+            borderColor: c.border,
+            backgroundColor: c.bg,
             borderWidth: state === 'default' ? 1.5 : 2,
           },
         ]}
       >
-        <View style={[styles.letterBadge, { backgroundColor: colors.letterBg }]}>
-          <Text style={[styles.letter, { color: colors.letterColor, fontFamily: 'Inter_600SemiBold' }]}>
+        <View style={[styles.letterBadge, { backgroundColor: c.letterBg }]}>
+          <Text style={[styles.letter, { color: c.letterColor, fontFamily: 'Inter_600SemiBold' }]}>
             {letter}
           </Text>
         </View>
 
         <Text
-          style={[
-            styles.optionText,
-            { color: colors.text, fontFamily: 'Inter_400Regular' },
-          ]}
+          style={[styles.optionText, { color: c.text, fontFamily: 'Inter_400Regular' }]}
           numberOfLines={3}
         >
           {text}
@@ -115,12 +110,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   letterBadge: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexShrink: 0,
+    width: 36, height: 36, borderRadius: 10,
+    justifyContent: 'center', alignItems: 'center', flexShrink: 0,
   },
   letter: { fontSize: 15 },
   optionText: { flex: 1, fontSize: 15, lineHeight: 22 },

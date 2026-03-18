@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -14,12 +14,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../context/ThemeContext';
 import { useQuiz } from '../context/QuizContext';
+import { useAuth } from '../context/AuthContext';
+import { saveQuizResult, deleteQuizProgress } from '../lib/api';
 
 const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
 
 export default function ResultsScreen() {
   const router = useRouter();
   const { isDark } = useTheme();
+  const { user } = useAuth();
   const {
     type,
     formNumber,
@@ -37,6 +40,28 @@ export default function ResultsScreen() {
   const score = useMemo(() => calculateScore(), [questions, answers]);
   const total = questions.length;
   const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (savedRef.current || !user || !questions || questions.length === 0) return;
+    savedRef.current = true;
+    console.log('[Results] Saving quiz result for user:', user.id);
+    saveQuizResult({
+      userId: user.id,
+      quizType: type,
+      formNumber,
+      score,
+      totalQuestions: total,
+      percentage,
+    }).then(({ error }) => {
+      if (error) {
+        console.error('[Results] Save failed:', error.message);
+      } else {
+        console.log('[Results] Saved successfully');
+        deleteQuizProgress(user.id, type, formNumber);
+      }
+    });
+  }, [user]);
 
   const getGradeInfo = () => {
     if (percentage >= 70) return { label: 'Passed', color: '#10b981', gradients: ['#059669', '#10b981'], icon: 'checkmark-circle' };

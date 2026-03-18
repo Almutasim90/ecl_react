@@ -19,6 +19,8 @@ function quizReducer(state, action) {
         type: action.payload.type,
         formNumber: action.payload.formNumber,
         questions: action.payload.questions,
+        currentIndex: action.payload.currentIndex ?? 0,
+        answers: action.payload.answers ?? {},
       };
     case 'ANSWER_QUESTION':
       return {
@@ -50,8 +52,8 @@ function quizReducer(state, action) {
 export function QuizProvider({ children }) {
   const [state, dispatch] = useReducer(quizReducer, initialState);
 
-  const startQuiz = useCallback(({ type, formNumber, questions }) => {
-    dispatch({ type: 'START_QUIZ', payload: { type, formNumber, questions } });
+  const startQuiz = useCallback(({ type, formNumber, questions, currentIndex = 0, answers = {} }) => {
+    dispatch({ type: 'START_QUIZ', payload: { type, formNumber, questions, currentIndex, answers } });
   }, []);
 
   const answerQuestion = useCallback((qno, selectedOption) => {

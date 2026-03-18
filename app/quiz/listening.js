@@ -16,14 +16,15 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../context/ThemeContext';
 import { useQuiz } from '../../context/QuizContext';
-import { getAudioUrl } from '../../lib/api';
+import { useAuth } from '../../context/AuthContext';
+import { getAudioUrl, saveQuizProgress } from '../../lib/api';
 import QuizOption from '../../components/QuizOption';
 import AudioPlayer from '../../components/AudioPlayer';
 
 export default function ListeningQuizScreen() {
   const router = useRouter();
   const { form } = useLocalSearchParams();
-  const { isDark } = useTheme();
+  const { colors } = useTheme();
   const {
     type,
     formNumber,
@@ -31,6 +32,7 @@ export default function ListeningQuizScreen() {
     currentIndex,
     currentQuestion,
     currentAnswer,
+    answers,
     totalQuestions,
     answerQuestion,
     nextQuestion,
@@ -39,18 +41,14 @@ export default function ListeningQuizScreen() {
     isComplete,
   } = useQuiz();
 
+  const { user } = useAuth();
   const insets = useSafeAreaInsets();
-  const bgColor = isDark ? '#0f172a' : '#f5f3ff';
-  const cardBg = isDark ? 'rgba(30,41,59,0.9)' : '#ffffff';
-  const textColor = isDark ? '#f1f5f9' : '#1e1b4b';
-  const subtextColor = isDark ? '#94a3b8' : '#64748b';
-  const accentColor = '#7c3aed';
-
   const [trackWidth, setTrackWidth] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
   const bottomInset = Platform.OS === 'android' ? insets.bottom : 0;
 
-  // If no quiz loaded or wrong type, redirect back
+  const answered = currentAnswer !== undefined && currentAnswer !== null;
+
   useEffect(() => {
     if (!questions || questions.length === 0 || type !== 'listening') {
       router.replace('/(tabs)/listening');
@@ -58,29 +56,10 @@ export default function ListeningQuizScreen() {
   }, []);
 
   useEffect(() => {
-    if (isComplete) {
-      router.replace('/results');
-    }
+    if (isComplete) router.replace('/results');
   }, [isComplete]);
 
-  if (!currentQuestion) return null;
-
-  const options = [
-    { number: 1, text: currentQuestion.optiona },
-    { number: 2, text: currentQuestion.optionb },
-    { number: 3, text: currentQuestion.optiond === undefined ? currentQuestion.optionc : currentQuestion.optionc },
-    { number: 4, text: currentQuestion.optiond },
-  ];
-
-  const getOptionState = (optionNumber) => {
-    if (currentAnswer === undefined || currentAnswer === null) return 'default';
-    const correct = currentQuestion.correctoption;
-    if (optionNumber === correct) return 'correct';
-    if (optionNumber === currentAnswer) return 'wrong';
-    return 'default';
-  };
-
-  const progress = (currentIndex + 1) / totalQuestions;
+  const progress = currentQuestion ? (currentIndex + 1) / totalQuestions : 0;
 
   useEffect(() => {
     if (trackWidth > 0) {
@@ -92,9 +71,30 @@ export default function ListeningQuizScreen() {
     }
   }, [progress, trackWidth]);
 
+  if (!currentQuestion) return null;
+
+  const options = [
+    { number: 1, text: currentQuestion.optiona },
+    { number: 2, text: currentQuestion.optionb },
+    { number: 3, text: currentQuestion.optionc },
+    { number: 4, text: currentQuestion.optiond },
+  ];
+
+  const getOptionState = (optionNumber) => {
+    if (!answered) return 'default';
+    const correct = currentQuestion.correctoption;
+    if (optionNumber === correct) return 'correct';
+    if (optionNumber === currentAnswer) return 'wrong';
+    return 'default';
+  };
+
   const handleAnswer = (optionNumber) => {
-    if (currentAnswer !== undefined && currentAnswer !== null) return;
+    if (answered) return;
     answerQuestion(currentQuestion.qno, optionNumber);
+    if (user) {
+      const newAnswers = { ...answers, [currentQuestion.qno]: optionNumber };
+      saveQuizProgress({ userId: user.id, quizType: 'listening', formNumber, currentIndex, answers: newAnswers });
+    }
   };
 
   const handlePrev = () => {
@@ -114,7 +114,7 @@ export default function ListeningQuizScreen() {
   const isLastQuestion = currentIndex === totalQuestions - 1;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Top bar */}
       <View style={styles.topBar}>
         <TouchableOpacity
@@ -122,34 +122,34 @@ export default function ListeningQuizScreen() {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             router.back();
           }}
-          style={[styles.backBtn, { backgroundColor: isDark ? '#1e293b' : '#f1f5f9' }]}
+          style={[styles.backBtn, { backgroundColor: colors.surfaceAlt }]}
         >
-          <Ionicons name="arrow-back" size={20} color={textColor} />
+          <Ionicons name="arrow-back" size={20} color={colors.text} />
         </TouchableOpacity>
 
         <View style={styles.topCenter}>
-          <Text style={[styles.formLabel, { color: accentColor, fontFamily: 'Inter_600SemiBold' }]}>
+          <Text style={[styles.formLabel, { color: colors.accent, fontFamily: 'Inter_600SemiBold' }]}>
             Form {formNumber}
           </Text>
-          <Text style={[styles.questionCounter, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+          <Text style={[styles.questionCounter, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
             {currentIndex + 1} / {totalQuestions}
           </Text>
         </View>
 
-        <View style={[styles.headsetBadge, { backgroundColor: 'rgba(124,58,237,0.12)' }]}>
-          <Ionicons name="headset" size={18} color={accentColor} />
+        <View style={[styles.headsetBadge, { backgroundColor: colors.accentIcon }]}>
+          <Ionicons name="headset" size={18} color={colors.accent} />
         </View>
       </View>
 
       {/* Progress bar */}
       <View
-        style={[styles.progressTrack, { backgroundColor: isDark ? '#1e293b' : '#e2e8f0' }]}
+        style={[styles.progressTrack, { backgroundColor: colors.border }]}
         onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
       >
         <Animated.View
-          style={[styles.progressFill, { backgroundColor: accentColor, width: progressAnim }]}
+          style={[styles.progressFill, { backgroundColor: colors.accent, width: progressAnim }]}
         />
-        <View style={[styles.progressGlow, { backgroundColor: accentColor, opacity: 0.25, width: progressAnim }]} />
+        <View style={[styles.progressGlow, { backgroundColor: colors.accent, opacity: 0.25, width: progressAnim }]} />
       </View>
 
       <ScrollView
@@ -157,7 +157,6 @@ export default function ListeningQuizScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: 100 + bottomInset }]}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Question Header */}
         <MotiView
           key={currentIndex}
           from={{ opacity: 0, translateX: 30 }}
@@ -165,21 +164,17 @@ export default function ListeningQuizScreen() {
           transition={{ type: 'timing', duration: 300 }}
         >
           <View style={styles.questionHeader}>
-            <Text style={[styles.questionNum, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.questionNum, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
               Question {currentIndex + 1}
             </Text>
-            <Text style={[styles.questionTitle, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+            <Text style={[styles.questionTitle, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
               Listen to the audio and select the correct answer
             </Text>
           </View>
 
-          {/* Audio Player */}
-          <AudioPlayer
-            audioUrl={getAudioUrl(currentQuestion.audiofile)}
-          />
+          <AudioPlayer audioUrl={getAudioUrl(currentQuestion.audiofile)} />
 
-          {/* Options */}
-          <Text style={[styles.pickLabel, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+          <Text style={[styles.pickLabel, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
             Choose one answer:
           </Text>
 
@@ -190,7 +185,7 @@ export default function ListeningQuizScreen() {
               text={opt.text || ''}
               state={getOptionState(opt.number)}
               onPress={() => handleAnswer(opt.number)}
-              disabled={currentAnswer !== undefined && currentAnswer !== null}
+              disabled={answered}
             />
           ))}
         </MotiView>
@@ -199,51 +194,34 @@ export default function ListeningQuizScreen() {
       {/* Bottom navigation */}
       <View style={[styles.bottomBar, { paddingBottom: 16 + bottomInset }]}>
         <View style={styles.bottomRow}>
-          {currentIndex > 0 ? (
-            <TouchableOpacity
-              activeOpacity={0.85}
-              onPress={handlePrev}
-              style={[styles.prevBtn, { backgroundColor: isDark ? '#1e293b' : '#e2e8f0' }]}
-            >
-              <Ionicons name="arrow-back" size={20} color={subtextColor} />
-              <Text style={[styles.prevText, { color: subtextColor, fontFamily: 'Inter_600SemiBold' }]}>
-                Previous
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.prevPlaceholder} />
-          )}
-
           <TouchableOpacity
-            activeOpacity={currentAnswer !== undefined && currentAnswer !== null ? 0.85 : 1}
-            disabled={currentAnswer === undefined || currentAnswer === null}
-            onPress={handleNext}
+            activeOpacity={0.85}
+            onPress={handlePrev}
+            disabled={currentIndex === 0}
             style={[
-              styles.nextBtn,
-              {
-                backgroundColor:
-                  currentAnswer !== undefined && currentAnswer !== null
-                    ? accentColor
-                    : isDark ? '#1e293b' : '#e2e8f0',
-              },
+              styles.navBtn,
+              { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1.5 },
+              currentIndex === 0 && { opacity: 0.35 },
             ]}
           >
-            <Text
-              style={[
-                styles.nextText,
-                {
-                  color:
-                    currentAnswer !== undefined && currentAnswer !== null ? '#ffffff' : subtextColor,
-                  fontFamily: 'Inter_600SemiBold',
-                },
-              ]}
-            >
-              {isLastQuestion ? 'Finish Quiz' : 'Next'}
+            <Ionicons name="arrow-back" size={20} color={colors.text} />
+            <Text style={[styles.navBtnText, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
+              Previous
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={handleNext}
+            style={[styles.navBtn, { backgroundColor: colors.accent }]}
+          >
+            <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Inter_600SemiBold' }]}>
+              {isLastQuestion ? 'Finish' : answered ? 'Next' : 'Skip'}
             </Text>
             <Ionicons
               name={isLastQuestion ? 'checkmark-circle' : 'arrow-forward'}
               size={20}
-              color={currentAnswer !== undefined && currentAnswer !== null ? '#ffffff' : subtextColor}
+              color="#ffffff"
             />
           </TouchableOpacity>
         </View>
@@ -258,82 +236,40 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 45,
     paddingBottom: 12,
     gap: 12,
   },
   backBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 40, height: 40, borderRadius: 12,
+    justifyContent: 'center', alignItems: 'center',
   },
   topCenter: { flex: 1, alignItems: 'center' },
   formLabel: { fontSize: 15 },
   questionCounter: { fontSize: 13, marginTop: 2 },
   headsetBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 40, height: 40, borderRadius: 12,
+    justifyContent: 'center', alignItems: 'center',
   },
   progressTrack: {
-    height: 4,
-    marginHorizontal: 20,
-    borderRadius: 2,
-    overflow: 'hidden',
-    marginBottom: 8,
+    height: 10, marginHorizontal: 20, marginTop: 20,
+    borderRadius: 5, overflow: 'hidden', marginBottom: 8,
   },
-  progressFill: {
-    height: 4,
-    borderRadius: 2,
-  },
+  progressFill: { height: 10, borderRadius: 2 },
   progressGlow: { position: 'absolute', height: 10, borderRadius: 5, top: -3 },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
-  },
+  scrollContent: { paddingHorizontal: 20, paddingTop: 8 },
   questionHeader: { marginBottom: 16 },
   questionNum: { fontSize: 13, marginBottom: 4 },
   questionTitle: { fontSize: 16, lineHeight: 22 },
-  pickLabel: {
-    fontSize: 13,
-    marginBottom: 10,
-    marginTop: 4,
-  },
+  pickLabel: { fontSize: 13, marginBottom: 10, marginTop: 4 },
   bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 20,
-    paddingTop: 12,
+    position: 'absolute', bottom: 0, left: 0, right: 0,
+    paddingHorizontal: 20, paddingTop: 12,
   },
-  bottomRow: {
-    flexDirection: 'row',
-    gap: 10,
+  bottomRow: { flexDirection: 'row', gap: 10 },
+  navBtn: {
+    flex: 1, flexDirection: 'row', alignItems: 'center',
+    justifyContent: 'center', paddingVertical: 16, borderRadius: 16, gap: 8,
   },
-  prevBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 16,
-    gap: 6,
-  },
-  prevText: { fontSize: 15 },
-  prevPlaceholder: { flex: 0, width: 0 },
-  nextBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    borderRadius: 16,
-    gap: 8,
-  },
-  nextText: { fontSize: 16 },
+  navBtnText: { fontSize: 16 },
 });
