@@ -4,11 +4,10 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   Animated,
-  Platform,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MotiView } from 'moti';
@@ -45,7 +44,7 @@ export default function ListeningQuizScreen() {
   const insets = useSafeAreaInsets();
   const [trackWidth, setTrackWidth] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
-  const bottomInset = Platform.OS === 'android' ? insets.bottom : 0;
+  const bottomInset = insets.bottom;
 
   const answered = currentAnswer !== undefined && currentAnswer !== null;
 
@@ -114,43 +113,59 @@ export default function ListeningQuizScreen() {
   const isLastQuestion = currentIndex === totalQuestions - 1;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Top bar */}
-      <View style={styles.topBar}>
-        <TouchableOpacity
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            router.back();
-          }}
-          style={[styles.backBtn, { backgroundColor: colors.surfaceAlt }]}
-        >
-          <Ionicons name="arrow-back" size={20} color={colors.text} />
-        </TouchableOpacity>
-
-        <View style={styles.topCenter}>
-          <Text style={[styles.formLabel, { color: colors.accent, fontFamily: 'Inter_600SemiBold' }]}>
-            Form {formNumber}
-          </Text>
-          <Text style={[styles.questionCounter, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
-            {currentIndex + 1} / {totalQuestions}
-          </Text>
-        </View>
-
-        <View style={[styles.headsetBadge, { backgroundColor: colors.accentIcon }]}>
-          <Ionicons name="headset" size={18} color={colors.accent} />
-        </View>
-      </View>
-
-      {/* Progress bar */}
-      <View
-        style={[styles.progressTrack, { backgroundColor: colors.border }]}
-        onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <LinearGradient
+        colors={colors.gradientListening}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.header, { paddingTop: insets.top + 14 }]}
       >
-        <Animated.View
-          style={[styles.progressFill, { backgroundColor: colors.accent, width: progressAnim }]}
-        />
-        <View style={[styles.progressGlow, { backgroundColor: colors.accent, opacity: 0.25, width: progressAnim }]} />
-      </View>
+        <View style={styles.headerBlob1} />
+        <View style={styles.headerBlob2} />
+
+        <View style={styles.headerTopRow}>
+          <TouchableOpacity
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.back();
+            }}
+            style={styles.headerBackBtn}
+          >
+            <Ionicons name="arrow-back" size={20} color="#ffffff" />
+          </TouchableOpacity>
+
+          <View style={styles.headerTitleBlock}>
+            <Text style={[styles.headerEyebrow, { fontFamily: 'Inter_400Regular' }]}>
+              Listening Quiz
+            </Text>
+            <Text style={[styles.headerTitle, { fontFamily: 'Inter_600SemiBold' }]} numberOfLines={1}>
+              Form {formNumber}
+            </Text>
+          </View>
+
+          <View style={styles.headerIconBadge}>
+            <Ionicons name="headset" size={20} color="#ffffff" />
+          </View>
+        </View>
+
+        <View style={styles.progressSection}>
+          <View style={styles.progressMeta}>
+            <Text style={[styles.progressLabel, { fontFamily: 'Inter_400Regular' }]}>
+              Question {currentIndex + 1} of {totalQuestions}
+            </Text>
+            <Text style={[styles.progressPct, { fontFamily: 'Inter_600SemiBold' }]}>
+              {Math.round(progress * 100)}%
+            </Text>
+          </View>
+          <View
+            style={styles.progressTrack}
+            onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+          >
+            <Animated.View style={[styles.progressFill, { width: progressAnim }]} />
+            <Animated.View style={[styles.progressGlow, { width: progressAnim }]} />
+          </View>
+        </View>
+      </LinearGradient>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -226,37 +241,61 @@ export default function ListeningQuizScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  header: {
     paddingHorizontal: 20,
-    paddingTop: 45,
-    paddingBottom: 12,
-    gap: 12,
+    paddingBottom: 20,
+    overflow: 'hidden',
+    position: 'relative',
   },
-  backBtn: {
+  headerBlob1: {
+    position: 'absolute', width: 170, height: 170, borderRadius: 85,
+    backgroundColor: 'rgba(255,255,255,0.06)', top: -50, right: -30,
+  },
+  headerBlob2: {
+    position: 'absolute', width: 90, height: 90, borderRadius: 45,
+    backgroundColor: 'rgba(255,255,255,0.05)', bottom: -20, left: 30,
+  },
+  headerTopRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20,
+  },
+  headerBackBtn: {
     width: 40, height: 40, borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     justifyContent: 'center', alignItems: 'center',
   },
-  topCenter: { flex: 1, alignItems: 'center' },
-  formLabel: { fontSize: 15 },
-  questionCounter: { fontSize: 13, marginTop: 2 },
-  headsetBadge: {
+  headerTitleBlock: { flex: 1 },
+  headerEyebrow: {
+    fontSize: 11, color: 'rgba(255,255,255,0.65)',
+    textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 3,
+  },
+  headerTitle: { fontSize: 17, color: '#ffffff' },
+  headerIconBadge: {
     width: 40, height: 40, borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     justifyContent: 'center', alignItems: 'center',
   },
+  progressSection: { gap: 8 },
+  progressMeta: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+  },
+  progressLabel: { fontSize: 12, color: 'rgba(255,255,255,0.75)' },
+  progressPct: { fontSize: 13, color: '#ffffff' },
   progressTrack: {
-    height: 10, marginHorizontal: 20, marginTop: 20,
-    borderRadius: 5, overflow: 'hidden', marginBottom: 8,
+    height: 8, borderRadius: 4,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    overflow: 'hidden',
   },
-  progressFill: { height: 10, borderRadius: 2 },
-  progressGlow: { position: 'absolute', height: 10, borderRadius: 5, top: -3 },
+  progressFill: { height: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.9)' },
+  progressGlow: {
+    position: 'absolute', height: 8, borderRadius: 4,
+    backgroundColor: 'rgba(255,255,255,0.35)', top: 0,
+  },
   scrollContent: { paddingHorizontal: 20, paddingTop: 8 },
   questionHeader: { marginBottom: 16 },
   questionNum: { fontSize: 13, marginBottom: 4 },

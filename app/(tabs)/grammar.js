@@ -39,7 +39,8 @@ export default function GrammarScreen() {
         const q = query.trim().toLowerCase();
         const asNum = String(f.formNumber);
         const asFull = `form ${f.formNumber}`;
-        return asFull.includes(q) || asNum.includes(q);
+        const asTitle = (f.title || '').toLowerCase();
+        return asFull.includes(q) || asNum.includes(q) || asTitle.includes(q);
       })
     : forms;
 
@@ -68,6 +69,14 @@ export default function GrammarScreen() {
       });
     }, [user])
   );
+
+  const handleRandomPress = () => {
+    const allQuestions = forms.flatMap((f) => f.questions);
+    const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 30);
+    startQuiz({ type: 'grammar', formNumber: 0, questions: selected });
+    router.push({ pathname: '/quiz/grammar', params: { form: 0, typeName: 'Random Practice' } });
+  };
 
   const handleFormPress = (formNumber, questions) => {
     const typeName = grammarTypeFromRow(questions[0] || {});
@@ -137,7 +146,7 @@ export default function GrammarScreen() {
                 <TextInput
                   value={query}
                   onChangeText={setQuery}
-                  placeholder="Search form number..."
+                  placeholder="Search by title or form number..."
                   placeholderTextColor="rgba(255,255,255,0.40)"
                   style={[styles.searchInput, { fontFamily: 'Inter_400Regular' }]}
                   keyboardType="default"
@@ -188,6 +197,40 @@ export default function GrammarScreen() {
           contentContainerStyle={styles.list}
           keyboardShouldPersistTaps="handled"
         >
+          {!query.trim() && (
+            <MotiView
+              from={{ opacity: 0, translateY: 10 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'spring', damping: 18 }}
+            >
+              <TouchableOpacity
+                activeOpacity={0.78}
+                onPress={handleRandomPress}
+                style={[styles.randomCard, { backgroundColor: colors.surface, borderColor: colors.grammarAccent }]}
+              >
+                <LinearGradient
+                  colors={colors.gradientGrammar}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.randomBadge}
+                >
+                  <Ionicons name="shuffle" size={22} color="#ffffff" />
+                </LinearGradient>
+                <View style={styles.randomInfo}>
+                  <Text style={[styles.randomTitle, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
+                    Random Practice
+                  </Text>
+                  <Text style={[styles.randomSub, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+                    30 questions from all forms
+                  </Text>
+                </View>
+                <View style={[styles.randomPlay, { backgroundColor: `${colors.grammarAccent}18` }]}>
+                  <Ionicons name="play" size={16} color={colors.grammarAccent} style={{ marginLeft: 2 }} />
+                </View>
+              </TouchableOpacity>
+            </MotiView>
+          )}
+
           <Text style={[styles.listLabel, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
             {query.trim()
               ? `${filteredForms.length} of ${forms.length} forms found`
@@ -224,6 +267,7 @@ export default function GrammarScreen() {
               <FormCard
                 key={form.formNumber}
                 formNumber={form.formNumber}
+                title={form.title}
                 questionCount={form.questions.length}
                 type="grammar"
                 index={idx}
@@ -317,4 +361,22 @@ const styles = StyleSheet.create({
   noResultsSub: { fontSize: 13, textAlign: 'center' },
   clearBtn: { paddingHorizontal: 20, paddingVertical: 9, borderRadius: 12, marginTop: 6 },
   clearBtnText: { fontSize: 14 },
+  randomCard: {
+    flexDirection: 'row', alignItems: 'center',
+    borderRadius: 18, borderWidth: 1.5,
+    overflow: 'hidden', marginBottom: 20,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07, shadowRadius: 10, elevation: 3,
+  },
+  randomBadge: {
+    width: 68, alignSelf: 'stretch',
+    justifyContent: 'center', alignItems: 'center',
+  },
+  randomInfo: { flex: 1, paddingVertical: 16, paddingHorizontal: 14, gap: 3 },
+  randomTitle: { fontSize: 16 },
+  randomSub: { fontSize: 13 },
+  randomPlay: {
+    width: 36, height: 36, borderRadius: 18,
+    justifyContent: 'center', alignItems: 'center', marginRight: 16,
+  },
 });

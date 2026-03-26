@@ -6,7 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context/ThemeContext';
 
-export default function FormCard({ formNumber, questionCount, type, onPress, index = 0, progress = null }) {
+export default function FormCard({ formNumber, title, questionCount, type, onPress, index = 0, progress = null }) {
   const { colors } = useTheme();
   const isListening = type === 'listening';
   const isGrammar = type === 'grammar';
@@ -58,7 +58,7 @@ export default function FormCard({ formNumber, questionCount, type, onPress, ind
         <View style={styles.content}>
           <View style={styles.titleRow}>
             <Text style={[styles.title, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
-              Form {formNumber}
+              {title || `Form ${formNumber}`}
             </Text>
             {progress && (
               <View style={[styles.resumeBadge, { backgroundColor: `${accentColor}18` }]}>
