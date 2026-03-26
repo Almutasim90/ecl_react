@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/rafoa/StudioProjects/ecl_react -path ./node_modules -prune -o -type f \\\\\\(-name *context* -o -name *provider* \\\\\\) -print)",
+      "Bash(xargs grep:*)",
+      "Bash(find /c/Users/rafoa/StudioProjects/ecl_react/components -type f -name *.js)",
+      "Bash(find /c/Users/rafoa/StudioProjects/ecl_react/app -type f -name *.js -o -name *.jsx)",
+      "Bash(find /c/Users/rafoa/StudioProjects/ecl_react -type f -name *.sql)",
+      "Bash(find /c/Users/rafoa/StudioProjects/ecl_react -type f \\\\\\(-name *.md -o -name *.txt \\\\\\))"
+    ]
+  }
+}

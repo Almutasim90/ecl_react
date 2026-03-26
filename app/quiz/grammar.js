@@ -57,7 +57,7 @@ export default function GrammarQuizScreen() {
     if (isComplete) router.replace('/results');
   }, [isComplete]);
 
-  const progress = currentQuestion ? (currentIndex + 1) / totalQuestions : 0;
+  const progress = currentQuestion ? currentIndex / totalQuestions : 0;
 
   useEffect(() => {
     if (trackWidth > 0) {
@@ -136,10 +136,10 @@ export default function GrammarQuizScreen() {
           </TouchableOpacity>
 
           <View style={styles.headerTitleBlock}>
-            <Text style={[styles.headerEyebrow, { fontFamily: 'Inter_400Regular' }]}>
-              Grammar Quiz
+            <Text style={[styles.headerEyebrow, { fontFamily: 'Cairo_700Bold' }]}>
+              GRAMMAR QUIZ
             </Text>
-            <Text style={[styles.headerTitle, { fontFamily: 'Inter_600SemiBold' }]} numberOfLines={1}>
+            <Text style={[styles.headerTitle, { fontFamily: 'Cairo_800ExtraBold' }]} numberOfLines={1}>
               {typeName || `Form ${formNumber}`}
             </Text>
           </View>
@@ -151,10 +151,10 @@ export default function GrammarQuizScreen() {
 
         <View style={styles.progressSection}>
           <View style={styles.progressMeta}>
-            <Text style={[styles.progressLabel, { fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.progressLabel, { fontFamily: 'Cairo_600SemiBold' }]}>
               Question {currentIndex + 1} of {totalQuestions}
             </Text>
-            <Text style={[styles.progressPct, { fontFamily: 'Inter_600SemiBold' }]}>
+            <Text style={[styles.progressPct, { fontFamily: 'Cairo_800ExtraBold' }]}>
               {Math.round(progress * 100)}%
             </Text>
           </View>
@@ -180,7 +180,7 @@ export default function GrammarQuizScreen() {
           transition={{ type: 'timing', duration: 300 }}
         >
           <View style={styles.questionHeader}>
-            <Text style={[styles.questionNum, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.questionNum, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
               Question {currentIndex + 1} of {totalQuestions}
             </Text>
           </View>
@@ -188,12 +188,12 @@ export default function GrammarQuizScreen() {
           {/* Question text card */}
           <View style={[styles.questionCard, { backgroundColor: colors.surface }]}>
             <View style={[styles.questionDecorBar, { backgroundColor: colors.grammarAccent }]} />
-            <Text style={[styles.questionText, { color: colors.text, fontFamily: 'Inter_500Medium' }]}>
+            <Text style={[styles.questionText, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
               {currentQuestion.questiontext}
             </Text>
           </View>
 
-          <Text style={[styles.pickLabel, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+          <Text style={[styles.pickLabel, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
             Choose one answer:
           </Text>
 
@@ -224,8 +224,8 @@ export default function GrammarQuizScreen() {
             ]}
           >
             <Ionicons name="arrow-back" size={20} color={colors.text} />
-            <Text style={[styles.navBtnText, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
-              Previous
+            <Text style={[styles.navBtnText, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+              PREVIOUS
             </Text>
           </TouchableOpacity>
 
@@ -234,8 +234,8 @@ export default function GrammarQuizScreen() {
             onPress={handleNext}
             style={[styles.navBtn, { backgroundColor: colors.grammarAccent }]}
           >
-            <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Inter_600SemiBold' }]}>
-              {isLastQuestion ? 'Finish' : answered ? 'Next' : 'Skip'}
+            <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Cairo_800ExtraBold' }]}>
+              {isLastQuestion ? 'FINISH' : answered ? 'NEXT' : 'SKIP'}
             </Text>
             <Ionicons
               name={isLastQuestion ? 'checkmark-circle' : 'arrow-forward'}
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 24,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.05)', bottom: -20, left: 30,
   },
   headerTopRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20,
+    flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 24,
   },
   headerBackBtn: {
     width: 40, height: 40, borderRadius: 12,
@@ -278,31 +278,31 @@ const styles = StyleSheet.create({
     fontSize: 11, color: 'rgba(255,255,255,0.65)',
     textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 3,
   },
-  headerTitle: { fontSize: 17, color: '#ffffff' },
+  headerTitle: { fontSize: 20, color: '#ffffff' },
   headerIconBadge: {
     width: 40, height: 40, borderRadius: 12,
     backgroundColor: 'rgba(255,255,255,0.18)',
     justifyContent: 'center', alignItems: 'center',
   },
-  progressSection: { gap: 8 },
+  progressSection: { gap: 10 },
   progressMeta: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
-  progressLabel: { fontSize: 12, color: 'rgba(255,255,255,0.75)' },
-  progressPct: { fontSize: 13, color: '#ffffff' },
+  progressLabel: { fontSize: 13, color: 'rgba(255,255,255,0.8)' },
+  progressPct: { fontSize: 14, color: '#ffffff' },
   progressTrack: {
-    height: 8, borderRadius: 4,
+    height: 10, borderRadius: 5,
     backgroundColor: 'rgba(255,255,255,0.2)',
     overflow: 'hidden',
   },
-  progressFill: { height: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.9)' },
+  progressFill: { height: 10, borderRadius: 5, backgroundColor: 'rgba(255,255,255,0.95)' },
   progressGlow: {
-    position: 'absolute', height: 8, borderRadius: 4,
+    position: 'absolute', height: 10, borderRadius: 5,
     backgroundColor: 'rgba(255,255,255,0.35)', top: 0,
   },
-  scrollContent: { paddingHorizontal: 20, paddingTop: 8 },
+  scrollContent: { paddingHorizontal: 20, paddingTop: 16 },
   questionHeader: { marginBottom: 12 },
-  questionNum: { fontSize: 13 },
+  questionNum: { fontSize: 14 },
   questionCard: {
     borderRadius: 16, padding: 16, paddingLeft: 20, marginBottom: 20,
     shadowColor: '#000',
@@ -313,15 +313,17 @@ const styles = StyleSheet.create({
   },
   questionDecorBar: { width: 4, borderRadius: 2, minHeight: 40, flexShrink: 0 },
   questionText: { flex: 1, fontSize: 16, lineHeight: 26 },
-  pickLabel: { fontSize: 13, marginBottom: 10 },
+  pickLabel: { fontSize: 14, marginBottom: 12 },
   bottomBar: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    paddingHorizontal: 20, paddingTop: 12,
+    paddingHorizontal: 20, paddingTop: 16,
+    backgroundColor: 'transparent',
   },
-  bottomRow: { flexDirection: 'row', gap: 10 },
+  bottomRow: { flexDirection: 'row', gap: 12 },
   navBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center',
-    justifyContent: 'center', paddingVertical: 16, borderRadius: 16, gap: 8,
+    justifyContent: 'center', paddingVertical: 18, borderRadius: 18, gap: 10,
+    elevation: 4, shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 4 },
   },
-  navBtnText: { fontSize: 16 },
+  navBtnText: { fontSize: 16, letterSpacing: 1 },
 });

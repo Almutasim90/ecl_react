@@ -38,7 +38,7 @@ export default function TabsLayout() {
         },
         tabBarLabelStyle: {
           fontSize: 11,
-          fontFamily: 'Inter_500Medium',
+          fontFamily: 'Cairo_600SemiBold',
           marginTop: 2,
           letterSpacing: 0.2,
         },
@@ -53,6 +53,15 @@ export default function TabsLayout() {
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'home' : 'home-outline'} color={color} size={26} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="quest"
+        options={{
+          title: 'Quest',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'map' : 'map-outline'} color={color} size={26} />
           ),
         }}
       />

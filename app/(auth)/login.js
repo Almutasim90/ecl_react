@@ -11,19 +11,17 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { MotiView } from 'moti';
+import { MotiView, AnimatePresence } from 'moti';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { useTheme } from '../../context/ThemeContext';
 import { useResponsive } from '../../utils/useResponsive';
 import { useAuth } from '../../context/AuthContext';
 import LiquidGlassBackground from '../../components/LiquidGlassBackground';
 import FloatingInput from '../../components/FloatingInput';
 import SocialAuthButtons from '../../components/SocialAuthButtons';
-
-const ENTER_DELAY = 100;
-const ENTER_DURATION = 400;
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -32,9 +30,9 @@ export default function LoginScreen() {
   const [localLoading, setLocalLoading] = useState(false);
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { isDark } = useTheme();
-  const { cardMaxWidth, horizontalPadding, cardPadding } = useResponsive();
-  const { signIn, signInWithGoogle, signInWithApple, isLoading } = useAuth();
+  const { isDark, colors } = useTheme();
+  const { cardMaxWidth, horizontalPadding } = useResponsive();
+  const { signIn, signInAsGuest, isLoading } = useAuth();
   const { redirect } = useLocalSearchParams();
 
   const resolveRedirect = () => {
@@ -44,20 +42,10 @@ export default function LoginScreen() {
   };
 
   const loading = isLoading || localLoading;
-  const accentColor = '#7c3aed';
-  const cardBg = isDark ? 'rgba(30,41,59,0.85)' : 'rgba(255,255,255,0.9)';
-  const dividerColor = isDark ? '#475569' : '#cbd5e1';
-  const linkColor = isDark ? '#a78bfa' : '#7c3aed';
-  const loginBtnColors = isDark ? ['#8b5cf6', '#7c3aed'] : ['#7c3aed', '#6d28d9'];
 
   const handleLogin = async () => {
     if (!email || !password) {
       setError('Please fill in all fields');
-      return;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address');
       return;
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -69,188 +57,159 @@ export default function LoginScreen() {
       router.replace(resolveRedirect());
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      let errorMessage = result.error;
-      if (result.error?.includes('Invalid login credentials')) {
-        errorMessage = 'Invalid email or password';
-      } else if (result.error?.includes('Email not confirmed')) {
-        errorMessage = 'Please confirm your email first';
-      }
-      setError(errorMessage);
+      setError(result.error || 'Login failed');
     }
     setLocalLoading(false);
   };
 
-  const handleGoogleSignIn = async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setError('');
-    setLocalLoading(true);
-    const result = await signInWithGoogle();
-    if (result.success) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      router.replace(resolveRedirect());
-    } else {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      if (result.error !== 'Authentication cancelled') {
-        setError('Google sign in failed');
-      }
-    }
-    setLocalLoading(false);
-  };
-
-  const handleAppleSignIn = async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setError('');
-    setLocalLoading(true);
-    const result = await signInWithApple();
-    if (result.success) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      router.replace(resolveRedirect());
-    } else {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      if (result.error !== 'Authentication cancelled') {
-        setError('Apple sign in failed');
-      }
-    }
-    setLocalLoading(false);
+  const handleGuestLogin = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    signInAsGuest();
+    router.replace(resolveRedirect());
   };
 
   return (
     <View style={styles.screen}>
       <LiquidGlassBackground />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={[styles.keyboard, { paddingTop: insets.top, paddingBottom: insets.bottom }]}
+        style={styles.keyboard}
       >
         <ScrollView
           contentContainerStyle={[styles.scrollContent, { paddingHorizontal: horizontalPadding }]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* App Branding */}
+          {/* Logo Section */}
           <MotiView
-            from={{ opacity: 0, translateY: -10 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: 'timing', duration: 600, delay: 50 }}
-            style={styles.brandRow}
+            from={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'spring', delay: 200 }}
+            style={styles.logoContainer}
           >
-            <View style={[styles.brandIcon, { backgroundColor: accentColor }]}>
-              <Ionicons name="school" size={22} color="#ffffff" />
-            </View>
-            <Text style={[styles.brandName, { color: isDark ? '#f1f5f9' : '#1e1b4b', fontFamily: 'Inter_600SemiBold' }]}>
-              ECL
+            <LinearGradient
+              colors={colors.gradientHero}
+              style={styles.logoGradient}
+            >
+              <Ionicons name="school" size={42} color="#fff" />
+            </LinearGradient>
+            <Text style={[styles.appName, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+              ECL QUEST
+            </Text>
+            <Text style={[styles.appTagline, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
+              Level up your English today
             </Text>
           </MotiView>
 
+          {/* Frosted Glass Login Card */}
           <MotiView
-            from={{ opacity: 0, translateY: 20 }}
+            from={{ opacity: 0, translateY: 40 }}
             animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: 'timing', duration: ENTER_DURATION, delay: ENTER_DELAY }}
-            style={[styles.card, { backgroundColor: cardBg, maxWidth: cardMaxWidth, padding: cardPadding }]}
+            transition={{ type: 'spring', delay: 400 }}
+            style={[styles.cardContainer, { maxWidth: cardMaxWidth }]}
           >
-            <Text style={[styles.title, { color: isDark ? '#f1f5f9' : '#1e1b4b', fontFamily: 'Inter_600SemiBold' }]}>
-              Login
-            </Text>
-
-            <FloatingInput
-              labelKey="email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoComplete="email"
-              autoCapitalize="none"
-            />
-            <FloatingInput
-              labelKey="password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoComplete="password"
-            />
-
-            {error ? (
-              <MotiView
-                from={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: 'timing', duration: 200 }}
-              >
-                <Text style={[styles.errorText, { color: '#ef4444', fontFamily: 'Inter_400Regular' }]}>
-                  {error}
-                </Text>
-              </MotiView>
-            ) : null}
-
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => {
-                Haptics.selectionAsync();
-                router.push('/(auth)/forgot-password');
-              }}
-              style={styles.forgotPasswordBtn}
+            <BlurView
+              intensity={isDark ? 30 : 70}
+              tint={isDark ? 'dark' : 'light'}
+              style={[styles.glassCard, { borderColor: colors.border }]}
             >
-              <Text style={[styles.forgotPasswordText, { color: linkColor, fontFamily: 'Inter_400Regular' }]}>
-                Forgot password?
+              <Text style={[styles.title, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+                Welcome Back
               </Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.85}
-              onPress={handleLogin}
-              disabled={loading}
-              style={styles.loginBtn}
-            >
-              <LinearGradient
-                colors={loginBtnColors}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[styles.loginBtnGradient, loading && styles.loginBtnLoading]}
-              >
-                {loading ? (
-                  <ActivityIndicator color="#ffffff" size="small" />
-                ) : (
-                  <Text style={[styles.loginBtnText, { fontFamily: 'Inter_600SemiBold' }]}>
-                    Login
-                  </Text>
+              <FloatingInput
+                labelKey="Email Address"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+              <FloatingInput
+                labelKey="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+
+              <AnimatePresence>
+                {error && (
+                  <MotiView
+                    from={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 35 }}
+                    exit={{ opacity: 0, height: 0 }}
+                    style={styles.errorContainer}
+                  >
+                    <Ionicons name="alert-circle" size={16} color={colors.error} />
+                    <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Cairo_400Regular' }]}>
+                      {error}
+                    </Text>
+                  </MotiView>
                 )}
-              </LinearGradient>
-            </TouchableOpacity>
+              </AnimatePresence>
 
-            <View style={styles.signUpRow}>
-              <Text style={[styles.signUpHint, { color: isDark ? '#94a3b8' : '#64748b', fontFamily: 'Inter_400Regular' }]}>
-                {"Don't have an account? "}
-              </Text>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => {
-                Haptics.selectionAsync();
-                router.push('/(auth)/signup');
-              }}>
-                <Text style={[styles.signUpLink, { color: linkColor, fontFamily: 'Inter_600SemiBold' }]}>
-                  Sign Up
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={handleLogin}
+                disabled={loading}
+                style={styles.loginBtn}
+              >
+                <LinearGradient
+                  colors={colors.gradientHero}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.loginBtnGradient}
+                >
+                  {loading ? (
+                    <ActivityIndicator color="#ffffff" size="small" />
+                  ) : (
+                    <Text style={[styles.loginBtnText, { fontFamily: 'Cairo_700Bold' }]}>SIGN IN</Text>
+                  )}
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={handleGuestLogin}
+                style={styles.guestBtn}
+              >
+                <Text style={[styles.guestBtnText, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+                  Continue as Guest
                 </Text>
               </TouchableOpacity>
+
+              <View style={styles.footerRow}>
+                <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
+                  <Text style={[styles.footerLink, { color: colors.accent, fontFamily: 'Cairo_600SemiBold' }]}>
+                    Create Account
+                  </Text>
+                </TouchableOpacity>
+                <View style={[styles.dot, { backgroundColor: colors.border }]} />
+                <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
+                  <Text style={[styles.footerLink, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
+                    Forgot Password?
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </BlurView>
+          </MotiView>
+
+          {/* Social Login */}
+          <MotiView
+            from={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 600 }}
+            style={styles.socialSection}
+          >
+            <View style={styles.dividerRow}>
+              <View style={[styles.line, { backgroundColor: colors.border }]} />
+              <Text style={[styles.dividerText, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+                OR CONTINUE WITH
+              </Text>
+              <View style={[styles.line, { backgroundColor: colors.border }]} />
             </View>
 
-            <View style={[styles.dividerRow, { marginBottom: 8 }]}>
-              <View style={[styles.dividerLine, { backgroundColor: dividerColor }]} />
-              <Text style={[styles.dividerText, { color: isDark ? '#94a3b8' : '#64748b', fontFamily: 'Inter_400Regular' }]}>
-                Or continue with
-              </Text>
-              <View style={[styles.dividerLine, { backgroundColor: dividerColor }]} />
-            </View>
-
-            <SocialAuthButtons onGoogle={handleGoogleSignIn} onApple={handleAppleSignIn} />
-
-            {/* Continue as Guest */}
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => {
-                Haptics.selectionAsync();
-                router.replace('/(tabs)');
-              }}
-              style={styles.guestBtn}
-            >
-              <Text style={[styles.guestText, { color: isDark ? '#94a3b8' : '#64748b', fontFamily: 'Inter_400Regular' }]}>
-                Continue as Guest
-              </Text>
-            </TouchableOpacity>
+            <SocialAuthButtons />
           </MotiView>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -263,81 +222,78 @@ const styles = StyleSheet.create({
   keyboard: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
+    paddingTop: 60,
+    paddingBottom: 40,
     justifyContent: 'center',
-    paddingVertical: 32,
   },
-  brandRow: {
-    flexDirection: 'row',
+  logoContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    marginBottom: 24,
+    marginBottom: 40,
   },
-  brandIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+  logoGradient: {
+    width: 86,
+    height: 86,
+    borderRadius: 26,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 16,
+    elevation: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
   },
-  brandName: { fontSize: 26, letterSpacing: 3 },
-  card: {
-    borderRadius: 32,
+  appName: { fontSize: 32, letterSpacing: 1 },
+  appTagline: { fontSize: 16, marginTop: 2, opacity: 0.8 },
+  cardContainer: {
     width: '100%',
     alignSelf: 'center',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
-  },
-  title: { fontSize: 28, marginBottom: 28, textAlign: 'center' },
-  forgotPasswordBtn: {
-    alignSelf: 'flex-end',
-    marginBottom: 16,
-    marginTop: -8,
-  },
-  forgotPasswordText: { fontSize: 14 },
-  loginBtn: {
-    marginTop: 8,
-    marginBottom: 20,
-    borderRadius: 16,
+    borderRadius: 32,
     overflow: 'hidden',
-    elevation: 2,
-    shadowColor: '#7c3aed',
-    shadowOffset: { width: 0, height: 4 },
+    elevation: 12,
+    shadowOpacity: 0.25,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 12 },
+  },
+  glassCard: {
+    padding: 30,
+    borderRadius: 32,
+    borderWidth: 1.5,
+  },
+  title: { fontSize: 26, textAlign: 'center', marginBottom: 30 },
+  errorContainer: { flexDirection: 'row', alignItems: 'center', gap: 8, justifyContent: 'center', marginBottom: 12 },
+  errorText: { fontSize: 14 },
+  loginBtn: {
+    marginTop: 20,
+    borderRadius: 18,
+    overflow: 'hidden',
+    elevation: 4,
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
   },
   loginBtnGradient: {
-    paddingVertical: 16,
+    paddingVertical: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 16,
   },
-  loginBtnLoading: { opacity: 0.8 },
-  loginBtnText: { fontSize: 17, color: '#ffffff' },
-  errorText: { fontSize: 13, marginBottom: 12, textAlign: 'center' },
-  signUpRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    marginBottom: 24,
-  },
-  signUpHint: { fontSize: 15 },
-  signUpLink: { fontSize: 15 },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  dividerLine: { flex: 1, height: 1 },
-  dividerText: { fontSize: 13 },
+  loginBtnText: { color: '#fff', fontSize: 18, letterSpacing: 1.5 },
   guestBtn: {
+    marginTop: 15,
+    paddingVertical: 10,
     alignItems: 'center',
-    paddingTop: 16,
-    paddingBottom: 4,
   },
-  guestText: { fontSize: 14 },
+  guestBtnText: { fontSize: 16, textDecorationLine: 'underline' },
+  footerRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    gap: 15,
+  },
+  footerLink: { fontSize: 14 },
+  dot: { width: 5, height: 5, borderRadius: 2.5 },
+  socialSection: { marginTop: 40 },
+  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 15, marginBottom: 25 },
+  line: { flex: 1, height: 1.5, opacity: 0.4 },
+  dividerText: { fontSize: 12, letterSpacing: 1 },
 });

@@ -75,7 +75,7 @@ export default function SplashScreen() {
         }}
         style={styles.logoWrap}
       >
-        <Text style={[styles.logoText, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+        <Text style={[styles.logoText, { color: textColor, fontFamily: 'Cairo_700Bold' }]}>
           ECL
         </Text>
       </MotiView>
@@ -91,7 +91,7 @@ export default function SplashScreen() {
         }}
         style={styles.taglineWrap}
       >
-        <Text style={[styles.tagline, { color: isDark ? '#64748b' : '#7c3aed', fontFamily: 'Inter_400Regular' }]}>
+        <Text style={[styles.tagline, { color: isDark ? '#64748b' : '#7c3aed', fontFamily: 'Cairo_600SemiBold' }]}>
           English Comprehension Learning
         </Text>
       </MotiView>

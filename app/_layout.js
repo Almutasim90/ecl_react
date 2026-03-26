@@ -8,14 +8,11 @@ import { config } from '@gluestack-ui/config';
 import {
   useFonts,
   Cairo_400Regular,
+  Cairo_500Medium,
   Cairo_600SemiBold,
   Cairo_700Bold,
+  Cairo_800ExtraBold,
 } from '@expo-google-fonts/cairo';
-import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-} from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
 import { ThemeProvider } from '../context/ThemeContext';
 import { AuthProvider } from '../context/AuthContext';
@@ -26,18 +23,15 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     Cairo_400Regular,
+    Cairo_500Medium,
     Cairo_600SemiBold,
     Cairo_700Bold,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
+    Cairo_800ExtraBold,
   });
 
-  // Fallback timeout for web - show app even if fonts fail
   const [fontTimeout, setFontTimeout] = useState(false);
 
   useEffect(() => {
-    // On web, set a timeout to show app even if fonts fail to load
     if (Platform.OS === 'web') {
       const timer = setTimeout(() => {
         setFontTimeout(true);
@@ -52,10 +46,7 @@ export default function RootLayout() {
     }
   }, [fontsLoaded, fontError, fontTimeout]);
 
-  // Show app if fonts loaded, or on error/timeout (with system fonts fallback)
-  const shouldRender = fontsLoaded || fontError || fontTimeout;
-
-  if (!shouldRender) {
+  if (!fontsLoaded && !fontError && !fontTimeout) {
     return null;
   }
 

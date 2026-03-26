@@ -33,7 +33,7 @@ export default function FormCard({ formNumber, title, questionCount, type, onPre
         style={[
           styles.card,
           { backgroundColor: colors.surface, borderColor: progress ? accentColor : colors.border },
-          progress && { borderWidth: 1.5 },
+          progress && { borderWidth: 2 },
         ]}
       >
         {/* Gradient number badge */}
@@ -44,40 +44,40 @@ export default function FormCard({ formNumber, title, questionCount, type, onPre
           style={styles.badge}
         >
           <View style={styles.badgeDecor} />
-          <Text style={[styles.badgeNum, { fontFamily: 'Inter_600SemiBold' }]}>
+          <Text style={[styles.badgeNum, { fontFamily: 'Cairo_800ExtraBold' }]}>
             {String(formNumber).padStart(2, '0')}
           </Text>
           <Ionicons
             name={isListening ? 'headset' : isGrammar ? 'language' : 'book'}
-            size={15}
-            color="rgba(255,255,255,0.6)"
+            size={16}
+            color="rgba(255,255,255,0.7)"
           />
         </LinearGradient>
 
         {/* Info */}
         <View style={styles.content}>
           <View style={styles.titleRow}>
-            <Text style={[styles.title, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
+            <Text style={[styles.title, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
               {title || `Form ${formNumber}`}
             </Text>
             {progress && (
               <View style={[styles.resumeBadge, { backgroundColor: `${accentColor}18` }]}>
-                <Ionicons name="time-outline" size={11} color={accentColor} />
-                <Text style={[styles.resumeText, { color: accentColor, fontFamily: 'Inter_600SemiBold' }]}>
+                <Ionicons name="time" size={12} color={accentColor} />
+                <Text style={[styles.resumeText, { color: accentColor, fontFamily: 'Cairo_800ExtraBold' }]}>
                   {answeredCount}/{questionCount}
                 </Text>
               </View>
             )}
           </View>
           <View style={styles.metaRow}>
-            <Ionicons name="help-circle-outline" size={13} color={colors.textSecondary} />
-            <Text style={[styles.metaText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
-              {questionCount} questions
+            <Ionicons name="help-circle" size={14} color={colors.textSecondary} />
+            <Text style={[styles.metaText, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+              {questionCount} Questions
             </Text>
             <View style={[styles.dot, { backgroundColor: colors.textSecondary }]} />
-            <Ionicons name="time-outline" size={13} color={colors.textSecondary} />
-            <Text style={[styles.metaText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
-              ~{estimatedMinutes} min
+            <Ionicons name="timer" size={14} color={colors.textSecondary} />
+            <Text style={[styles.metaText, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+              {estimatedMinutes}m
             </Text>
           </View>
           {progress && (
@@ -88,12 +88,11 @@ export default function FormCard({ formNumber, title, questionCount, type, onPre
         </View>
 
         {/* CTA icon */}
-        <View style={[styles.playBtn, { backgroundColor: `${accentColor}18` }]}>
+        <View style={[styles.playBtn, { backgroundColor: `${accentColor}12`, borderColor: `${accentColor}20`, borderWidth: 1 }]}>
           <Ionicons
-            name={progress ? 'arrow-forward-circle' : 'play'}
-            size={progress ? 22 : 16}
+            name={progress ? 'chevron-forward-circle' : 'play-circle'}
+            size={28}
             color={accentColor}
-            style={!progress && { marginLeft: 2 }}
           />
         </View>
       </TouchableOpacity>
@@ -105,51 +104,51 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 18,
-    borderWidth: 1,
+    borderRadius: 20,
+    borderWidth: 1.5,
     overflow: 'hidden',
-    marginBottom: 12,
+    marginBottom: 14,
+    elevation: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 10,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
   },
   badge: {
-    width: 68,
+    width: 72,
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 5,
+    gap: 4,
     overflow: 'hidden',
     position: 'relative',
   },
   badgeDecor: {
     position: 'absolute',
-    width: 64, height: 64, borderRadius: 32,
-    backgroundColor: 'rgba(255,255,255,0.09)',
-    top: -18, right: -18,
+    width: 60, height: 60, borderRadius: 30,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    top: -20, right: -20,
   },
-  badgeNum: { fontSize: 22, color: '#ffffff', letterSpacing: 0.5 },
-  content: { flex: 1, paddingVertical: 14, paddingHorizontal: 14 },
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 5 },
-  title: { fontSize: 16 },
+  badgeNum: { fontSize: 24, color: '#ffffff' },
+  content: { flex: 1, paddingVertical: 16, paddingHorizontal: 16 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 6 },
+  title: { fontSize: 17 },
   resumeBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: 3,
-    paddingHorizontal: 7, paddingVertical: 2, borderRadius: 6,
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8,
   },
-  resumeText: { fontSize: 11 },
+  resumeText: { fontSize: 12 },
   metaRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 4, flexWrap: 'nowrap',
+    flexDirection: 'row', alignItems: 'center', gap: 6,
   },
-  metaText: { fontSize: 12 },
-  dot: { width: 3, height: 3, borderRadius: 1.5, opacity: 0.45, marginHorizontal: 2 },
+  metaText: { fontSize: 13 },
+  dot: { width: 4, height: 4, borderRadius: 2, opacity: 0.4, marginHorizontal: 4 },
   progressTrack: {
-    height: 3, borderRadius: 2, marginTop: 8, overflow: 'hidden',
+    height: 6, borderRadius: 3, marginTop: 12, overflow: 'hidden',
   },
-  progressFill: { height: 3, borderRadius: 2 },
+  progressFill: { height: 6, borderRadius: 3 },
   playBtn: {
-    width: 36, height: 36, borderRadius: 18,
+    width: 44, height: 44, borderRadius: 22,
     justifyContent: 'center', alignItems: 'center', marginRight: 16,
   },
 });

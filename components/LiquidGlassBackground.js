@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, Dimensions, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 import Animated, {
@@ -10,135 +10,101 @@ import Animated, {
   interpolate,
 } from 'react-native-reanimated';
 import { useTheme } from '../context/ThemeContext';
+import { LinearGradient } from 'expo-linear-gradient';
 
-const PARALLAX_FACTOR = 18;
-const FALLBACK_DURATION = 8000;
+const { width, height } = Dimensions.get('window');
 
-function useWindowDimensions() {
-  const [dims, setDims] = useState(() => Dimensions.get('window'));
-  useEffect(() => {
-    const sub = Dimensions.addEventListener('change', setDims);
-    return () => sub?.remove?.();
-  }, []);
-  return dims;
-}
+// Blob Configuration
+const BLOBS = [
+  { id: 1, color: '#818cf8', size: width * 0.8, initialPos: { top: -width * 0.2, right: -width * 0.1 }, duration: 7000 },
+  { id: 2, color: '#c084fc', size: width * 0.7, initialPos: { bottom: height * 0.1, left: -width * 0.2 }, duration: 9000 },
+  { id: 3, color: '#60a5fa', size: width * 0.5, initialPos: { top: height * 0.3, left: width * 0.2 }, duration: 11000 },
+  { id: 4, color: '#4ade80', size: width * 0.4, initialPos: { bottom: -width * 0.1, right: width * 0.1 }, duration: 8000 },
+];
 
 export default function LiquidGlassBackground() {
-  const { width } = useWindowDimensions();
-  const { isDark } = useTheme();
-  const offset1 = useSharedValue(0);
-  const offset2 = useSharedValue(0);
-  const tiltX = useSharedValue(0);
-  const tiltY = useSharedValue(0);
-  const useTiltMode = useSharedValue(0);
-
-  useEffect(() => {
-    let subscription;
-    const init = async () => {
-      try {
-        const { Accelerometer } = await import('expo-sensors');
-        const available = await Accelerometer.isAvailableAsync();
-        if (available) {
-          Accelerometer.setUpdateInterval(100);
-          subscription = Accelerometer.addListener((data) => {
-            tiltX.value = data.x * PARALLAX_FACTOR;
-            tiltY.value = data.y * PARALLAX_FACTOR;
-          });
-          useTiltMode.value = 1;
-          return;
-        }
-      } catch (_) {}
-      useTiltMode.value = 0;
-      offset1.value = withRepeat(
-        withTiming(1, { duration: FALLBACK_DURATION, easing: Easing.inOut(Easing.ease) }),
-        -1,
-        true
-      );
-      offset2.value = withRepeat(
-        withTiming(1, { duration: FALLBACK_DURATION + 2000, easing: Easing.inOut(Easing.ease) }),
-        -1,
-        true
-      );
-    };
-    init();
-    return () => {
-      subscription?.remove?.();
-    };
-  }, []);
-
-  const blob1Style = useAnimatedStyle(() => {
-    'worklet';
-    const fallbackX = interpolate(offset1.value, [0, 1], [0, 30]);
-    const fallbackY = interpolate(offset1.value, [0, 1], [0, -20]);
-    return {
-      transform: [
-        { translateX: useTiltMode.value * tiltX.value + (1 - useTiltMode.value) * fallbackX },
-        { translateY: useTiltMode.value * tiltY.value + (1 - useTiltMode.value) * fallbackY },
-      ],
-    };
-  });
-
-  const blob2Style = useAnimatedStyle(() => {
-    'worklet';
-    const fallbackX = interpolate(offset2.value, [0, 1], [0, -25]);
-    const fallbackY = interpolate(offset2.value, [0, 1], [0, 25]);
-    return {
-      transform: [
-        { translateX: useTiltMode.value * (-tiltX.value * 0.7) + (1 - useTiltMode.value) * fallbackX },
-        { translateY: useTiltMode.value * (-tiltY.value * 0.7) + (1 - useTiltMode.value) * fallbackY },
-      ],
-    };
-  });
-
-  const tint = isDark ? 'dark' : 'light';
-  const intensity = isDark ? 60 : 50;
-  const blob1Size = width * 0.7;
-  const blob2Size = width * 0.6;
+  const { isDark, colors } = useTheme();
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <View style={[styles.gradientBase, isDark && styles.gradientBaseDark]} />
-      <Animated.View
-        style={[
-          styles.blob,
-          styles.blob1,
-          { width: blob1Size, height: blob1Size, top: -width * 0.2, right: -width * 0.15 },
-          blob1Style,
-        ]}
-      >
-        <BlurView intensity={intensity} tint={tint} style={StyleSheet.absoluteFill} />
-      </Animated.View>
-      <Animated.View
-        style={[
-          styles.blob,
-          styles.blob2,
-          { width: blob2Size, height: blob2Size, bottom: -width * 0.15, left: -width * 0.2 },
-          blob2Style,
-        ]}
-      >
-        <BlurView intensity={intensity} tint={tint} style={StyleSheet.absoluteFill} />
-      </Animated.View>
+      {/* Deep Background Gradient */}
+      <LinearGradient
+        colors={isDark ? ['#0d0d14', '#14141f'] : ['#f8fafc', '#e2e8f0']}
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Animated Liquid Blobs */}
+      {BLOBS.map((blob) => (
+        <Blob key={blob.id} config={blob} />
+      ))}
+
+      {/* Glass Frost Layer */}
+      <BlurView
+        intensity={Platform.OS === 'ios' ? 40 : 80}
+        tint={isDark ? 'dark' : 'light'}
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Subtle Overlay to bind colors */}
+      <View style={[
+        StyleSheet.absoluteFill,
+        { backgroundColor: isDark ? 'rgba(13, 13, 20, 0.4)' : 'rgba(255, 255, 255, 0.2)' }
+      ]} />
     </View>
   );
 }
 
+function Blob({ config }) {
+  const progress = useSharedValue(0);
+
+  useEffect(() => {
+    progress.value = withRepeat(
+      withTiming(1, {
+        duration: config.duration,
+        easing: Easing.inOut(Easing.ease),
+      }),
+      -1,
+      true
+    );
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const translateX = interpolate(progress.value, [0, 1], [-20, 20]);
+    const translateY = interpolate(progress.value, [0, 1], [30, -30]);
+    const scale = interpolate(progress.value, [0, 1], [1, 1.15]);
+    const rotate = interpolate(progress.value, [0, 1], [0, 15]);
+
+    return {
+      transform: [
+        { translateX },
+        { translateY },
+        { scale },
+        { rotate: `${rotate}deg` },
+      ],
+    };
+  });
+
+  return (
+    <Animated.View
+      style={[
+        styles.blob,
+        {
+          width: config.size,
+          height: config.size,
+          backgroundColor: config.color,
+          borderRadius: config.size / 2,
+          opacity: 0.35,
+          ...config.initialPos,
+        },
+        animatedStyle,
+      ]}
+    />
+  );
+}
+
 const styles = StyleSheet.create({
-  gradientBase: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#e2e8f0',
-  },
-  gradientBaseDark: {
-    backgroundColor: '#0f172a',
-  },
   blob: {
     position: 'absolute',
-    borderRadius: 9999,
-    overflow: 'hidden',
-  },
-  blob1: {
-    opacity: 0.6,
-  },
-  blob2: {
-    opacity: 0.5,
+    filter: Platform.OS === 'web' ? 'blur(60px)' : undefined, // Web support for blur
   },
 });

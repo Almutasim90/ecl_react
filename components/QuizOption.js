@@ -54,21 +54,21 @@ export default function QuizOption({ optionNumber, text, state = 'default', onPr
   const c = getColors();
 
   const getStatusIcon = () => {
-    if (state === 'correct') return <Ionicons name="checkmark-circle" size={20} color={colors.success} />;
-    if (state === 'wrong') return <Ionicons name="close-circle" size={20} color={colors.error} />;
+    if (state === 'correct') return <Ionicons name="checkmark-circle" size={22} color={colors.success} />;
+    if (state === 'wrong') return <Ionicons name="close-circle" size={22} color={colors.error} />;
     return null;
   };
 
   return (
     <MotiView
-      animate={{ scale: state === 'selected' ? 1.01 : 1 }}
+      animate={{ scale: state === 'selected' ? 1.02 : 1 }}
       transition={{ type: 'spring', damping: 15 }}
     >
       <TouchableOpacity
         activeOpacity={disabled ? 1 : 0.75}
         onPress={() => {
           if (!disabled) {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             onPress?.();
           }
         }}
@@ -77,19 +77,19 @@ export default function QuizOption({ optionNumber, text, state = 'default', onPr
           {
             borderColor: c.border,
             backgroundColor: c.bg,
-            borderWidth: state === 'default' ? 1.5 : 2,
+            borderWidth: state === 'default' ? 1.5 : 2.5,
           },
         ]}
       >
         <View style={[styles.letterBadge, { backgroundColor: c.letterBg }]}>
-          <Text style={[styles.letter, { color: c.letterColor, fontFamily: 'Inter_600SemiBold' }]}>
+          <Text style={[styles.letter, { color: c.letterColor, fontFamily: 'Cairo_800ExtraBold' }]}>
             {letter}
           </Text>
         </View>
 
         <Text
-          style={[styles.optionText, { color: c.text, fontFamily: 'Inter_400Regular' }]}
-          numberOfLines={3}
+          style={[styles.optionText, { color: c.text, fontFamily: 'Cairo_800ExtraBold' }]}
+          numberOfLines={4}
         >
           {text}
         </Text>
@@ -104,16 +104,21 @@ const styles = StyleSheet.create({
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 10,
-    gap: 12,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    gap: 14,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
   },
   letterBadge: {
-    width: 36, height: 36, borderRadius: 10,
+    width: 42, height: 42, borderRadius: 12,
     justifyContent: 'center', alignItems: 'center', flexShrink: 0,
   },
-  letter: { fontSize: 14, letterSpacing: 0.3 },
-  optionText: { flex: 1, fontSize: 15, lineHeight: 22 },
-  statusIcon: { width: 20, flexShrink: 0 },
+  letter: { fontSize: 18, letterSpacing: 0.5 },
+  optionText: { flex: 1, fontSize: 16, lineHeight: 24 },
+  statusIcon: { width: 26, alignItems: 'center', justifyContent: 'center' },
 });

@@ -98,13 +98,13 @@ export default function ReadingScreen() {
 
           <View style={styles.heroRow}>
             <View style={styles.heroTextBlock}>
-              <Text style={[styles.heroEyebrow, { fontFamily: 'Inter_400Regular' }]}>
+              <Text style={[styles.heroEyebrow, { fontFamily: 'Cairo_700Bold' }]}>
                 ECL Practice
               </Text>
-              <Text style={[styles.heroTitle, { fontFamily: 'Inter_600SemiBold' }]}>
+              <Text style={[styles.heroTitle, { fontFamily: 'Cairo_800ExtraBold' }]}>
                 Reading Quiz
               </Text>
-              <Text style={[styles.heroSub, { fontFamily: 'Inter_400Regular' }]}>
+              <Text style={[styles.heroSub, { fontFamily: 'Cairo_600SemiBold' }]}>
                 Build your text comprehension skills
               </Text>
             </View>
@@ -118,14 +118,14 @@ export default function ReadingScreen() {
               <View style={styles.pillsRow}>
                 <View style={styles.pill}>
                   <Ionicons name="layers-outline" size={13} color="rgba(255,255,255,0.85)" />
-                  <Text style={[styles.pillText, { fontFamily: 'Inter_400Regular' }]}>
+                  <Text style={[styles.pillText, { fontFamily: 'Cairo_600SemiBold' }]}>
                     {forms.length} Forms
                   </Text>
                 </View>
                 <View style={styles.pillDot} />
                 <View style={styles.pill}>
                   <Ionicons name="help-circle-outline" size={13} color="rgba(255,255,255,0.85)" />
-                  <Text style={[styles.pillText, { fontFamily: 'Inter_400Regular' }]}>
+                  <Text style={[styles.pillText, { fontFamily: 'Cairo_600SemiBold' }]}>
                     {totalQuestions} Questions
                   </Text>
                 </View>
@@ -139,7 +139,7 @@ export default function ReadingScreen() {
                   onChangeText={setQuery}
                   placeholder="Search form number..."
                   placeholderTextColor="rgba(255,255,255,0.40)"
-                  style={[styles.searchInput, { fontFamily: 'Inter_400Regular' }]}
+                  style={[styles.searchInput, { fontFamily: 'Cairo_400Regular' }]}
                   keyboardType="default"
                   returnKeyType="search"
                   clearButtonMode="never"
@@ -162,21 +162,21 @@ export default function ReadingScreen() {
       {loading ? (
         <View style={styles.centered}>
           <ActivityIndicator color={colors.accent} size="large" />
-          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
             Loading forms...
           </Text>
         </View>
       ) : error ? (
         <View style={styles.centered}>
           <Ionicons name="cloud-offline-outline" size={52} color={colors.textSecondary} />
-          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
             {error}
           </Text>
         </View>
       ) : forms.length === 0 ? (
         <View style={styles.centered}>
           <Ionicons name="book-outline" size={52} color={colors.textSecondary} />
-          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
             No reading forms available.
           </Text>
         </View>
@@ -186,7 +186,7 @@ export default function ReadingScreen() {
           contentContainerStyle={styles.list}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={[styles.listLabel, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+          <Text style={[styles.listLabel, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
             {query.trim()
               ? `${filteredForms.length} of ${forms.length} forms found`
               : `${forms.length} FORM${forms.length !== 1 ? 'S' : ''} AVAILABLE`}
@@ -202,17 +202,17 @@ export default function ReadingScreen() {
               <View style={[styles.noResultsIcon, { backgroundColor: colors.accentSoft }]}>
                 <Ionicons name="search" size={28} color={colors.accent} />
               </View>
-              <Text style={[styles.noResultsTitle, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
+              <Text style={[styles.noResultsTitle, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
                 No forms found
               </Text>
-              <Text style={[styles.noResultsSub, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+              <Text style={[styles.noResultsSub, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
                 No form matches "{query}"
               </Text>
               <TouchableOpacity
                 onPress={() => setQuery('')}
                 style={[styles.clearBtn, { backgroundColor: colors.accentSoft }]}
               >
-                <Text style={[styles.clearBtnText, { color: colors.accent, fontFamily: 'Inter_600SemiBold' }]}>
+                <Text style={[styles.clearBtnText, { color: colors.accent, fontFamily: 'Cairo_700Bold' }]}>
                   Clear search
                 </Text>
               </TouchableOpacity>

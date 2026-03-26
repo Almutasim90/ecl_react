@@ -10,6 +10,7 @@ export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(authBypass);
+  const [isGuest, setIsGuest] = useState(false);
 
   // Initialize auth state
   useEffect(() => {
@@ -46,13 +47,15 @@ export function AuthProvider({ children }) {
         setUser(newSession?.user ?? null);
         
         if (newSession?.user) {
+          setIsGuest(false); // If user signs in, they are no longer a guest
           await fetchProfile(newSession.user.id);
-        } else {
+        } else if (!isGuest) {
           setProfile(null);
         }
 
         if (event === 'SIGNED_OUT') {
           setProfile(null);
+          setIsGuest(false);
         }
       }
     );
@@ -60,7 +63,7 @@ export function AuthProvider({ children }) {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [authBypass]);
+  }, [authBypass, isGuest]);
 
   // Fetch user profile from database
   const fetchProfile = async (userId) => {
@@ -119,12 +122,21 @@ export function AuthProvider({ children }) {
         return { success: false, error: error.message };
       }
 
+      setIsGuest(false);
       return { success: true, data };
     } catch (error) {
       return { success: false, error: error.message };
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Sign in as Guest
+  const signInAsGuest = () => {
+    setIsGuest(true);
+    setUser({ id: 'guest', email: 'guest@example.com', user_metadata: { full_name: 'Guest User' } });
+    setProfile({ full_name: 'Guest User', role: 'guest' });
+    return { success: true };
   };
 
   // Sign in with OTP (magic link via email)
@@ -158,6 +170,7 @@ export function AuthProvider({ children }) {
         return { success: false, error: error.message };
       }
 
+      setIsGuest(false);
       return { success: true, data };
     } catch (error) {
       return { success: false, error: error.message };
@@ -209,16 +222,18 @@ export function AuthProvider({ children }) {
   const signOut = async () => {
     setIsLoading(true);
     try {
-      const { error } = await authHelpers.signOut();
-      
-      if (error) {
-        return { success: false, error: error.message };
+      if (!isGuest) {
+        const { error } = await authHelpers.signOut();
+        if (error) {
+          return { success: false, error: error.message };
+        }
       }
 
       setUser(null);
       setProfile(null);
       setSession(null);
-      
+      setIsGuest(false);
+
       return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
@@ -229,6 +244,7 @@ export function AuthProvider({ children }) {
 
   // Update user profile
   const updateProfile = async (updates) => {
+    if (isGuest) return { success: false, error: 'Guest cannot update profile' };
     setIsLoading(true);
     try {
       const { data, error } = await authHelpers.updateProfile(updates);
@@ -263,6 +279,7 @@ export function AuthProvider({ children }) {
       const result = await authHelpers.signInWithGoogle();
       
       if (result.success) {
+        setIsGuest(false);
         return { success: true, data: result.data };
       } else {
         return { success: false, error: result.error };
@@ -281,6 +298,7 @@ export function AuthProvider({ children }) {
       const result = await authHelpers.signInWithApple();
       
       if (result.success) {
+        setIsGuest(false);
         return { success: true, data: result.data };
       } else {
         return { success: false, error: result.error };
@@ -299,11 +317,13 @@ export function AuthProvider({ children }) {
     session,
     isLoading,
     isInitialized,
-    isAuthenticated: authBypass ? true : !!session,
+    isGuest,
+    isAuthenticated: authBypass || isGuest ? true : !!session,
     
     // Auth methods
     signUp,
     signIn,
+    signInAsGuest,
     signInWithOTP,
     verifyOTP,
     signOut,

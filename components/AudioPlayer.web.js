@@ -183,13 +183,13 @@ export default function AudioPlayer({ audioUrl, onPlaybackStatusUpdate }) {
         {/* Info */}
         <View style={styles.info}>
           <View style={styles.timeRow}>
-            <Text style={[styles.timeText, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.timeText, { color: subtextColor, fontFamily: 'Cairo_600SemiBold' }]}>
               {fmt(position)}
             </Text>
-            <Text style={[styles.statusText, { color: error ? '#ef4444' : accentColor, fontFamily: 'Inter_600SemiBold' }]}>
+            <Text style={[styles.statusText, { color: error ? '#ef4444' : accentColor, fontFamily: 'Cairo_700Bold' }]}>
               {statusLabel}
             </Text>
-            <Text style={[styles.timeText, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.timeText, { color: subtextColor, fontFamily: 'Cairo_600SemiBold' }]}>
               {fmt(duration)}
             </Text>
           </View>
@@ -200,7 +200,7 @@ export default function AudioPlayer({ audioUrl, onPlaybackStatusUpdate }) {
           </View>
 
           {error && (
-            <Text style={[styles.errorText, { fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.errorText, { fontFamily: 'Cairo_600SemiBold' }]}>
               {error}
             </Text>
           )}

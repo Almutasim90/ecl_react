@@ -28,7 +28,7 @@ const SettingsScreen = () => {
         <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={28} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
+        <Text style={[styles.title, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
           {t('settings')}
         </Text>
         <View style={styles.headerPlaceholder} />
@@ -40,7 +40,7 @@ const SettingsScreen = () => {
       >
         {/* General */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
             {t('general')}
           </Text>
 
@@ -48,16 +48,16 @@ const SettingsScreen = () => {
             style={[styles.option, { backgroundColor: colors.surface, borderColor: colors.border }]}
             onPress={() => router.navigate('Language')}
           >
-            <Text style={[styles.optionText, { color: colors.text, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.optionText, { color: colors.text, fontFamily: 'Cairo_600SemiBold' }]}>
               {t('language')}
             </Text>
-            <Text style={[styles.optionValue, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.optionValue, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
               English
             </Text>
           </TouchableOpacity>
 
           <View style={[styles.option, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.optionText, { color: colors.text, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.optionText, { color: colors.text, fontFamily: 'Cairo_600SemiBold' }]}>
               {t('dark_mode')}
             </Text>
             <Switch
@@ -69,7 +69,7 @@ const SettingsScreen = () => {
           </View>
 
           <View style={[styles.option, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.optionText, { color: colors.text, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.optionText, { color: colors.text, fontFamily: 'Cairo_600SemiBold' }]}>
               {t('notifications')}
             </Text>
             <Switch
@@ -83,7 +83,7 @@ const SettingsScreen = () => {
 
         {/* Account */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
             {t('account')}
           </Text>
 
@@ -91,7 +91,7 @@ const SettingsScreen = () => {
             style={[styles.option, { backgroundColor: colors.surface, borderColor: colors.border }]}
             onPress={() => router.navigate('Profile')}
           >
-            <Text style={[styles.optionText, { color: colors.text, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.optionText, { color: colors.text, fontFamily: 'Cairo_600SemiBold' }]}>
               {t('profile')}
             </Text>
           </TouchableOpacity>
@@ -99,7 +99,7 @@ const SettingsScreen = () => {
 
         {/* Support */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
             {t('support')}
           </Text>
 
@@ -107,7 +107,7 @@ const SettingsScreen = () => {
             style={[styles.option, { backgroundColor: colors.surface, borderColor: colors.border }]}
             onPress={() => router.navigate('Help')}
           >
-            <Text style={[styles.optionText, { color: colors.text, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.optionText, { color: colors.text, fontFamily: 'Cairo_600SemiBold' }]}>
               {t('help_support')}
             </Text>
           </TouchableOpacity>
@@ -116,7 +116,7 @@ const SettingsScreen = () => {
             style={[styles.option, { backgroundColor: colors.surface, borderColor: colors.border }]}
             onPress={() => router.navigate('About')}
           >
-            <Text style={[styles.optionText, { color: colors.text, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.optionText, { color: colors.text, fontFamily: 'Cairo_600SemiBold' }]}>
               {t('about')}
             </Text>
           </TouchableOpacity>

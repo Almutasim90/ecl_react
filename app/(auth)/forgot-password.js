@@ -28,16 +28,16 @@ export default function ForgotPasswordScreen() {
   const [localLoading, setLocalLoading] = useState(false);
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { isDark } = useTheme();
+  const { isDark, colors } = useTheme();
   const { cardMaxWidth, horizontalPadding, cardPadding } = useResponsive();
   const { resetPassword, isLoading } = useAuth();
 
   const loading = isLoading || localLoading;
-  const accentColor = '#7c3aed';
+  const accentColor = colors.accent;
   const cardBg = isDark ? 'rgba(30,41,59,0.85)' : 'rgba(255,255,255,0.9)';
-  const textColor = isDark ? '#f1f5f9' : '#1e1b4b';
-  const subtextColor = isDark ? '#94a3b8' : '#64748b';
-  const resetBtnColors = isDark ? ['#8b5cf6', '#7c3aed'] : ['#7c3aed', '#6d28d9'];
+  const textColor = colors.text;
+  const subtextColor = colors.textSecondary;
+  const resetBtnColors = colors.gradientHero;
 
   const handleResetPassword = async () => {
     if (!email) {
@@ -80,7 +80,7 @@ export default function ForgotPasswordScreen() {
               from={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ type: 'spring', damping: 15 }}
-              style={[styles.card, { backgroundColor: cardBg, maxWidth: cardMaxWidth, padding: cardPadding }]}
+              style={[styles.card, { backgroundColor: cardBg, maxWidth: cardMaxWidth, padding: cardPadding, borderColor: colors.border, borderWidth: 1 }]}
             >
               <MotiView
                 from={{ scale: 0 }}
@@ -91,13 +91,13 @@ export default function ForgotPasswordScreen() {
                 <Ionicons name="checkmark-circle" size={64} color="#10b981" />
               </MotiView>
 
-              <Text style={[styles.title, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+              <Text style={[styles.title, { color: textColor, fontFamily: 'Cairo_700Bold' }]}>
                 Email Sent!
               </Text>
-              <Text style={[styles.subtitle, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+              <Text style={[styles.subtitle, { color: subtextColor, fontFamily: 'Cairo_400Regular' }]}>
                 We have sent a password reset link to your email. Please check your inbox.
               </Text>
-              <Text style={[styles.emailText, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+              <Text style={[styles.emailText, { color: textColor, fontFamily: 'Cairo_600SemiBold' }]}>
                 {email}
               </Text>
 
@@ -112,14 +112,14 @@ export default function ForgotPasswordScreen() {
                   end={{ x: 1, y: 1 }}
                   style={styles.resetBtnGradient}
                 >
-                  <Text style={[styles.resetBtnText, { fontFamily: 'Inter_600SemiBold' }]}>
-                    Back to Login
+                  <Text style={[styles.resetBtnText, { fontFamily: 'Cairo_700Bold' }]}>
+                    BACK TO LOGIN
                   </Text>
                 </LinearGradient>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={handleResetPassword} disabled={loading} style={styles.resendBtn}>
-                <Text style={[styles.resendText, { color: accentColor, fontFamily: 'Inter_400Regular' }]}>
+                <Text style={[styles.resendText, { color: accentColor, fontFamily: 'Cairo_600SemiBold' }]}>
                   {"Didn't receive it? Resend"}
                 </Text>
               </TouchableOpacity>
@@ -146,7 +146,7 @@ export default function ForgotPasswordScreen() {
             from={{ opacity: 0, translateY: 20 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: 'timing', duration: 400, delay: 100 }}
-            style={[styles.card, { backgroundColor: cardBg, maxWidth: cardMaxWidth, padding: cardPadding }]}
+            style={[styles.card, { backgroundColor: cardBg, maxWidth: cardMaxWidth, padding: cardPadding, borderColor: colors.border, borderWidth: 1 }]}
           >
             <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
               <Ionicons name="chevron-back" size={24} color={textColor} />
@@ -161,15 +161,15 @@ export default function ForgotPasswordScreen() {
               <Ionicons name="lock-open-outline" size={48} color={accentColor} />
             </MotiView>
 
-            <Text style={[styles.title, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+            <Text style={[styles.title, { color: textColor, fontFamily: 'Cairo_700Bold' }]}>
               Forgot Password?
             </Text>
-            <Text style={[styles.subtitle, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.subtitle, { color: subtextColor, fontFamily: 'Cairo_400Regular' }]}>
               {"Don't worry! Enter your email and we'll send you a link to reset your password."}
             </Text>
 
             <FloatingInput
-              labelKey="email"
+              labelKey="Email Address"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -183,7 +183,7 @@ export default function ForgotPasswordScreen() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ type: 'timing', duration: 200 }}
               >
-                <Text style={[styles.errorText, { fontFamily: 'Inter_400Regular' }]}>{error}</Text>
+                <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Cairo_400Regular' }]}>{error}</Text>
               </MotiView>
             ) : null}
 
@@ -202,8 +202,8 @@ export default function ForgotPasswordScreen() {
                 {loading ? (
                   <ActivityIndicator color="#ffffff" size="small" />
                 ) : (
-                  <Text style={[styles.resetBtnText, { fontFamily: 'Inter_600SemiBold' }]}>
-                    Send Reset Link
+                  <Text style={[styles.resetBtnText, { fontFamily: 'Cairo_700Bold' }]}>
+                    SEND RESET LINK
                   </Text>
                 )}
               </LinearGradient>
@@ -211,7 +211,7 @@ export default function ForgotPasswordScreen() {
 
             <TouchableOpacity onPress={() => router.back()} style={styles.backToLoginBtn}>
               <Ionicons name="arrow-back" size={18} color={accentColor} style={{ marginRight: 6 }} />
-              <Text style={[styles.backToLoginText, { color: accentColor, fontFamily: 'Inter_400Regular' }]}>
+              <Text style={[styles.backToLoginText, { color: accentColor, fontFamily: 'Cairo_600SemiBold' }]}>
                 Back to Login
               </Text>
             </TouchableOpacity>
@@ -250,25 +250,23 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, marginBottom: 12, textAlign: 'center' },
   subtitle: { fontSize: 15, textAlign: 'center', marginBottom: 24, lineHeight: 22, paddingHorizontal: 8 },
   emailText: { fontSize: 15, textAlign: 'center', marginBottom: 32 },
-  errorText: { fontSize: 13, marginBottom: 16, textAlign: 'center', color: '#ef4444' },
+  errorText: { fontSize: 13, marginBottom: 16, textAlign: 'center' },
   resetBtn: {
     marginTop: 8,
     marginBottom: 20,
-    borderRadius: 16,
+    borderRadius: 18,
     overflow: 'hidden',
-    elevation: 2,
-    shadowColor: '#7c3aed',
-    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
   },
   resetBtnGradient: {
-    paddingVertical: 16,
+    paddingVertical: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 16,
   },
-  resetBtnText: { fontSize: 17, color: '#ffffff' },
+  resetBtnText: { fontSize: 17, color: '#ffffff', letterSpacing: 1.2 },
   backToLoginBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 8 },
   backToLoginText: { fontSize: 15 },
   resendBtn: { alignItems: 'center', paddingVertical: 8 },

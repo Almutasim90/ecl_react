@@ -36,7 +36,7 @@ export default function VerifyEmailScreen() {
   const params = useLocalSearchParams();
   const email = params.email || '';
   const redirect = params.redirect;
-  const { isDark } = useTheme();
+  const { isDark, colors } = useTheme();
   const { cardMaxWidth, horizontalPadding, cardPadding } = useResponsive();
   const { verifyOTP, signInWithOTP, isLoading } = useAuth();
 
@@ -47,13 +47,13 @@ export default function VerifyEmailScreen() {
   };
 
   const loading = isLoading || localLoading;
-  const accentColor = '#7c3aed';
+  const accentColor = colors.accent;
   const cardBg = isDark ? 'rgba(30,41,59,0.85)' : 'rgba(255,255,255,0.9)';
   const inputBg = isDark ? '#1e293b' : '#f1f5f9';
-  const inputBorder = isDark ? '#475569' : '#e2e8f0';
-  const textColor = isDark ? '#f1f5f9' : '#1e1b4b';
-  const subtextColor = isDark ? '#94a3b8' : '#64748b';
-  const verifyBtnColors = isDark ? ['#8b5cf6', '#7c3aed'] : ['#7c3aed', '#6d28d9'];
+  const inputBorder = colors.border;
+  const textColor = colors.text;
+  const subtextColor = colors.textSecondary;
+  const verifyBtnColors = colors.gradientHero;
 
   useEffect(() => {
     if (resendTimer > 0) {
@@ -148,7 +148,7 @@ export default function VerifyEmailScreen() {
             from={{ opacity: 0, translateY: 20 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: 'timing', duration: 400, delay: 100 }}
-            style={[styles.card, { backgroundColor: cardBg, maxWidth: cardMaxWidth, padding: cardPadding }]}
+            style={[styles.card, { backgroundColor: cardBg, maxWidth: cardMaxWidth, padding: cardPadding, borderColor: colors.border, borderWidth: 1 }]}
           >
             <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
               <Ionicons name="chevron-back" size={24} color={textColor} />
@@ -163,13 +163,13 @@ export default function VerifyEmailScreen() {
               <Ionicons name="mail-outline" size={48} color={accentColor} />
             </MotiView>
 
-            <Text style={[styles.title, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+            <Text style={[styles.title, { color: textColor, fontFamily: 'Cairo_700Bold' }]}>
               Verify Your Email
             </Text>
-            <Text style={[styles.subtitle, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+            <Text style={[styles.subtitle, { color: subtextColor, fontFamily: 'Cairo_400Regular' }]}>
               {"We've sent a 6-digit verification code to"}
             </Text>
-            <Text style={[styles.emailText, { color: textColor, fontFamily: 'Inter_600SemiBold' }]}>
+            <Text style={[styles.emailText, { color: textColor, fontFamily: 'Cairo_600SemiBold' }]}>
               {email}
             </Text>
 
@@ -184,7 +184,7 @@ export default function VerifyEmailScreen() {
                       backgroundColor: inputBg,
                       borderColor: digit ? accentColor : inputBorder,
                       color: textColor,
-                      fontFamily: 'Inter_600SemiBold',
+                      fontFamily: 'Cairo_700Bold',
                     },
                   ]}
                   value={digit}
@@ -199,13 +199,13 @@ export default function VerifyEmailScreen() {
 
             {error ? (
               <MotiView from={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'timing', duration: 200 }}>
-                <Text style={[styles.errorText, { fontFamily: 'Inter_400Regular' }]}>{error}</Text>
+                <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Cairo_400Regular' }]}>{error}</Text>
               </MotiView>
             ) : null}
 
             {success ? (
               <MotiView from={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'timing', duration: 200 }}>
-                <Text style={[styles.successText, { fontFamily: 'Inter_400Regular' }]}>{success}</Text>
+                <Text style={[styles.successText, { color: '#10b981', fontFamily: 'Cairo_400Regular' }]}>{success}</Text>
               </MotiView>
             ) : null}
 
@@ -219,17 +219,17 @@ export default function VerifyEmailScreen() {
                 {loading ? (
                   <ActivityIndicator color="#ffffff" size="small" />
                 ) : (
-                  <Text style={[styles.verifyBtnText, { fontFamily: 'Inter_600SemiBold' }]}>Verify</Text>
+                  <Text style={[styles.verifyBtnText, { fontFamily: 'Cairo_700Bold' }]}>VERIFY</Text>
                 )}
               </LinearGradient>
             </TouchableOpacity>
 
             <View style={styles.resendContainer}>
-              <Text style={[styles.resendHint, { color: subtextColor, fontFamily: 'Inter_400Regular' }]}>
+              <Text style={[styles.resendHint, { color: subtextColor, fontFamily: 'Cairo_400Regular' }]}>
                 {"Didn't receive the code? "}
               </Text>
               <TouchableOpacity onPress={handleResend} disabled={!canResend || loading}>
-                <Text style={[styles.resendLink, { color: canResend ? accentColor : subtextColor, fontFamily: 'Inter_600SemiBold' }]}>
+                <Text style={[styles.resendLink, { color: canResend ? accentColor : subtextColor, fontFamily: 'Cairo_600SemiBold' }]}>
                   {canResend ? 'Resend' : `Resend in ${resendTimer}s`}
                 </Text>
               </TouchableOpacity>
@@ -278,25 +278,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 24,
   },
-  errorText: { fontSize: 13, marginBottom: 16, textAlign: 'center', color: '#ef4444' },
-  successText: { fontSize: 13, marginBottom: 16, textAlign: 'center', color: '#10b981' },
+  errorText: { fontSize: 13, marginBottom: 16, textAlign: 'center' },
+  successText: { fontSize: 13, marginBottom: 16, textAlign: 'center' },
   verifyBtn: {
     marginBottom: 20,
-    borderRadius: 16,
+    borderRadius: 18,
     overflow: 'hidden',
-    elevation: 2,
-    shadowColor: '#7c3aed',
-    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
   },
   verifyBtnGradient: {
-    paddingVertical: 16,
+    paddingVertical: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 16,
   },
-  verifyBtnText: { fontSize: 17, color: '#ffffff' },
+  verifyBtnText: { fontSize: 17, color: '#ffffff', letterSpacing: 1.2 },
   resendContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' },
   resendHint: { fontSize: 14 },
   resendLink: { fontSize: 14 },
