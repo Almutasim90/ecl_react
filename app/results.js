@@ -73,12 +73,12 @@ export default function ResultsScreen() {
 
   const handleTryAgain = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // Go back to the form selector, reset quiz state
+    resetQuiz();
     if (type === 'listening') {
-      resetQuiz();
       router.replace('/(tabs)/listening');
+    } else if (type === 'grammar') {
+      router.replace('/(tabs)/grammar');
     } else {
-      resetQuiz();
       router.replace('/(tabs)/reading');
     }
   };
@@ -143,12 +143,12 @@ export default function ResultsScreen() {
 
             <View style={styles.formBadge}>
               <Ionicons
-                name={type === 'listening' ? 'headset' : 'book'}
+                name={type === 'listening' ? 'headset' : type === 'grammar' ? 'language' : 'book'}
                 size={14}
                 color="#ffffff"
               />
               <Text style={[styles.formBadgeText, { fontFamily: 'Inter_400Regular' }]}>
-                {type === 'listening' ? 'Listening' : 'Reading'} · Form {formNumber}
+                {type === 'listening' ? 'Listening' : type === 'grammar' ? 'Grammar' : 'Reading'} · Form {formNumber}
               </Text>
             </View>
           </LinearGradient>

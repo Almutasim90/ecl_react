@@ -15,11 +15,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
 import { useQuiz } from '../../context/QuizContext';
-import { fetchReadingQuestions, getFormList, fetchQuizProgress } from '../../lib/api';
+import { fetchGrammarQuestions, getFormList, grammarTypeFromRow, fetchQuizProgress } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import FormCard from '../../components/FormCard';
 
-export default function ReadingScreen() {
+export default function GrammarScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -35,7 +35,7 @@ export default function ReadingScreen() {
   const totalQuestions = forms.reduce((s, f) => s + f.questions.length, 0);
 
   const filteredForms = query.trim()
-    ? forms.filter(f => {
+    ? forms.filter((f) => {
         const q = query.trim().toLowerCase();
         const asNum = String(f.formNumber);
         const asFull = `form ${f.formNumber}`;
@@ -46,10 +46,11 @@ export default function ReadingScreen() {
   useEffect(() => {
     async function load() {
       try {
-        const questions = await fetchReadingQuestions();
+        const questions = await fetchGrammarQuestions();
         setForms(getFormList(questions));
       } catch (e) {
-        setError('Failed to load reading questions. Please check your connection.');
+        console.warn('[Grammar] load failed:', e?.message ?? e);
+        setError('Failed to load grammar questions. Please check your connection.');
       } finally {
         setLoading(false);
       }
@@ -60,35 +61,35 @@ export default function ReadingScreen() {
   useFocusEffect(
     useCallback(() => {
       if (!user) return;
-      fetchQuizProgress(user.id, 'reading').then(({ data }) => {
+      fetchQuizProgress(user.id, 'grammar').then(({ data }) => {
         const map = {};
-        data.forEach(p => { map[p.form_number] = p; });
+        data.forEach((p) => { map[p.form_number] = p; });
         setProgressMap(map);
       });
     }, [user])
   );
 
   const handleFormPress = (formNumber, questions) => {
+    const typeName = grammarTypeFromRow(questions[0] || {});
     const saved = progressMap[formNumber];
     if (saved) {
       const resumeIndex = Math.min(Object.keys(saved.answers).length, questions.length - 1);
-      startQuiz({ type: 'reading', formNumber, questions, currentIndex: resumeIndex, answers: saved.answers });
+      startQuiz({ type: 'grammar', formNumber, questions, currentIndex: resumeIndex, answers: saved.answers });
     } else {
-      startQuiz({ type: 'reading', formNumber, questions });
+      startQuiz({ type: 'grammar', formNumber, questions });
     }
-    router.push({ pathname: '/quiz/reading', params: { form: formNumber } });
+    router.push({ pathname: '/quiz/grammar', params: { form: formNumber, typeName } });
   };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* ── Gradient hero header ── */}
       <MotiView
         from={{ opacity: 0, translateY: -12 }}
         animate={{ opacity: 1, translateY: 0 }}
         transition={{ type: 'spring', damping: 18 }}
       >
         <LinearGradient
-          colors={colors.gradientReading}
+          colors={colors.gradientGrammar}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.heroGradient, { paddingTop: insets.top + 20 }]}
@@ -102,14 +103,14 @@ export default function ReadingScreen() {
                 ECL Practice
               </Text>
               <Text style={[styles.heroTitle, { fontFamily: 'Inter_600SemiBold' }]}>
-                Reading Quiz
+                Grammar Quiz
               </Text>
               <Text style={[styles.heroSub, { fontFamily: 'Inter_400Regular' }]}>
-                Build your text comprehension skills
+                Master rules, usage & structure
               </Text>
             </View>
             <View style={styles.heroIconWrap}>
-              <Ionicons name="book" size={34} color="#ffffff" />
+              <Ionicons name="language" size={36} color="#ffffff" />
             </View>
           </View>
 
@@ -131,7 +132,6 @@ export default function ReadingScreen() {
                 </View>
               </View>
 
-              {/* Search bar */}
               <View style={styles.searchBar}>
                 <Ionicons name="search" size={16} color="rgba(255,255,255,0.65)" />
                 <TextInput
@@ -158,10 +158,9 @@ export default function ReadingScreen() {
         </LinearGradient>
       </MotiView>
 
-      {/* ── Content ── */}
       {loading ? (
         <View style={styles.centered}>
-          <ActivityIndicator color={colors.accent} size="large" />
+          <ActivityIndicator color={colors.grammarAccent} size="large" />
           <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
             Loading forms...
           </Text>
@@ -175,9 +174,12 @@ export default function ReadingScreen() {
         </View>
       ) : forms.length === 0 ? (
         <View style={styles.centered}>
-          <Ionicons name="book-outline" size={52} color={colors.textSecondary} />
+          <Ionicons name="language-outline" size={52} color={colors.textSecondary} />
           <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
-            No reading forms available.
+            No grammar forms available.
+          </Text>
+          <Text style={[styles.stateHint, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+            Add rows to grammarquestions in Supabase (GrammarType, questiontext, options).
           </Text>
         </View>
       ) : (
@@ -199,8 +201,8 @@ export default function ReadingScreen() {
               transition={{ type: 'spring', damping: 16 }}
               style={[styles.noResults, { backgroundColor: colors.surface, borderColor: colors.border }]}
             >
-              <View style={[styles.noResultsIcon, { backgroundColor: colors.accentSoft }]}>
-                <Ionicons name="search" size={28} color={colors.accent} />
+              <View style={[styles.noResultsIcon, { backgroundColor: `${colors.grammarAccent}18` }]}>
+                <Ionicons name="search" size={28} color={colors.grammarAccent} />
               </View>
               <Text style={[styles.noResultsTitle, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
                 No forms found
@@ -210,9 +212,9 @@ export default function ReadingScreen() {
               </Text>
               <TouchableOpacity
                 onPress={() => setQuery('')}
-                style={[styles.clearBtn, { backgroundColor: colors.accentSoft }]}
+                style={[styles.clearBtn, { backgroundColor: `${colors.grammarAccent}18` }]}
               >
-                <Text style={[styles.clearBtnText, { color: colors.accent, fontFamily: 'Inter_600SemiBold' }]}>
+                <Text style={[styles.clearBtnText, { color: colors.grammarAccent, fontFamily: 'Inter_600SemiBold' }]}>
                   Clear search
                 </Text>
               </TouchableOpacity>
@@ -223,7 +225,7 @@ export default function ReadingScreen() {
                 key={form.formNumber}
                 formNumber={form.formNumber}
                 questionCount={form.questions.length}
-                type="reading"
+                type="grammar"
                 index={idx}
                 progress={progressMap[form.formNumber] || null}
                 onPress={() => handleFormPress(form.formNumber, form.questions)}
@@ -238,7 +240,6 @@ export default function ReadingScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-
   heroGradient: {
     paddingHorizontal: 24,
     paddingBottom: 24,
@@ -286,8 +287,6 @@ const styles = StyleSheet.create({
     width: 4, height: 4, borderRadius: 2,
     backgroundColor: 'rgba(255,255,255,0.4)',
   },
-
-  // Search bar (glassmorphism inside hero)
   searchBar: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     backgroundColor: 'rgba(255,255,255,0.14)',
@@ -298,21 +297,17 @@ const styles = StyleSheet.create({
     flex: 1, color: '#ffffff', fontSize: 14,
     padding: 0, margin: 0,
   },
-
   centered: {
     flex: 1, justifyContent: 'center', alignItems: 'center',
     paddingHorizontal: 32, gap: 14,
   },
   stateText: { fontSize: 14, textAlign: 'center', lineHeight: 21 },
-
+  stateHint: { fontSize: 12, textAlign: 'center', lineHeight: 18, opacity: 0.7 },
   list: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 110 },
   listLabel: { fontSize: 11, letterSpacing: 1.0, marginBottom: 16 },
-
-  // No results
   noResults: {
     alignItems: 'center', paddingVertical: 40, paddingHorizontal: 24,
-    borderRadius: 20, borderWidth: 1, gap: 10,
-    marginTop: 8,
+    borderRadius: 20, borderWidth: 1, gap: 10, marginTop: 8,
   },
   noResultsIcon: {
     width: 60, height: 60, borderRadius: 18,
@@ -320,9 +315,6 @@ const styles = StyleSheet.create({
   },
   noResultsTitle: { fontSize: 16 },
   noResultsSub: { fontSize: 13, textAlign: 'center' },
-  clearBtn: {
-    paddingHorizontal: 20, paddingVertical: 9,
-    borderRadius: 12, marginTop: 6,
-  },
+  clearBtn: { paddingHorizontal: 20, paddingVertical: 9, borderRadius: 12, marginTop: 6 },
   clearBtnText: { fontSize: 14 },
 });

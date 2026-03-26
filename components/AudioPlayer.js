@@ -161,9 +161,9 @@ export default function AudioPlayer({ audioUrl, onPlaybackStatusUpdate }) {
 
   const statusLabel = isLoading ? 'Loading...'
     : error ? error
-    : isPlaying ? 'Playing'
-    : position > 0 ? 'Paused'
-    : 'Ready';
+      : isPlaying ? 'Playing'
+        : position > 0 ? 'Paused'
+          : 'Ready';
 
   return (
     <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     height: RING_SIZE - RING_STROKE * 2 - 8,
     borderRadius: (RING_SIZE - RING_STROKE * 2 - 8) / 2,
     justifyContent: 'center', alignItems: 'center',
-    shadowColor: '#7c3aed',
+    shadowColor: '#818cf8',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.35, shadowRadius: 6, elevation: 4,
   },

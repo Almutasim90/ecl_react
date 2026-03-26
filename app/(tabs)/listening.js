@@ -5,6 +5,8 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { MotiView } from 'moti';
@@ -22,14 +24,24 @@ export default function ListeningScreen() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { startQuiz } = useQuiz();
-
   const { user } = useAuth();
+
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [progressMap, setProgressMap] = useState({});
+  const [query, setQuery] = useState('');
 
   const totalQuestions = forms.reduce((s, f) => s + f.questions.length, 0);
+
+  const filteredForms = query.trim()
+    ? forms.filter(f => {
+        const q = query.trim().toLowerCase();
+        const asNum = String(f.formNumber);
+        const asFull = `form ${f.formNumber}`;
+        return asFull.includes(q) || asNum.includes(q);
+      })
+    : forms;
 
   useEffect(() => {
     async function load() {
@@ -49,7 +61,6 @@ export default function ListeningScreen() {
     useCallback(() => {
       if (!user) return;
       fetchQuizProgress(user.id, 'listening').then(({ data }) => {
-        console.log('[Listening] progress fetched:', data);
         const map = {};
         data.forEach(p => { map[p.form_number] = p; });
         setProgressMap(map);
@@ -103,21 +114,46 @@ export default function ListeningScreen() {
           </View>
 
           {!loading && forms.length > 0 && (
-            <View style={styles.pillsRow}>
-              <View style={styles.pill}>
-                <Ionicons name="layers-outline" size={13} color="rgba(255,255,255,0.85)" />
-                <Text style={[styles.pillText, { fontFamily: 'Inter_400Regular' }]}>
-                  {forms.length} Forms
-                </Text>
+            <>
+              <View style={styles.pillsRow}>
+                <View style={styles.pill}>
+                  <Ionicons name="layers-outline" size={13} color="rgba(255,255,255,0.85)" />
+                  <Text style={[styles.pillText, { fontFamily: 'Inter_400Regular' }]}>
+                    {forms.length} Forms
+                  </Text>
+                </View>
+                <View style={styles.pillDot} />
+                <View style={styles.pill}>
+                  <Ionicons name="help-circle-outline" size={13} color="rgba(255,255,255,0.85)" />
+                  <Text style={[styles.pillText, { fontFamily: 'Inter_400Regular' }]}>
+                    {totalQuestions} Questions
+                  </Text>
+                </View>
               </View>
-              <View style={styles.pillDot} />
-              <View style={styles.pill}>
-                <Ionicons name="help-circle-outline" size={13} color="rgba(255,255,255,0.85)" />
-                <Text style={[styles.pillText, { fontFamily: 'Inter_400Regular' }]}>
-                  {totalQuestions} Questions
-                </Text>
+
+              {/* Search bar */}
+              <View style={styles.searchBar}>
+                <Ionicons name="search" size={16} color="rgba(255,255,255,0.65)" />
+                <TextInput
+                  value={query}
+                  onChangeText={setQuery}
+                  placeholder="Search form number..."
+                  placeholderTextColor="rgba(255,255,255,0.40)"
+                  style={[styles.searchInput, { fontFamily: 'Inter_400Regular' }]}
+                  keyboardType="default"
+                  returnKeyType="search"
+                  clearButtonMode="never"
+                />
+                {query.length > 0 && (
+                  <TouchableOpacity
+                    onPress={() => setQuery('')}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons name="close-circle" size={17} color="rgba(255,255,255,0.75)" />
+                  </TouchableOpacity>
+                )}
               </View>
-            </View>
+            </>
           )}
         </LinearGradient>
       </MotiView>
@@ -148,21 +184,52 @@ export default function ListeningScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.list}
+          keyboardShouldPersistTaps="handled"
         >
           <Text style={[styles.listLabel, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
-            {forms.length} FORM{forms.length !== 1 ? 'S' : ''} AVAILABLE
+            {query.trim()
+              ? `${filteredForms.length} of ${forms.length} forms found`
+              : `${forms.length} FORM${forms.length !== 1 ? 'S' : ''} AVAILABLE`}
           </Text>
-          {forms.map((form, idx) => (
-            <FormCard
-              key={form.formNumber}
-              formNumber={form.formNumber}
-              questionCount={form.questions.length}
-              type="listening"
-              index={idx}
-              progress={progressMap[form.formNumber] || null}
-              onPress={() => handleFormPress(form.formNumber, form.questions)}
-            />
-          ))}
+
+          {filteredForms.length === 0 ? (
+            <MotiView
+              from={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: 'spring', damping: 16 }}
+              style={[styles.noResults, { backgroundColor: colors.surface, borderColor: colors.border }]}
+            >
+              <View style={[styles.noResultsIcon, { backgroundColor: colors.accentSoft }]}>
+                <Ionicons name="search" size={28} color={colors.accent} />
+              </View>
+              <Text style={[styles.noResultsTitle, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
+                No forms found
+              </Text>
+              <Text style={[styles.noResultsSub, { color: colors.textSecondary, fontFamily: 'Inter_400Regular' }]}>
+                No form matches "{query}"
+              </Text>
+              <TouchableOpacity
+                onPress={() => setQuery('')}
+                style={[styles.clearBtn, { backgroundColor: colors.accentSoft }]}
+              >
+                <Text style={[styles.clearBtnText, { color: colors.accent, fontFamily: 'Inter_600SemiBold' }]}>
+                  Clear search
+                </Text>
+              </TouchableOpacity>
+            </MotiView>
+          ) : (
+            filteredForms.map((form, idx) => (
+              <FormCard
+                key={form.formNumber}
+                formNumber={form.formNumber}
+                questionCount={form.questions.length}
+                type="listening"
+                index={idx}
+                progress={progressMap[form.formNumber] || null}
+                onPress={() => handleFormPress(form.formNumber, form.questions)}
+              />
+            ))
+          )}
         </ScrollView>
       )}
     </View>
@@ -174,7 +241,7 @@ const styles = StyleSheet.create({
 
   heroGradient: {
     paddingHorizontal: 24,
-    paddingBottom: 28,
+    paddingBottom: 24,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -208,7 +275,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.15)',
     justifyContent: 'center', alignItems: 'center', marginLeft: 16,
   },
-  pillsRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  pillsRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
   pill: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     backgroundColor: 'rgba(255,255,255,0.15)',
@@ -220,6 +287,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.4)',
   },
 
+  // Search bar (glassmorphism inside hero)
+  searchBar: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderRadius: 14, paddingHorizontal: 14, paddingVertical: 11,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.22)',
+  },
+  searchInput: {
+    flex: 1, color: '#ffffff', fontSize: 14,
+    padding: 0, margin: 0,
+  },
+
   centered: {
     flex: 1, justifyContent: 'center', alignItems: 'center',
     paddingHorizontal: 32, gap: 14,
@@ -227,5 +306,23 @@ const styles = StyleSheet.create({
   stateText: { fontSize: 14, textAlign: 'center', lineHeight: 21 },
 
   list: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 110 },
-  listLabel: { fontSize: 11, letterSpacing: 1.2, marginBottom: 16 },
+  listLabel: { fontSize: 11, letterSpacing: 1.0, marginBottom: 16 },
+
+  // No results
+  noResults: {
+    alignItems: 'center', paddingVertical: 40, paddingHorizontal: 24,
+    borderRadius: 20, borderWidth: 1, gap: 10,
+    marginTop: 8,
+  },
+  noResultsIcon: {
+    width: 60, height: 60, borderRadius: 18,
+    alignItems: 'center', justifyContent: 'center', marginBottom: 4,
+  },
+  noResultsTitle: { fontSize: 16 },
+  noResultsSub: { fontSize: 13, textAlign: 'center' },
+  clearBtn: {
+    paddingHorizontal: 20, paddingVertical: 9,
+    borderRadius: 12, marginTop: 6,
+  },
+  clearBtnText: { fontSize: 14 },
 });

@@ -14,9 +14,9 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../context/ThemeContext';
 
-const FONT_TITLE  = { en: 'Inter_600SemiBold',  ar: 'Cairo_600SemiBold' };
-const FONT_BODY   = { en: 'Inter_400Regular',   ar: 'Cairo_400Regular' };
-const FONT_MEDIUM = { en: 'Inter_500Medium',    ar: 'Cairo_600SemiBold' };
+const FONT_TITLE = { en: 'Inter_600SemiBold', ar: 'Cairo_600SemiBold' };
+const FONT_BODY = { en: 'Inter_400Regular', ar: 'Cairo_400Regular' };
+const FONT_MEDIUM = { en: 'Inter_500Medium', ar: 'Cairo_600SemiBold' };
 
 export default function HelpSupportScreen() {
   const router = useRouter();
@@ -74,20 +74,20 @@ export default function HelpSupportScreen() {
     {
       icon: 'mail',
       title: { en: 'Email Us', ar: 'راسلنا' },
-      subtitle: { en: 'support@ecl-learn.com', ar: 'support@ecl-learn.com' },
-      action: () => Linking.openURL('mailto:support@ecl-learn.com'),
+      subtitle: { en: 'almazidi21@gmail.com', ar: 'almazidi21@gmail.com' },
+      action: () => Linking.openURL('mailto:almazidi21@gmail.com'),
     },
     {
       icon: 'logo-whatsapp',
       title: { en: 'WhatsApp', ar: 'واتساب' },
-      subtitle: { en: '+1 234 567 890', ar: '+1 234 567 890' },
-      action: () => Linking.openURL('whatsapp://send?phone=1234567890'),
+      subtitle: { en: '+96899364644', ar: '+96899364644' },
+      action: () => Linking.openURL('whatsapp://send?phone=+96899364644'),
     },
     {
       icon: 'call',
       title: { en: 'Call Us', ar: 'اتصل بنا' },
-      subtitle: { en: '+1 234 567 890', ar: '+1 234 567 890' },
-      action: () => Linking.openURL('tel:+1234567890'),
+      subtitle: { en: '+96899364644', ar: '+96899364644' },
+      action: () => Linking.openURL('tel:+96899364644'),
     },
   ];
 

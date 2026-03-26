@@ -19,22 +19,18 @@ export default function FloatingInput({
   ...rest
 }) {
   const [focused, setFocused] = useState(false);
-  const { isDark } = useTheme();
+  const { isDark, colors } = useTheme();
 
   const hasValue = value && value.length > 0;
   const floating = focused || hasValue;
 
   const label = LABELS[labelKey] || labelKey;
 
-  const borderColor = focused
-    ? isDark ? '#8b5cf6' : '#7c3aed'
-    : isDark ? '#334155' : '#cbd5e1';
-  const labelColor = floating
-    ? isDark ? '#8b5cf6' : '#7c3aed'
-    : isDark ? '#94a3b8' : '#64748b';
-  const inputBg = isDark ? '#1e293b' : '#ffffff';
-  const inputText = isDark ? '#f1f5f9' : '#0f172a';
-  const placeholder = isDark ? '#64748b' : '#94a3b8';
+  const borderColor = focused ? colors.accent : colors.border;
+  const labelColor = floating ? colors.accent : colors.textSecondary;
+  const inputBg = colors.surface;
+  const inputText = colors.text;
+  const placeholder = colors.textSecondary;
 
   return (
     <View style={styles.wrap}>

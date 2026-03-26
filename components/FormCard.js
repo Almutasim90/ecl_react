@@ -9,9 +9,10 @@ import { useTheme } from '../context/ThemeContext';
 export default function FormCard({ formNumber, questionCount, type, onPress, index = 0, progress = null }) {
   const { colors } = useTheme();
   const isListening = type === 'listening';
+  const isGrammar = type === 'grammar';
 
-  const accentColor = isListening ? colors.accent : '#4f46e5';
-  const badgeColors = isListening ? ['#7c3aed', '#5b21b6'] : ['#4f46e5', '#3730a3'];
+  const accentColor = isListening ? colors.listeningAccent : isGrammar ? colors.grammarAccent : colors.readingAccent;
+  const badgeColors = isListening ? colors.gradientListening : isGrammar ? colors.gradientGrammar : colors.gradientReading;
   const estimatedMinutes = isListening ? Math.round(questionCount * 1.5) : questionCount;
 
   const answeredCount = progress ? Object.keys(progress.answers).length : 0;
@@ -47,7 +48,7 @@ export default function FormCard({ formNumber, questionCount, type, onPress, ind
             {String(formNumber).padStart(2, '0')}
           </Text>
           <Ionicons
-            name={isListening ? 'headset' : 'book'}
+            name={isListening ? 'headset' : isGrammar ? 'language' : 'book'}
             size={15}
             color="rgba(255,255,255,0.6)"
           />

@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     width: 36, height: 36, borderRadius: 10,
     justifyContent: 'center', alignItems: 'center', flexShrink: 0,
   },
-  letter: { fontSize: 15 },
+  letter: { fontSize: 14, letterSpacing: 0.3 },
   optionText: { flex: 1, fontSize: 15, lineHeight: 22 },
   statusIcon: { width: 20, flexShrink: 0 },
 });

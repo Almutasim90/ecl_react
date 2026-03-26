@@ -3,72 +3,84 @@ import { useColorScheme as useRNColorScheme } from 'react-native';
 
 const ThemeContext = createContext({ colorScheme: 'light', isDark: false });
 
-// ── Dark theme — deep purple-black, warm violet tones ───────────
+// ── Dark theme — Indigo-Premium: deep indigo-tinted darks, vibrant accent ─────
 export const darkColors = {
-  // Backgrounds
-  background:      '#0e0b18',  // Deep purple-black (not cold blue)
-  surface:         '#1a1630',  // Card surface
-  surfaceAlt:      '#231e3c',  // Elevated panels / modals
+  // Backgrounds — deep indigo-black, not flat zinc
+  background: '#0d0d14',
+  surface: '#14141f',
+  surfaceAlt: '#1c1c2e',
 
-  // Text
-  text:            '#f0ecff',  // Warm violet-tinted white
-  textSecondary:   '#9b8ec4',  // Muted lavender (warm, not cold slate)
+  // Text — warm white with slight indigo cast
+  text: '#ededf5',
+  textSecondary: '#8a8aa8',
 
-  // Borders
-  border:          '#2c2554',  // Dark violet border
+  // Border — indigo-tinted
+  border: '#1c1c2e',
 
-  // Accent (lighter violet for dark-bg contrast)
-  accent:          '#a78bfa',  // Violet 400
-  accentDark:      '#8b5cf6',  // Violet 500
-  accentSoft:      'rgba(167,139,250,0.15)',
-  accentIcon:      'rgba(167,139,250,0.18)',
+  // Accent — Indigo-400, the brand identity color
+  accent: '#818cf8',
+  accentDark: '#6366f1',
+  accentSoft: 'rgba(129,140,248,0.12)',
+  accentIcon: 'rgba(129,140,248,0.18)',
+
+  // Semantic category colors
+  listeningAccent: '#a78bfa',   // Violet-400
+  readingAccent: '#60a5fa',     // Blue-400
+  grammarAccent: '#4ade80',     // Green-400
 
   // Status
-  success:         '#10b981',
-  successSoft:     'rgba(16,185,129,0.15)',
-  error:           '#f87171',
-  errorSoft:       'rgba(248,113,113,0.15)',
-  warning:         '#fbbf24',
+  success: '#34d399',
+  successSoft: 'rgba(52,211,153,0.12)',
+  error: '#f87171',
+  errorSoft: 'rgba(248,113,113,0.12)',
+  warning: '#fbbf24',
 
-  // Gradient presets
-  gradientHero:      ['#3b1f7a', '#5b21b6'],
-  gradientListening: ['#2e1065', '#4c1d95'],
-  gradientReading:   ['#1e1b4b', '#3730a3'],
-  gradientProfile:   ['#2d1b6e', '#4c1d95', '#7c3aed'],
+  // Gradient presets — rich, saturated, premium
+  gradientHero: ['#1a1040', '#312e81', '#4338ca'],
+  gradientListening: ['#2d1b69', '#5b21b6', '#7c3aed'],
+  gradientReading: ['#0c2340', '#1e40af', '#2563eb'],
+  gradientGrammar: ['#052e16', '#14532d', '#16a34a'],
+  gradientProfile: ['#12122a', '#1a1a3e', '#0d0d1a'],
 };
 
-// ── Light theme — soft violet wash, clean & bright ──────────────
+// ── Light theme — Lavender bg + white cards for strong visual hierarchy ───────
 export const lightColors = {
-  // Backgrounds
-  background:      '#f6f4ff',  // Soft violet-wash (brand cohesion)
-  surface:         '#ffffff',  // Clean white cards
-  surfaceAlt:      '#ede9fe',  // Violet 100, subtle areas
+  // Backgrounds — lavender-tinted page, pure white cards
+  background: '#eef0fb',   // Soft indigo-lavender page background
+  surface: '#ffffff',      // Pure white cards — strong contrast against bg
+  surfaceAlt: '#f0f0fa',   // Slightly tinted for nested elements
 
-  // Text
-  text:            '#1e1042',  // Deep violet-black (branded, not pure #000)
-  textSecondary:   '#6b5f8a',  // Warm muted purple-gray
+  // Text — deep indigo-black, strong contrast
+  text: '#0f0f1a',
+  textSecondary: '#5a5a80',
 
-  // Borders
-  border:          '#ddd6fe',  // Violet 200 (clearly branded)
+  // Border — clear, defined edges
+  border: 'rgba(79,70,229,0.14)',
 
-  // Accent
-  accent:          '#7c3aed',  // Violet 600 — brand color
-  accentDark:      '#6d28d9',  // Violet 700
-  accentSoft:      'rgba(124,58,237,0.10)',
-  accentIcon:      'rgba(124,58,237,0.12)',
+  // Accent — Indigo-600, brand identity
+  accent: '#4f46e5',
+  accentDark: '#3730a3',
+  accentSoft: 'rgba(79,70,229,0.10)',
+  accentIcon: 'rgba(79,70,229,0.14)',
+
+  // Semantic category colors
+  listeningAccent: '#7c3aed',   // Violet-600
+  readingAccent: '#2563eb',     // Blue-600
+  grammarAccent: '#16a34a',     // Green-600
 
   // Status
-  success:         '#059669',
-  successSoft:     'rgba(5,150,105,0.10)',
-  error:           '#dc2626',
-  errorSoft:       'rgba(220,38,38,0.10)',
-  warning:         '#d97706',
+  success: '#059669',
+  successSoft: 'rgba(5,150,105,0.12)',
+  error: '#dc2626',
+  errorSoft: 'rgba(220,38,38,0.10)',
+  warning: '#d97706',
 
   // Gradient presets
-  gradientHero:      ['#6d28d9', '#7c3aed'],
-  gradientListening: ['#6d28d9', '#7c3aed'],
-  gradientReading:   ['#4338ca', '#4f46e5'],
-  gradientProfile:   ['#6d28d9', '#7c3aed', '#a78bfa'],
+  gradientHero: ['#4338ca', '#6366f1', '#818cf8'],
+  gradientListening: ['#5b21b6', '#7c3aed', '#8b5cf6'],
+  gradientReading: ['#1d4ed8', '#3b82f6', '#60a5fa'],
+  gradientGrammar: ['#15803d', '#22c55e', '#4ade80'],
+  gradientProfile: ['#4338ca', '#6366f1', '#818cf8'],
 };
 
 export function ThemeProvider({ children }) {

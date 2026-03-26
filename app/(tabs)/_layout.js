@@ -37,9 +37,10 @@ export default function TabsLayout() {
           shadowRadius: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
-          marginTop: 4,
+          fontSize: 11,
+          fontFamily: 'Inter_500Medium',
+          marginTop: 2,
+          letterSpacing: 0.2,
         },
         tabBarIconStyle: {
           marginTop: 4,
@@ -70,6 +71,15 @@ export default function TabsLayout() {
           title: 'Reading',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'book' : 'book-outline'} color={color} size={26} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="grammar"
+        options={{
+          title: 'Grammar',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'language' : 'language-outline'} color={color} size={26} />
           ),
         }}
       />
