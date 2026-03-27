@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Dimensions,
+  StyleSheet, ActivityIndicator,
 } from 'react-native';
 import { MotiView } from 'moti';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,11 +13,9 @@ import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { fetchQuizQuestionCounts } from '../../lib/api';
 
-const { width: SW } = Dimensions.get('window');
-
 // ── Category chip data ────────────────────────────────────────────────────
 const CATEGORIES = [
-  { id: 'listening', label: 'Listening', emoji: '🎧', bg: '#2563eb', route: '/(tabs)/listening' },
+  { id: 'listening', label: 'Listening', emoji: '🎧', bg: '#7c3aed', route: '/(tabs)/listening' },
   { id: 'reading',   label: 'Reading',   emoji: '📖', bg: '#0891b2', route: '/(tabs)/reading' },
   { id: 'grammar',   label: 'Grammar',   emoji: '✏️', bg: '#059669', route: '/(tabs)/grammar' },
   { id: 'learn',     label: 'Guide',     emoji: '💡', bg: '#d97706', route: '/learn/grammar' },
@@ -32,7 +30,7 @@ const ACTIVITIES = [
     sub: 'Interactive lessons',
     emoji: '📚',
     badge: 'NEW',
-    gradients: ['#0c4a6e', '#0369a1', '#0ea5e9'],
+    gradients: ['#4f46e5', '#7c3aed', '#a855f7'],
     route: '/learn/grammar',
   },
   {
@@ -41,7 +39,7 @@ const ACTIVITIES = [
     sub: 'Games & challenges',
     emoji: '🏆',
     badge: 'HOT',
-    gradients: ['#7f1d1d', '#b91c1c', '#ef4444'],
+    gradients: ['#0f766e', '#0d9488', '#2dd4bf'],
     route: '/(tabs)/quest',
   },
 ];
@@ -79,8 +77,8 @@ export default function HomeScreen() {
       {/* ── Full-page gradient hero background ── */}
       <LinearGradient
         colors={isDark
-          ? ['#0a1628', '#0f2460', '#1e3a8a']
-          : ['#1e3a8a', '#1d4ed8', '#2563eb']}
+          ? ['#1a0840', '#2e1065', '#1e1b4b']
+          : ['#4338ca', '#5b21b6', '#7c3aed']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.heroBg, { height: insets.top + 280 }]}
@@ -102,10 +100,10 @@ export default function HomeScreen() {
           style={styles.header}
         >
           <View style={styles.greetingCol}>
-            <Text style={[styles.greetingLine, { fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.greetingLine, { fontFamily: 'Poppins_700Bold' }]}>
               {greetingEmoji}  {greeting}
             </Text>
-            <Text style={[styles.userName, { fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.userName, { fontFamily: 'Poppins_800ExtraBold' }]}>
               {userName} 👋
             </Text>
           </View>
@@ -115,8 +113,8 @@ export default function HomeScreen() {
             activeOpacity={0.85}
             style={styles.avatarRing}
           >
-            <LinearGradient colors={['#2563eb', '#3b82f6']} style={styles.avatarBtn}>
-              <Text style={[styles.avatarLetter, { fontFamily: 'Cairo_800ExtraBold' }]}>
+            <LinearGradient colors={['#5b21b6', '#7c3aed']} style={styles.avatarBtn}>
+              <Text style={[styles.avatarLetter, { fontFamily: 'Poppins_800ExtraBold' }]}>
                 {initial}
               </Text>
             </LinearGradient>
@@ -136,7 +134,7 @@ export default function HomeScreen() {
           >
             {/* Solid white card on blue hero — high contrast */}
             <LinearGradient
-              colors={isDark ? ['#1e293b', '#0f172a'] : ['#ffffff', '#f0f9ff']}
+              colors={isDark ? ['#1e293b', '#0f172a'] : ['#ffffff', '#f5f3ff']}
               style={styles.featuredInner}
             >
               <View style={styles.featuredDecor1} />
@@ -144,24 +142,24 @@ export default function HomeScreen() {
 
               <View style={styles.featuredLeft}>
                 <View style={styles.featuredBadge}>
-                  <Text style={[styles.featuredBadgeText, { fontFamily: 'Cairo_800ExtraBold' }]}>
+                  <Text style={[styles.featuredBadgeText, { fontFamily: 'Poppins_800ExtraBold' }]}>
                     🔥 TODAY'S CHALLENGE
                   </Text>
                 </View>
-                <Text style={[styles.featuredTitle, { color: isDark ? '#f1f5f9' : '#0f172a', fontFamily: 'Cairo_800ExtraBold', paddingTop:22 }]}>
+                <Text style={[styles.featuredTitle, { color: isDark ? '#f1f5f9' : '#0f172a', fontFamily: 'Poppins_800ExtraBold', paddingTop:22 }]}>
                   Start your{'\n'}daily practice!
                 </Text>
                 <View style={styles.featuredMeta}>
                   <View style={styles.featuredStat}>
-                    <Ionicons name="help-circle" size={13} color="#2563eb" />
-                    <Text style={[styles.featuredStatText, { color: isDark ? '#94a3b8' : '#475569', fontFamily: 'Cairo_700Bold' }]}>
+                    <Ionicons name="help-circle" size={13} color="#7c3aed" />
+                    <Text style={[styles.featuredStatText, { color: isDark ? '#94a3b8' : '#475569', fontFamily: 'Poppins_700Bold' }]}>
                       {loading ? '…' : `${total} Questions`}
                     </Text>
                   </View>
                   <View style={[styles.featuredStatDot, { backgroundColor: isDark ? '#334155' : '#cbd5e1' }]} />
                   <View style={styles.featuredStat}>
-                    <Ionicons name="layers" size={13} color="#2563eb" />
-                    <Text style={[styles.featuredStatText, { color: isDark ? '#94a3b8' : '#475569', fontFamily: 'Cairo_700Bold' }]}>
+                    <Ionicons name="layers" size={13} color="#7c3aed" />
+                    <Text style={[styles.featuredStatText, { color: isDark ? '#94a3b8' : '#475569', fontFamily: 'Poppins_700Bold' }]}>
                       3 Topics
                     </Text>
                   </View>
@@ -171,7 +169,7 @@ export default function HomeScreen() {
               <View style={styles.featuredEmojiWrap}>
                 <Text style={styles.featuredEmoji}>🎓</Text>
                 <View style={styles.startPill}>
-                  <Text style={[styles.startPillText, { fontFamily: 'Cairo_800ExtraBold' }]}>
+                  <Text style={[styles.startPillText, { fontFamily: 'Poppins_800ExtraBold' }]}>
                     START
                   </Text>
                   <Ionicons name="arrow-forward" size={12} color="#fff" />
@@ -186,10 +184,10 @@ export default function HomeScreen() {
 
           {/* ── Quiz Categories ── */}
           <View style={styles.sectionRow}>
-            <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
               Practice
             </Text>
-            <Text style={[styles.sectionSub, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.sectionSub, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
               Choose a topic
             </Text>
           </View>
@@ -214,7 +212,7 @@ export default function HomeScreen() {
                   <View style={[styles.chipIconWrap, { backgroundColor: cat.bg }]}>
                     <Text style={styles.chipEmoji}>{cat.emoji}</Text>
                   </View>
-                  <Text style={[styles.chipLabel, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+                  <Text style={[styles.chipLabel, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
                     {cat.label}
                   </Text>
                 </TouchableOpacity>
@@ -222,42 +220,9 @@ export default function HomeScreen() {
             ))}
           </ScrollView>
 
-          <View style={styles.sectionRow2}>
-            <Text style={[styles.sectionTitle2, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
-              Quick Practice
-            </Text>
-          </View>
-
-          <View style={styles.quizRow}>
-            <QuizCard
-              title="Listening"
-              count={counts.listening}
-              emoji="🎧"
-              colors={colors.gradientListening}
-              delay={100}
-              onPress={() => handleNav('/(tabs)/listening')}
-            />
-            <QuizCard
-              title="Reading"
-              count={counts.reading}
-              emoji="📖"
-              colors={colors.gradientReading}
-              delay={150}
-              onPress={() => handleNav('/(tabs)/reading')}
-            />
-            <QuizCard
-              title="Grammar"
-              count={counts.grammar}
-              emoji="✏️"
-              colors={colors.gradientGrammar}
-              delay={200}
-              onPress={() => handleNav('/(tabs)/grammar')}
-            />
-          </View>
-
           {/* ── Activity cards ── */}
           <View style={styles.sectionRow2}>
-            <Text style={[styles.sectionTitle2, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.sectionTitle2, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
               More Activities
             </Text>
           </View>
@@ -274,31 +239,25 @@ export default function HomeScreen() {
                 <TouchableOpacity
                   activeOpacity={0.82}
                   onPress={() => handleNav(act.route)}
-                  style={styles.activityCard}
+                  style={[styles.activityCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
                 >
-                  <LinearGradient
-                    colors={act.gradients}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.activityGrad}
-                  >
-                    <View style={styles.activityDecor} />
-                    <View style={styles.activityBadge}>
-                      <Text style={[styles.activityBadgeText, { fontFamily: 'Cairo_800ExtraBold' }]}>
+                  <View style={styles.activityGrad}>
+                    <View style={[styles.activityBadge, { backgroundColor: colors.border }]}>
+                      <Text style={[styles.activityBadgeText, { color: colors.textSecondary, fontFamily: 'Poppins_800ExtraBold' }]}>
                         {act.badge}
                       </Text>
                     </View>
                     <Text style={styles.activityEmoji}>{act.emoji}</Text>
-                    <Text style={[styles.activityTitle, { fontFamily: 'Cairo_800ExtraBold' }]}>
+                    <Text style={[styles.activityTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
                       {act.title}
                     </Text>
-                    <Text style={[styles.activitySub, { fontFamily: 'Cairo_700Bold' }]}>
+                    <Text style={[styles.activitySub, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
                       {act.sub}
                     </Text>
-                    <View style={styles.activityArrow}>
-                      <Ionicons name="arrow-forward" size={14} color="rgba(255,255,255,0.9)" />
+                    <View style={[styles.activityArrow, { backgroundColor: colors.border }]}>
+                      <Ionicons name="arrow-forward" size={14} color={colors.textSecondary} />
                     </View>
-                  </LinearGradient>
+                  </View>
                 </TouchableOpacity>
               </MotiView>
             ))}
@@ -314,7 +273,7 @@ export default function HomeScreen() {
             >
               <View style={styles.statsHeader}>
                 <View style={[styles.statsAccentBar, { backgroundColor: colors.accent }]} />
-                <Text style={[styles.statsTitle, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+                <Text style={[styles.statsTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
                   Question Bank
                 </Text>
               </View>
@@ -353,34 +312,6 @@ export default function HomeScreen() {
 
 // ── Sub-components ──────────────────────────────────────────────────────────
 
-function QuizCard({ title, count, emoji, colors, delay, onPress }) {
-  return (
-    <MotiView
-      from={{ opacity: 0, scale: 0.86, translateY: 12 }}
-      animate={{ opacity: 1, scale: 1, translateY: 0 }}
-      transition={{ type: 'spring', damping: 14, delay }}
-      style={styles.quizCardWrap}
-    >
-      <TouchableOpacity activeOpacity={0.82} onPress={onPress}>
-        <LinearGradient
-          colors={colors}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.quizCardGrad}
-        >
-          <View style={styles.quizCardDecor} />
-          <Text style={styles.quizCardEmoji}>{emoji}</Text>
-          <Text style={[styles.quizCardCount, { fontFamily: 'Cairo_800ExtraBold' }]}>{count}</Text>
-          <Text style={[styles.quizCardQs, { fontFamily: 'Cairo_700Bold' }]}>Questions</Text>
-          <View style={styles.quizCardFooter}>
-            <Text style={[styles.quizCardTitle, { fontFamily: 'Cairo_800ExtraBold' }]}>{title}</Text>
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>
-    </MotiView>
-  );
-}
-
 function StatCell({ emoji, label, count, color, pct }) {
   const { colors } = useTheme();
   return (
@@ -388,10 +319,10 @@ function StatCell({ emoji, label, count, color, pct }) {
       <View style={[styles.statIconWrap, { backgroundColor: color + '18' }]}>
         <Text style={styles.statEmoji}>{emoji}</Text>
       </View>
-      <Text style={[styles.statCount, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+      <Text style={[styles.statCount, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
         {count}
       </Text>
-      <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+      <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
         {label}
       </Text>
       <View style={[styles.statBar, { backgroundColor: colors.border }]}>
@@ -424,7 +355,7 @@ const styles = StyleSheet.create({
     borderRadius: 26, borderWidth: 2.5, borderColor: 'rgba(255,255,255,0.35)',
     padding: 2,
     elevation: 8,
-    shadowColor: '#2563eb', shadowOpacity: 0.45,
+    shadowColor: '#7c3aed', shadowOpacity: 0.45,
     shadowRadius: 14, shadowOffset: { width: 0, height: 4 },
   },
   avatarBtn: {
@@ -456,7 +387,7 @@ const styles = StyleSheet.create({
   },
   featuredLeft: { flex: 1, gap: 8 },
   featuredBadge: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#7c3aed',
     alignSelf: 'flex-start',
     paddingHorizontal: 10, paddingVertical: 4,
     borderRadius: 8,
@@ -473,7 +404,7 @@ const styles = StyleSheet.create({
   featuredEmoji: { fontSize: 54 },
   startPill: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: '#2563eb',
+    backgroundColor: '#7c3aed',
     paddingHorizontal: 14, paddingVertical: 8,
     borderRadius: 20,
   },
@@ -513,12 +444,12 @@ const styles = StyleSheet.create({
   sectionTitle2: { fontSize: 20 },
 
   // Quiz cards (3-col)
-  quizRow: { flexDirection: 'row', gap: 10, marginBottom: 24 },
-  quizCardWrap: { flex: 1 },
+  quizRow: { flexDirection: 'row', gap: 6, marginBottom: 20 },
+  quizCardWrap: { flex: 1 , alignItems:'center'},
   quizCardGrad: {
     borderRadius: 22, paddingTop: 16, paddingBottom: 14,
-    paddingHorizontal: 12, minHeight: 148,
-    justifyContent: 'space-between', overflow: 'hidden',
+    paddingHorizontal: 30, minHeight: 100,
+    justifyContent: 'center', overflow: 'hidden',
   },
   quizCardDecor: {
     position: 'absolute', width: 80, height: 80, borderRadius: 40,
@@ -531,34 +462,35 @@ const styles = StyleSheet.create({
   quizCardTitle: { fontSize: 13, color: '#ffffff' },
 
   // Activity cards (2-col)
-  activitiesRow: { flexDirection: 'row', gap: 12, marginBottom: 24 },
+  activitiesRow: { flexDirection: 'row', gap: 10, marginBottom: 20, justifyContent: 'center' },
   activityWrap: { flex: 1 },
   activityCard: {
-    borderRadius: 24, overflow: 'hidden',
-    elevation: 6,
-    shadowColor: '#000', shadowOpacity: 0.18,
-    shadowRadius: 12, shadowOffset: { width: 0, height: 6 },
+    borderRadius: 22, overflow: 'hidden', borderWidth: 1.5,
+    elevation: 3,
+    shadowColor: '#000', shadowOpacity: 0.08,
+    shadowRadius: 8, shadowOffset: { width: 0, height: 3 },
   },
   activityGrad: {
-    paddingTop: 18, paddingBottom: 16, paddingHorizontal: 16,
-    minHeight: 170, overflow: 'hidden',
+    paddingTop: 14, paddingBottom: 14, paddingHorizontal: 14,
+    minHeight: 148, overflow: 'hidden',
+    alignItems: 'center', justifyContent: 'center',
   },
   activityDecor: {
-    position: 'absolute', width: 120, height: 120, borderRadius: 60,
-    backgroundColor: 'rgba(255,255,255,0.08)', top: -40, right: -30,
+    position: 'absolute', width: 110, height: 110, borderRadius: 55,
+    backgroundColor: 'rgba(255,255,255,0.08)', top: -35, right: -28,
   },
   activityBadge: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     backgroundColor: 'rgba(255,255,255,0.25)',
-    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, marginBottom: 8,
+    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, marginBottom: 6,
   },
   activityBadgeText: { fontSize: 9, color: '#fff', letterSpacing: 1 },
-  activityEmoji: { fontSize: 36, marginBottom: 10 },
-  activityTitle: { fontSize: 15, color: '#ffffff', marginBottom: 4 },
-  activitySub: { fontSize: 11, color: 'rgba(255,255,255,0.72)' },
+  activityEmoji: { fontSize: 34, marginBottom: 6, textAlign: 'center' },
+  activityTitle: { fontSize: 14, color: '#ffffff', marginBottom: 2, textAlign: 'center' },
+  activitySub: { fontSize: 10, color: 'rgba(255,255,255,0.72)', textAlign: 'center' },
   activityArrow: {
-    marginTop: 14,
-    width: 28, height: 28, borderRadius: 14,
+    marginTop: 10,
+    width: 26, height: 26, borderRadius: 13,
     backgroundColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center', justifyContent: 'center',
   },
@@ -579,11 +511,11 @@ const styles = StyleSheet.create({
     width: 48, height: 48, borderRadius: 14,
     alignItems: 'center', justifyContent: 'center',
   },
-  statEmoji: { fontSize: 24 },
-  statCount: { fontSize: 22 },
-  statLabel: { fontSize: 11 },
+  statEmoji: { fontSize: 26 },
+  statCount: { fontSize: 20 },
+  statLabel: { fontSize: 16 },
   statBar: {
-    width: '80%', height: 4, borderRadius: 2, overflow: 'hidden',
+    width: '80%', height: 6, borderRadius: 4, overflow: 'hidden',
   },
-  statBarFill: { height: 4, borderRadius: 2 },
+  statBarFill: { height: 6, borderRadius: 4 },
 });

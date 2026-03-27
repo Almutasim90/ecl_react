@@ -84,9 +84,9 @@ export default function ResultsScreen() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.centered}>
-          <Text style={[styles.emptyText, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>No results to show.</Text>
+          <Text style={[styles.emptyText, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>No results to show.</Text>
           <TouchableOpacity onPress={handleHome} style={styles.homeBtn}>
-            <Text style={[styles.homeBtnText, { color: colors.accent, fontFamily: 'Cairo_800ExtraBold' }]}>Back to Home</Text>
+            <Text style={[styles.homeBtnText, { color: colors.accent, fontFamily: 'Poppins_800ExtraBold' }]}>Back to Home</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -115,20 +115,20 @@ export default function ResultsScreen() {
 
             <Ionicons name={grade.icon} size={54} color="#ffffff" style={styles.gradeIcon} />
 
-            <Text style={[styles.gradeLabel, { fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.gradeLabel, { fontFamily: 'Poppins_800ExtraBold' }]}>
               {grade.label}
             </Text>
 
             <View style={styles.scoreRow}>
-              <Text style={[styles.scoreNum, { fontFamily: 'Cairo_800ExtraBold' }]}>
+              <Text style={[styles.scoreNum, { fontFamily: 'Poppins_800ExtraBold' }]}>
                 {score}
               </Text>
-              <Text style={[styles.scoreTotal, { fontFamily: 'Cairo_700Bold' }]}>
+              <Text style={[styles.scoreTotal, { fontFamily: 'Poppins_700Bold' }]}>
                 /{total}
               </Text>
             </View>
 
-            <Text style={[styles.percentText, { fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.percentText, { fontFamily: 'Poppins_800ExtraBold' }]}>
               {percentage}%
             </Text>
 
@@ -138,7 +138,7 @@ export default function ResultsScreen() {
                 size={16}
                 color="#ffffff"
               />
-              <Text style={[styles.formBadgeText, { fontFamily: 'Cairo_700Bold' }]}>
+              <Text style={[styles.formBadgeText, { fontFamily: 'Poppins_700Bold' }]}>
                 {type.toUpperCase()} · FORM {formNumber}
               </Text>
             </View>
@@ -158,7 +158,7 @@ export default function ResultsScreen() {
             style={[styles.actionBtn, styles.tryAgainBtn, { borderColor: colors.accent }]}
           >
             <Ionicons name="refresh" size={20} color={colors.accent} />
-            <Text style={[styles.tryAgainText, { color: colors.accent, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.tryAgainText, { color: colors.accent, fontFamily: 'Poppins_800ExtraBold' }]}>
               TRY AGAIN
             </Text>
           </TouchableOpacity>
@@ -169,14 +169,14 @@ export default function ResultsScreen() {
             style={[styles.actionBtn, { backgroundColor: colors.accent }]}
           >
             <Ionicons name="home" size={20} color="#ffffff" />
-            <Text style={[styles.homeText, { fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.homeText, { fontFamily: 'Poppins_800ExtraBold' }]}>
               HOME
             </Text>
           </TouchableOpacity>
         </MotiView>
 
         {/* Review Section */}
-        <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+        <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
           Review Answers
         </Text>
 
@@ -202,7 +202,7 @@ export default function ResultsScreen() {
 
                 <View style={styles.reviewContent}>
                   <View style={styles.reviewHeader}>
-                    <Text style={[styles.reviewQnum, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+                    <Text style={[styles.reviewQnum, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
                       QUESTION {idx + 1}
                     </Text>
                     <View style={[
@@ -216,7 +216,7 @@ export default function ResultsScreen() {
                       />
                       <Text style={[
                         styles.reviewBadgeText,
-                        { color: isCorrect ? colors.success : colors.error, fontFamily: 'Cairo_800ExtraBold' }
+                        { color: isCorrect ? colors.success : colors.error, fontFamily: 'Poppins_800ExtraBold' }
                       ]}>
                         {isCorrect ? 'CORRECT' : 'WRONG'}
                       </Text>
@@ -224,30 +224,30 @@ export default function ResultsScreen() {
                   </View>
 
                   {q.questiontext ? (
-                    <Text style={[styles.reviewQuestion, { color: colors.text, fontFamily: 'Cairo_700Bold' }]} numberOfLines={3}>
+                    <Text style={[styles.reviewQuestion, { color: colors.text, fontFamily: 'Poppins_700Bold' }]} numberOfLines={3}>
                       {q.questiontext}
                     </Text>
                   ) : (
-                    <Text style={[styles.reviewQuestion, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+                    <Text style={[styles.reviewQuestion, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
                       Audio question
                     </Text>
                   )}
 
                   <View style={styles.reviewAnswerRow}>
                     <View style={[styles.answerChip, { backgroundColor: isCorrect ? colors.successSoft : colors.errorSoft }]}>
-                      <Text style={[styles.answerChipLabel, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+                      <Text style={[styles.answerChipLabel, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
                         YOURS:
                       </Text>
-                      <Text style={[styles.answerChipValue, { color: isCorrect ? colors.success : colors.error, fontFamily: 'Cairo_800ExtraBold' }]}>
+                      <Text style={[styles.answerChipValue, { color: isCorrect ? colors.success : colors.error, fontFamily: 'Poppins_800ExtraBold' }]}>
                         {userLetter}
                       </Text>
                     </View>
                     {!isCorrect && (
                       <View style={[styles.answerChip, { backgroundColor: colors.successSoft }]}>
-                        <Text style={[styles.answerChipLabel, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+                        <Text style={[styles.answerChipLabel, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
                           CORRECT:
                         </Text>
-                        <Text style={[styles.answerChipValue, { color: colors.success, fontFamily: 'Cairo_800ExtraBold' }]}>
+                        <Text style={[styles.answerChipValue, { color: colors.success, fontFamily: 'Poppins_800ExtraBold' }]}>
                           {correctLetter}
                         </Text>
                       </View>

@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' },
-  levelText: { color: '#fff', fontSize: 20, fontWeight: '700', fontFamily: 'Cairo_700Bold' },
+  levelText: { color: '#fff', fontSize: 20, fontWeight: '700', fontFamily: 'Poppins_700Bold' },
   timerBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
   timerText: { color: '#fff', fontWeight: '700' },
   progressTrack: { height: 6, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 3, overflow: 'hidden' },

@@ -163,13 +163,13 @@ export default function VerifyEmailScreen() {
               <Ionicons name="mail-outline" size={48} color={accentColor} />
             </MotiView>
 
-            <Text style={[styles.title, { color: textColor, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.title, { color: textColor, fontFamily: 'Poppins_700Bold' }]}>
               Verify Your Email
             </Text>
-            <Text style={[styles.subtitle, { color: subtextColor, fontFamily: 'Cairo_400Regular' }]}>
+            <Text style={[styles.subtitle, { color: subtextColor, fontFamily: 'Poppins_400Regular' }]}>
               {"We've sent a 6-digit verification code to"}
             </Text>
-            <Text style={[styles.emailText, { color: textColor, fontFamily: 'Cairo_600SemiBold' }]}>
+            <Text style={[styles.emailText, { color: textColor, fontFamily: 'Poppins_600SemiBold' }]}>
               {email}
             </Text>
 
@@ -184,7 +184,7 @@ export default function VerifyEmailScreen() {
                       backgroundColor: inputBg,
                       borderColor: digit ? accentColor : inputBorder,
                       color: textColor,
-                      fontFamily: 'Cairo_700Bold',
+                      fontFamily: 'Poppins_700Bold',
                     },
                   ]}
                   value={digit}
@@ -199,13 +199,13 @@ export default function VerifyEmailScreen() {
 
             {error ? (
               <MotiView from={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'timing', duration: 200 }}>
-                <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Cairo_400Regular' }]}>{error}</Text>
+                <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Poppins_400Regular' }]}>{error}</Text>
               </MotiView>
             ) : null}
 
             {success ? (
               <MotiView from={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'timing', duration: 200 }}>
-                <Text style={[styles.successText, { color: '#10b981', fontFamily: 'Cairo_400Regular' }]}>{success}</Text>
+                <Text style={[styles.successText, { color: '#10b981', fontFamily: 'Poppins_400Regular' }]}>{success}</Text>
               </MotiView>
             ) : null}
 
@@ -219,17 +219,17 @@ export default function VerifyEmailScreen() {
                 {loading ? (
                   <ActivityIndicator color="#ffffff" size="small" />
                 ) : (
-                  <Text style={[styles.verifyBtnText, { fontFamily: 'Cairo_700Bold' }]}>VERIFY</Text>
+                  <Text style={[styles.verifyBtnText, { fontFamily: 'Poppins_700Bold' }]}>VERIFY</Text>
                 )}
               </LinearGradient>
             </TouchableOpacity>
 
             <View style={styles.resendContainer}>
-              <Text style={[styles.resendHint, { color: subtextColor, fontFamily: 'Cairo_400Regular' }]}>
+              <Text style={[styles.resendHint, { color: subtextColor, fontFamily: 'Poppins_400Regular' }]}>
                 {"Didn't receive the code? "}
               </Text>
               <TouchableOpacity onPress={handleResend} disabled={!canResend || loading}>
-                <Text style={[styles.resendLink, { color: canResend ? accentColor : subtextColor, fontFamily: 'Cairo_600SemiBold' }]}>
+                <Text style={[styles.resendLink, { color: canResend ? accentColor : subtextColor, fontFamily: 'Poppins_600SemiBold' }]}>
                   {canResend ? 'Resend' : `Resend in ${resendTimer}s`}
                 </Text>
               </TouchableOpacity>

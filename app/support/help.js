@@ -89,7 +89,7 @@ export default function HelpSupportScreen() {
             <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
               <Ionicons name="chevron-back" size={28} color="#fff" />
             </TouchableOpacity>
-            <Text style={[styles.headerTitle, { fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.headerTitle, { fontFamily: 'Poppins_800ExtraBold' }]}>
               Help & Support
             </Text>
             <View style={{ width: 44 }} />
@@ -113,7 +113,7 @@ export default function HelpSupportScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: 40 + insets.bottom }]}
       >
         {/* FAQ Section */}
-        <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+        <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
           Frequently Asked Questions
         </Text>
 
@@ -133,7 +133,7 @@ export default function HelpSupportScreen() {
               style={[styles.faqCard, { borderColor: colors.border }]}
             >
               <View style={styles.faqHeader}>
-                <Text style={[styles.faqQuestion, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+                <Text style={[styles.faqQuestion, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
                   {faq.question}
                 </Text>
                 <Ionicons
@@ -161,7 +161,7 @@ export default function HelpSupportScreen() {
         ))}
 
         {/* Contact Section */}
-        <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Cairo_700Bold', marginTop: 30 }]}>
+        <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins_700Bold', marginTop: 30 }]}>
           Contact Us
         </Text>
 
@@ -185,7 +185,7 @@ export default function HelpSupportScreen() {
                   <Ionicons name={option.icon} size={24} color={colors.accent} />
                 </View>
                 <View style={styles.contactInfo}>
-                  <Text style={[styles.contactTitle, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+                  <Text style={[styles.contactTitle, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
                     {option.title}
                   </Text>
                   <Text style={[styles.contactSubtitle, { color: colors.textSecondary }]}>

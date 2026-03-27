@@ -126,7 +126,7 @@ export default function QuestScreen() {
             <View style={styles.labelContainer}>
                <Text style={[
                 styles.nodeLabel,
-                { color: isLocked ? colors.textSecondary : colors.text, fontFamily: 'Cairo_700Bold' }
+                { color: isLocked ? colors.textSecondary : colors.text, fontFamily: 'Poppins_700Bold' }
               ]}>
                 {level.title}
               </Text>
@@ -147,16 +147,16 @@ export default function QuestScreen() {
         >
           <View style={styles.headerContent}>
             <View>
-              <Text style={[styles.headerTitle, { fontFamily: 'Cairo_800ExtraBold' }]}>Quest Map</Text>
+              <Text style={[styles.headerTitle, { fontFamily: 'Poppins_800ExtraBold' }]}>Quest Map</Text>
               <View style={styles.statsRow}>
                 <View style={styles.statItem}>
                   <Ionicons name="flash" size={14} color="#fbbf24" />
-                  <Text style={[styles.statText, { fontFamily: 'Cairo_700Bold' }]}>Level 4</Text>
+                  <Text style={[styles.statText, { fontFamily: 'Poppins_700Bold' }]}>Level 4</Text>
                 </View>
                 <View style={styles.statDivider} />
                 <View style={styles.statItem}>
                   <Ionicons name="star" size={14} color="#60a5fa" />
-                  <Text style={[styles.statText, { fontFamily: 'Cairo_700Bold' }]}>1,240 XP</Text>
+                  <Text style={[styles.statText, { fontFamily: 'Poppins_700Bold' }]}>1,240 XP</Text>
                 </View>
               </View>
             </View>
@@ -181,7 +181,7 @@ export default function QuestScreen() {
                   <Ionicons name="flash" size={28} color="#ffffff" />
                 </LinearGradient>
               </MotiView>
-              <Text style={[styles.rollText, { color: '#ffffff', fontFamily: 'Cairo_800ExtraBold' }]}>SURVIVE!</Text>
+              <Text style={[styles.rollText, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>SURVIVE!</Text>
             </TouchableOpacity>
           </View>
         </LinearGradient>

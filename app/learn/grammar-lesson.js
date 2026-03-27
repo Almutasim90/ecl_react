@@ -229,13 +229,13 @@ export default function GrammarLessonScreen() {
         transition={{ type: 'timing', delay: 220, duration: 380 }}
         style={{ alignItems: 'center' }}
       >
-        <Text style={[styles.introEyebrow, { color: colors.accent, fontFamily: 'Cairo_700Bold' }]}>
+        <Text style={[styles.introEyebrow, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
           GRAMMAR GUIDE
         </Text>
-        <Text style={[styles.introTitle, { color: '#ffffff', fontFamily: 'Cairo_800ExtraBold' }]}>
+        <Text style={[styles.introTitle, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
           {type}
         </Text>
-        <Text style={[styles.introHook, { color: 'rgba(255,255,255,0.85)', fontFamily: 'Cairo_600SemiBold' }]}>
+        <Text style={[styles.introHook, { color: 'rgba(255,255,255,0.85)', fontFamily: 'Poppins_600SemiBold' }]}>
           {content.hook}
         </Text>
       </MotiView>
@@ -246,7 +246,7 @@ export default function GrammarLessonScreen() {
         transition={{ type: 'timing', delay: 600, duration: 400 }}
         style={styles.introFooter}
       >
-        <Text style={[styles.introFooterText, { color: 'rgba(255,255,255,0.6)', fontFamily: 'Cairo_600SemiBold' }]}>
+        <Text style={[styles.introFooterText, { color: 'rgba(255,255,255,0.6)', fontFamily: 'Poppins_600SemiBold' }]}>
           5 Cards · Tap right to continue
         </Text>
         <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.6)" />
@@ -263,10 +263,10 @@ export default function GrammarLessonScreen() {
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: 'timing', duration: 300 }}
         >
-          <Text style={[styles.cardEyebrow, { color: colors.accent, fontFamily: 'Cairo_700Bold' }]}>
+          <Text style={[styles.cardEyebrow, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
             THE FORMULA
           </Text>
-          <Text style={[styles.cardTitle, { color: '#ffffff', fontFamily: 'Cairo_800ExtraBold' }]}>
+          <Text style={[styles.cardTitle, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
             {label}
           </Text>
         </MotiView>
@@ -283,7 +283,7 @@ export default function GrammarLessonScreen() {
                 transition={{ type: 'spring', delay: 80 * i, damping: 14 }}
               >
                 {isConnector ? (
-                  <Text style={[styles.connectorText, { color: '#ffffff', fontFamily: 'Cairo_800ExtraBold' }]}>
+                  <Text style={[styles.connectorText, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
                     {part.text}
                   </Text>
                 ) : (
@@ -301,10 +301,10 @@ export default function GrammarLessonScreen() {
                       tappedChip === i && { backgroundColor: chipColor + '66' },
                     ]}
                   >
-                    <Text style={[styles.chipLabel, { color: '#ffffff', fontFamily: 'Cairo_700Bold' }]}>
+                    <Text style={[styles.chipLabel, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
                       {part.text}
                     </Text>
-                    <Text style={[styles.chipRole, { color: '#ffffff', opacity: 0.8, fontFamily: 'Cairo_600SemiBold' }]}>
+                    <Text style={[styles.chipRole, { color: '#ffffff', opacity: 0.8, fontFamily: 'Poppins_600SemiBold' }]}>
                       {part.role.toUpperCase()}
                     </Text>
                   </TouchableOpacity>
@@ -322,14 +322,14 @@ export default function GrammarLessonScreen() {
             style={[styles.noteCard, { backgroundColor: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)' }]}
           >
             <Ionicons name="information-circle" size={20} color={colors.accent} />
-            <Text style={[styles.noteText, { color: '#ffffff', fontFamily: 'Cairo_600SemiBold' }]}>
+            <Text style={[styles.noteText, { color: '#ffffff', fontFamily: 'Poppins_600SemiBold' }]}>
               {parts[tappedChip].note}
             </Text>
           </MotiView>
         )}
 
         {tappedChip === null && (
-          <Text style={[styles.tapHint, { color: 'rgba(255,255,255,0.5)', fontFamily: 'Cairo_600SemiBold' }]}>
+          <Text style={[styles.tapHint, { color: 'rgba(255,255,255,0.5)', fontFamily: 'Poppins_600SemiBold' }]}>
             TAP A CHIP TO LEARN MORE
           </Text>
         )}
@@ -344,10 +344,10 @@ export default function GrammarLessonScreen() {
         animate={{ opacity: 1, translateY: 0 }}
         transition={{ type: 'timing', duration: 300 }}
       >
-        <Text style={[styles.cardEyebrow, { color: colors.accent, fontFamily: 'Cairo_700Bold' }]}>
+        <Text style={[styles.cardEyebrow, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
           REAL EXAMPLES
         </Text>
-        <Text style={[styles.cardTitle, { color: '#ffffff', fontFamily: 'Cairo_800ExtraBold' }]}>
+        <Text style={[styles.cardTitle, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
           Context is Key
         </Text>
       </MotiView>
@@ -365,10 +365,10 @@ export default function GrammarLessonScreen() {
                   transition={{ type: 'spring', delay: exIdx * 200 + pIdx * 70, damping: 14 }}
                 >
                   <View style={[styles.wordChip, { backgroundColor: chipColor + '33', borderColor: chipColor + '66' }]}>
-                    <Text style={[styles.wordChipText, { color: '#ffffff', fontFamily: 'Cairo_700Bold' }]}>
+                    <Text style={[styles.wordChipText, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
                       {part.word}
                     </Text>
-                    <Text style={[styles.wordChipRole, { color: '#ffffff', opacity: 0.7, fontFamily: 'Cairo_600SemiBold' }]}>
+                    <Text style={[styles.wordChipRole, { color: '#ffffff', opacity: 0.7, fontFamily: 'Poppins_600SemiBold' }]}>
                       {part.role.toUpperCase()}
                     </Text>
                   </View>
@@ -378,7 +378,7 @@ export default function GrammarLessonScreen() {
           </View>
 
           <View style={styles.sentenceRow}>
-            <Text style={[styles.sentenceText, { color: '#ffffff', fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.sentenceText, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
               "{ex.sentence}"
             </Text>
             {exIdx === 0 && (
@@ -407,10 +407,10 @@ export default function GrammarLessonScreen() {
         animate={{ opacity: 1, translateY: 0 }}
         transition={{ type: 'timing', duration: 300 }}
       >
-        <Text style={[styles.cardEyebrow, { color: colors.accent, fontFamily: 'Cairo_700Bold' }]}>
+        <Text style={[styles.cardEyebrow, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
           LEARNING HACK
         </Text>
-        <Text style={[styles.cardTitle, { color: '#ffffff', fontFamily: 'Cairo_800ExtraBold' }]}>
+        <Text style={[styles.cardTitle, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
           Avoid the Trap
         </Text>
       </MotiView>
@@ -418,15 +418,15 @@ export default function GrammarLessonScreen() {
       <TouchableOpacity activeOpacity={0.9} onPress={handleFlip} style={styles.flipOuter}>
         <Reanimated.View style={[styles.flipFace, styles.flipFront, frontStyle, { backgroundColor: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)' }]}>
           <Ionicons name="bulb" size={48} color={colors.warning} style={{ marginBottom: 20 }} />
-          <Text style={[styles.flipLabel, { color: colors.warning, fontFamily: 'Cairo_800ExtraBold' }]}>
+          <Text style={[styles.flipLabel, { color: colors.warning, fontFamily: 'Poppins_800ExtraBold' }]}>
             PRO TIP
           </Text>
-          <Text style={[styles.flipBody, { color: '#ffffff', fontFamily: 'Cairo_700Bold' }]}>
+          <Text style={[styles.flipBody, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
             {content.tip}
           </Text>
           <View style={styles.flipHint}>
             <Ionicons name="sync" size={16} color="rgba(255,255,255,0.5)" />
-            <Text style={[styles.flipHintText, { color: 'rgba(255,255,255,0.5)', fontFamily: 'Cairo_600SemiBold' }]}>
+            <Text style={[styles.flipHintText, { color: 'rgba(255,255,255,0.5)', fontFamily: 'Poppins_600SemiBold' }]}>
               TAP TO FLIP
             </Text>
           </View>
@@ -434,15 +434,15 @@ export default function GrammarLessonScreen() {
 
         <Reanimated.View style={[styles.flipFace, styles.flipBack, backStyle, { backgroundColor: colors.errorSoft, borderColor: colors.error }]}>
           <Ionicons name="warning" size={48} color={colors.error} style={{ marginBottom: 20 }} />
-          <Text style={[styles.flipLabel, { color: colors.error, fontFamily: 'Cairo_800ExtraBold' }]}>
+          <Text style={[styles.flipLabel, { color: colors.error, fontFamily: 'Poppins_800ExtraBold' }]}>
             COMMON MISTAKE
           </Text>
-          <Text style={[styles.flipBody, { color: '#ffffff', fontFamily: 'Cairo_700Bold' }]}>
+          <Text style={[styles.flipBody, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
             {content.commonMistake}
           </Text>
           <View style={styles.flipHint}>
             <Ionicons name="sync" size={16} color="rgba(255,255,255,0.5)" />
-            <Text style={[styles.flipHintText, { color: 'rgba(255,255,255,0.5)', fontFamily: 'Cairo_600SemiBold' }]}>
+            <Text style={[styles.flipHintText, { color: 'rgba(255,255,255,0.5)', fontFamily: 'Poppins_600SemiBold' }]}>
               TAP TO FLIP BACK
             </Text>
           </View>
@@ -456,7 +456,7 @@ export default function GrammarLessonScreen() {
       return (
         <View style={[styles.cardContent, { justifyContent: 'center' }]}>
           <ActivityIndicator color={colors.accent} size="large" />
-          <Text style={[styles.loadingText, { color: 'rgba(255,255,255,0.6)', fontFamily: 'Cairo_600SemiBold' }]}>
+          <Text style={[styles.loadingText, { color: 'rgba(255,255,255,0.6)', fontFamily: 'Poppins_600SemiBold' }]}>
             Preparing challenge...
           </Text>
         </View>
@@ -479,17 +479,17 @@ export default function GrammarLessonScreen() {
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: 'timing', duration: 300 }}
         >
-          <Text style={[styles.cardEyebrow, { color: colors.accent, fontFamily: 'Cairo_700Bold' }]}>
+          <Text style={[styles.cardEyebrow, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
             FINAL CHALLENGE
           </Text>
-          <Text style={[styles.cardTitle, { color: '#ffffff', fontFamily: 'Cairo_800ExtraBold' }]}>
+          <Text style={[styles.cardTitle, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
             Are you ready?
           </Text>
         </MotiView>
 
         <Reanimated.View style={shakeStyle}>
           <View style={[styles.quizQuestionCard, { backgroundColor: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)' }]}>
-            <Text style={[styles.quizQuestion, { color: '#ffffff', fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.quizQuestion, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
               {quizQuestion.questiontext}
             </Text>
           </View>
@@ -527,11 +527,11 @@ export default function GrammarLessonScreen() {
                   style={[styles.quizOpt, { backgroundColor: bg, borderColor: border }]}
                 >
                   <View style={[styles.quizOptNum, { backgroundColor: border + '33' }]}>
-                    <Text style={[styles.quizOptNumText, { color: textColor, fontFamily: 'Cairo_800ExtraBold' }]}>
+                    <Text style={[styles.quizOptNumText, { color: textColor, fontFamily: 'Poppins_800ExtraBold' }]}>
                       {String.fromCharCode(64 + opt.num)}
                     </Text>
                   </View>
-                  <Text style={[styles.quizOptText, { color: textColor, fontFamily: 'Cairo_700Bold' }]}>
+                  <Text style={[styles.quizOptText, { color: textColor, fontFamily: 'Poppins_700Bold' }]}>
                     {opt.text}
                   </Text>
                   {quizAnswered && opt.num === correct && (
@@ -569,7 +569,7 @@ export default function GrammarLessonScreen() {
                     <ActivityIndicator color="#fff" size="small" />
                   ) : (
                     <>
-                      <Text style={[styles.startText, { fontFamily: 'Cairo_800ExtraBold' }]}>
+                      <Text style={[styles.startText, { fontFamily: 'Poppins_800ExtraBold' }]}>
                         START PRACTICE TEST
                       </Text>
                       <Ionicons name="play" size={20} color="#ffffff" />
@@ -588,7 +588,7 @@ export default function GrammarLessonScreen() {
             transition={{ type: 'timing', duration: 300 }}
             style={styles.tryAgainRow}
           >
-            <Text style={[styles.tryAgainLabel, { color: 'rgba(255,255,255,0.6)', fontFamily: 'Cairo_600SemiBold' }]}>
+            <Text style={[styles.tryAgainLabel, { color: 'rgba(255,255,255,0.6)', fontFamily: 'Poppins_600SemiBold' }]}>
               NOT QUITE — TRY AGAIN
             </Text>
             <TouchableOpacity onPress={() => {
@@ -599,7 +599,7 @@ export default function GrammarLessonScreen() {
               shakeX.value = 0;
             }} style={styles.retryBtn}>
               <Ionicons name="refresh" size={18} color={colors.accent} />
-              <Text style={[styles.retryBtnText, { color: colors.accent, fontFamily: 'Cairo_800ExtraBold' }]}>
+              <Text style={[styles.retryBtnText, { color: colors.accent, fontFamily: 'Poppins_800ExtraBold' }]}>
                 RETRY
               </Text>
             </TouchableOpacity>
@@ -699,13 +699,13 @@ export default function GrammarLessonScreen() {
           style={[styles.navBtn, { opacity: cardIndex === 0 ? 0 : 1 }]}
         >
           <Ionicons name="chevron-back" size={20} color="#ffffff" />
-          <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Cairo_700Bold' }]}>
+          <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
             BACK
           </Text>
         </TouchableOpacity>
 
         <View style={styles.navCenter}>
-          <Text style={[styles.navCardNum, { color: 'rgba(255,255,255,0.6)', fontFamily: 'Cairo_800ExtraBold' }]}>
+          <Text style={[styles.navCardNum, { color: 'rgba(255,255,255,0.6)', fontFamily: 'Poppins_800ExtraBold' }]}>
             {cardIndex + 1} / {TOTAL_CARDS}
           </Text>
         </View>
@@ -715,7 +715,7 @@ export default function GrammarLessonScreen() {
             onPress={() => goTo(cardIndex + 1, 1)}
             style={styles.navBtn}
           >
-            <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
               NEXT
             </Text>
             <Ionicons name="chevron-forward" size={20} color="#ffffff" />

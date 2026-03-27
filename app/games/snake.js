@@ -237,14 +237,14 @@ export default function EnglishSurvivalChallenge() {
 
           {/* Title */}
           <View style={styles.headerCenter}>
-            <Text style={[styles.headerEyebrow, { fontFamily: 'Cairo_600SemiBold' }]}>Daily Challenge</Text>
-            <Text style={[styles.headerTitle, { fontFamily: 'Cairo_800ExtraBold' }]}>English Survival</Text>
+            <Text style={[styles.headerEyebrow, { fontFamily: 'Poppins_600SemiBold' }]}>Daily Challenge</Text>
+            <Text style={[styles.headerTitle, { fontFamily: 'Poppins_800ExtraBold' }]}>English Survival</Text>
           </View>
 
           {/* Score */}
           <View style={styles.scorePill}>
             <Ionicons name="star" size={13} color="#fbbf24" />
-            <Text style={[styles.scoreText, { fontFamily: 'Cairo_800ExtraBold' }]}>{score}</Text>
+            <Text style={[styles.scoreText, { fontFamily: 'Poppins_800ExtraBold' }]}>{score}</Text>
           </View>
         </View>
 
@@ -262,7 +262,7 @@ export default function EnglishSurvivalChallenge() {
           </View>
 
           <View style={styles.progressPill}>
-            <Text style={[styles.progressText, { fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.progressText, { fontFamily: 'Poppins_700Bold' }]}>
               {qIndex + 1} / {questions.length}
             </Text>
           </View>
@@ -274,7 +274,7 @@ export default function EnglishSurvivalChallenge() {
               transition={{ type: 'spring' }}
               style={styles.streakBadge}
             >
-              <Text style={[styles.streakText, { fontFamily: 'Cairo_800ExtraBold' }]}>🔥 ×{streak}</Text>
+              <Text style={[styles.streakText, { fontFamily: 'Poppins_800ExtraBold' }]}>🔥 ×{streak}</Text>
             </MotiView>
           )}
         </View>
@@ -303,7 +303,7 @@ export default function EnglishSurvivalChallenge() {
             {/* Category badge */}
             <View style={[styles.categoryBadge, { backgroundColor: `${CATEGORY_COLOR[currentQ.category]}22`, borderColor: `${CATEGORY_COLOR[currentQ.category]}55` }]}>
               <View style={[styles.categoryDot, { backgroundColor: CATEGORY_COLOR[currentQ.category] }]} />
-              <Text style={[styles.categoryText, { color: CATEGORY_COLOR[currentQ.category], fontFamily: 'Cairo_700Bold' }]}>
+              <Text style={[styles.categoryText, { color: CATEGORY_COLOR[currentQ.category], fontFamily: 'Poppins_700Bold' }]}>
                 {currentQ.category}
               </Text>
             </View>
@@ -311,7 +311,7 @@ export default function EnglishSurvivalChallenge() {
             {/* Question card */}
             <View style={[styles.questionCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <View style={[styles.qDecorBar, { backgroundColor: CATEGORY_COLOR[currentQ.category] }]} />
-              <Text style={[styles.questionText, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+              <Text style={[styles.questionText, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
                 {currentQ.q}
               </Text>
             </View>
@@ -323,7 +323,7 @@ export default function EnglishSurvivalChallenge() {
                 animate={{ opacity: 1, scale: 1 }}
                 style={styles.timeUpBadge}
               >
-                <Text style={[styles.timeUpText, { fontFamily: 'Cairo_800ExtraBold' }]}>⏱ Time's up!</Text>
+                <Text style={[styles.timeUpText, { fontFamily: 'Poppins_800ExtraBold' }]}>⏱ Time's up!</Text>
               </MotiView>
             )}
           </MotiView>
@@ -349,14 +349,14 @@ export default function EnglishSurvivalChallenge() {
                 ]}
               >
                 <View style={[styles.optionIndex, { backgroundColor: state !== 'default' ? 'rgba(255,255,255,0.2)' : colors.surfaceAlt }]}>
-                  <Text style={[styles.optionIndexText, { color: state !== 'default' ? '#fff' : colors.textSecondary, fontFamily: 'Cairo_800ExtraBold' }]}>
+                  <Text style={[styles.optionIndexText, { color: state !== 'default' ? '#fff' : colors.textSecondary, fontFamily: 'Poppins_800ExtraBold' }]}>
                     {String.fromCharCode(65 + i)}
                   </Text>
                 </View>
                 <Text
                   style={[
                     styles.optionText,
-                    { color: state !== 'default' ? '#ffffff' : colors.text, fontFamily: 'Cairo_700Bold' },
+                    { color: state !== 'default' ? '#ffffff' : colors.text, fontFamily: 'Poppins_700Bold' },
                   ]}
                   numberOfLines={2}
                 >
@@ -380,22 +380,22 @@ export default function EnglishSurvivalChallenge() {
             style={[styles.overlayCard, { backgroundColor: colors.surface }]}
           >
             <Text style={styles.overlayEmoji}>💔</Text>
-            <Text style={[styles.overlayTitle, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>Out of Lives!</Text>
-            <Text style={[styles.overlaySub, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+            <Text style={[styles.overlayTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>Out of Lives!</Text>
+            <Text style={[styles.overlaySub, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
               You answered {qIndex} of {questions.length} questions
             </Text>
             <View style={[styles.overlayScore, { backgroundColor: colors.surfaceAlt }]}>
               <Ionicons name="star" size={18} color="#fbbf24" />
-              <Text style={[styles.overlayScoreText, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>{score} pts</Text>
+              <Text style={[styles.overlayScoreText, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>{score} pts</Text>
             </View>
             <TouchableOpacity style={styles.retryBtn} onPress={resetGame}>
               <LinearGradient colors={colors.gradientHero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.retryGrad}>
                 <Ionicons name="refresh" size={18} color="#fff" />
-                <Text style={[styles.retryText, { fontFamily: 'Cairo_800ExtraBold' }]}>Try Again</Text>
+                <Text style={[styles.retryText, { fontFamily: 'Poppins_800ExtraBold' }]}>Try Again</Text>
               </LinearGradient>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/quest')} style={styles.exitLink}>
-              <Text style={[styles.exitLinkText, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>Exit</Text>
+              <Text style={[styles.exitLinkText, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>Exit</Text>
             </TouchableOpacity>
           </MotiView>
         </MotiView>
@@ -411,22 +411,22 @@ export default function EnglishSurvivalChallenge() {
             style={[styles.overlayCard, { backgroundColor: colors.surface }]}
           >
             <Text style={styles.overlayEmoji}>🏆</Text>
-            <Text style={[styles.overlayTitle, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>Challenge Complete!</Text>
-            <Text style={[styles.overlaySub, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+            <Text style={[styles.overlayTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>Challenge Complete!</Text>
+            <Text style={[styles.overlaySub, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
               You survived all {questions.length} questions
             </Text>
             <View style={[styles.overlayScore, { backgroundColor: colors.surfaceAlt }]}>
               <Ionicons name="star" size={18} color="#fbbf24" />
-              <Text style={[styles.overlayScoreText, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>{score} pts</Text>
+              <Text style={[styles.overlayScoreText, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>{score} pts</Text>
             </View>
             <TouchableOpacity style={styles.retryBtn} onPress={resetGame}>
               <LinearGradient colors={colors.gradientHero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.retryGrad}>
                 <Ionicons name="refresh" size={18} color="#fff" />
-                <Text style={[styles.retryText, { fontFamily: 'Cairo_800ExtraBold' }]}>Play Again</Text>
+                <Text style={[styles.retryText, { fontFamily: 'Poppins_800ExtraBold' }]}>Play Again</Text>
               </LinearGradient>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/quest')} style={styles.exitLink}>
-              <Text style={[styles.exitLinkText, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>Back to Quest</Text>
+              <Text style={[styles.exitLinkText, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>Back to Quest</Text>
             </TouchableOpacity>
           </MotiView>
         </MotiView>

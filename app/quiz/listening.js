@@ -8,7 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MotiView } from 'moti';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,8 +22,8 @@ import AudioPlayer from '../../components/AudioPlayer';
 
 export default function ListeningQuizScreen() {
   const router = useRouter();
-  const { form } = useLocalSearchParams();
-  const { colors } = useTheme();
+
+  const { colors, isDark } = useTheme();
   const {
     type,
     formNumber,
@@ -114,57 +114,58 @@ export default function ListeningQuizScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* ── Standardized Header ── */}
-      <View style={{ overflow: 'hidden', borderBottomLeftRadius: 32, borderBottomRightRadius: 32 }}>
-        <LinearGradient
-          colors={colors.gradientListening}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.header, { paddingTop: insets.top + 16 }]}
-        >
-          <View style={styles.headerTopRow}>
-            <TouchableOpacity
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.back();
-              }}
-              style={[styles.headerBackBtn, { backgroundColor: 'rgba(255,255,255,0.2)' }]}
-            >
-              <Ionicons name="chevron-back" size={24} color="#ffffff" />
-            </TouchableOpacity>
+      <LinearGradient
+        colors={colors.gradientListening}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.header, { paddingTop: insets.top + 14 }]}
+      >
+        <View style={styles.headerBlob1} />
+        <View style={styles.headerBlob2} />
 
-            <View style={styles.headerTitleBlock}>
-              <Text style={[styles.headerEyebrow, { fontFamily: 'Cairo_700Bold' }]}>
-                LISTENING QUEST
-              </Text>
-              <Text style={[styles.headerTitle, { fontFamily: 'Cairo_800ExtraBold' }]} numberOfLines={1}>
-                Form {formNumber}
-              </Text>
-            </View>
+        <View style={styles.headerTopRow}>
+          <TouchableOpacity
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.back();
+            }}
+            style={styles.headerBackBtn}
+          >
+            <Ionicons name="arrow-back" size={20} color="#ffffff" />
+          </TouchableOpacity>
 
-            <View style={[styles.headerIconBadge, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
-              <Ionicons name="headset" size={24} color="#ffffff" />
-            </View>
+          <View style={styles.headerTitleBlock}>
+            <Text style={[styles.headerEyebrow, { fontFamily: 'Poppins_700Bold' }]}>
+              LISTENING QUIZ
+            </Text>
+            <Text style={[styles.headerTitle, { fontFamily: 'Poppins_800ExtraBold' }]} numberOfLines={1}>
+              Form {formNumber}
+            </Text>
           </View>
 
-          <View style={styles.progressSection}>
-            <View style={styles.progressMeta}>
-              <Text style={[styles.progressLabel, { fontFamily: 'Cairo_700Bold' }]}>
-                Progress {currentIndex + 1}/{totalQuestions}
-              </Text>
-              <Text style={[styles.progressPct, { fontFamily: 'Cairo_800ExtraBold' }]}>
-                {Math.round(progress * 100)}%
-              </Text>
-            </View>
-            <View
-              style={[styles.progressTrack, { backgroundColor: 'rgba(255,255,255,0.25)' }]}
-              onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
-            >
-              <Animated.View style={[styles.progressFill, { width: progressAnim, backgroundColor: '#ffffff' }]} />
-            </View>
+          <View style={styles.headerIconBadge}>
+            <Ionicons name="headset" size={20} color="#ffffff" />
           </View>
-        </LinearGradient>
-      </View>
+        </View>
+
+        <View style={styles.progressSection}>
+          <View style={styles.progressMeta}>
+            <Text style={[styles.progressLabel, { fontFamily: 'Poppins_600SemiBold' }]}>
+              Question {currentIndex + 1} of {totalQuestions}
+            </Text>
+            <Text style={[styles.progressPct, { fontFamily: 'Poppins_800ExtraBold' }]}>
+              {Math.round(progress * 100)}%
+            </Text>
+          </View>
+          <View
+            style={styles.progressTrack}
+            onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+          >
+            <Animated.View style={[styles.progressFill, { width: progressAnim }]} />
+            <Animated.View style={[styles.progressGlow, { width: progressAnim }]} />
+          </View>
+        </View>
+      </LinearGradient>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -179,11 +180,11 @@ export default function ListeningQuizScreen() {
         >
           <View style={styles.questionHeader}>
             <View style={[styles.qBadge, { backgroundColor: colors.accentSoft }]}>
-              <Text style={[styles.qBadgeText, { color: colors.accent, fontFamily: 'Cairo_800ExtraBold' }]}>
+              <Text style={[styles.qBadgeText, { color: colors.accent, fontFamily: 'Poppins_800ExtraBold' }]}>
                 QUESTION {currentIndex + 1}
               </Text>
             </View>
-            <Text style={[styles.questionTitle, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.questionTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
               Listen carefully and select the best answer.
             </Text>
           </View>
@@ -194,7 +195,7 @@ export default function ListeningQuizScreen() {
 
           <View style={styles.pickHeader}>
             <Ionicons name="list" size={18} color={colors.textSecondary} />
-            <Text style={[styles.pickLabel, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.pickLabel, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
               CHOOSE ONE OPTION:
             </Text>
           </View>
@@ -230,7 +231,7 @@ export default function ListeningQuizScreen() {
             ]}
           >
             <Ionicons name="arrow-back" size={22} color={colors.text} />
-            <Text style={[styles.navBtnText, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.navBtnText, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
               BACK
             </Text>
           </TouchableOpacity>
@@ -240,7 +241,7 @@ export default function ListeningQuizScreen() {
             onPress={handleNext}
             style={[styles.navBtn, { backgroundColor: colors.accent }]}
           >
-            <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
               {isLastQuestion ? 'FINISH' : answered ? 'NEXT' : 'SKIP'}
             </Text>
             <Ionicons
@@ -258,37 +259,52 @@ export default function ListeningQuizScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    paddingHorizontal: 24,
-    paddingBottom: 28,
+    paddingHorizontal: 24, paddingBottom: 28,
+    position: 'relative',
+  },
+  headerBlob1: {
+    position: 'absolute', width: 170, height: 170, borderRadius: 85,
+    backgroundColor: 'rgba(255,255,255,0.06)', top: -50, right: -30,
+  },
+  headerBlob2: {
+    position: 'absolute', width: 90, height: 90, borderRadius: 45,
+    backgroundColor: 'rgba(255,255,255,0.05)', bottom: -20, left: 30,
   },
   headerTopRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 24,
+    flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 24,
   },
   headerBackBtn: {
-    width: 48, height: 48, borderRadius: 16,
+    width: 40, height: 40, borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     justifyContent: 'center', alignItems: 'center',
   },
   headerTitleBlock: { flex: 1 },
   headerEyebrow: {
-    fontSize: 12, color: 'rgba(255,255,255,0.7)',
-    letterSpacing: 1.5, marginBottom: 2,
+    fontSize: 11, color: 'rgba(255,255,255,0.65)',
+    textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 3,
   },
-  headerTitle: { fontSize: 24, color: '#ffffff' },
+  headerTitle: { fontSize: 20, color: '#ffffff' },
   headerIconBadge: {
-    width: 48, height: 48, borderRadius: 16,
+    width: 40, height: 40, borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     justifyContent: 'center', alignItems: 'center',
   },
   progressSection: { gap: 10 },
   progressMeta: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
-  progressLabel: { fontSize: 14, color: 'rgba(255,255,255,0.85)' },
-  progressPct: { fontSize: 16, color: '#ffffff' },
+  progressLabel: { fontSize: 13, color: 'rgba(255,255,255,0.8)' },
+  progressPct: { fontSize: 14, color: '#ffffff' },
   progressTrack: {
-    height: 12, borderRadius: 6,
+    height: 10, borderRadius: 5,
+    backgroundColor: 'rgba(255,255,255,0.2)',
     overflow: 'hidden',
   },
-  progressFill: { height: '100%', borderRadius: 6 },
+  progressFill: { height: 10, borderRadius: 5, backgroundColor: 'rgba(255,255,255,0.95)' },
+  progressGlow: {
+    position: 'absolute', height: 10, borderRadius: 5,
+    backgroundColor: 'rgba(255,255,255,0.35)', top: 0,
+  },
   scrollContent: { paddingHorizontal: 24, paddingTop: 24 },
   questionHeader: { marginBottom: 24 },
   qBadge: {

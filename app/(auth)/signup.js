@@ -153,7 +153,7 @@ export default function SignupScreen() {
             <View style={[styles.brandIcon, { backgroundColor: accentColor }]}>
               <Ionicons name="school" size={22} color="#ffffff" />
             </View>
-            <Text style={[styles.brandName, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.brandName, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
               ECL QUEST
             </Text>
           </MotiView>
@@ -164,7 +164,7 @@ export default function SignupScreen() {
             transition={{ type: 'timing', duration: ENTER_DURATION, delay: ENTER_DELAY }}
             style={[styles.card, { backgroundColor: cardBg, maxWidth: cardMaxWidth, padding: cardPadding, borderColor: colors.border, borderWidth: 1 }]}
           >
-            <Text style={[styles.title, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.title, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
               Create Account
             </Text>
 
@@ -198,7 +198,7 @@ export default function SignupScreen() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ type: 'timing', duration: 200 }}
               >
-                <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Cairo_400Regular' }]}>
+                <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Poppins_400Regular' }]}>
                   {error}
                 </Text>
               </MotiView>
@@ -219,7 +219,7 @@ export default function SignupScreen() {
                 {loading ? (
                   <ActivityIndicator color="#ffffff" size="small" />
                 ) : (
-                  <Text style={[styles.signupBtnText, { fontFamily: 'Cairo_700Bold' }]}>
+                  <Text style={[styles.signupBtnText, { fontFamily: 'Poppins_700Bold' }]}>
                     SIGN UP
                   </Text>
                 )}
@@ -227,14 +227,14 @@ export default function SignupScreen() {
             </TouchableOpacity>
 
             <View style={styles.loginRow}>
-              <Text style={[styles.loginHint, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
+              <Text style={[styles.loginHint, { color: colors.textSecondary, fontFamily: 'Poppins_400Regular' }]}>
                 {'Already have an account? '}
               </Text>
               <TouchableOpacity activeOpacity={0.7} onPress={() => {
                 Haptics.selectionAsync();
                 router.push('/(auth)/login');
               }}>
-                <Text style={[styles.loginLink, { color: linkColor, fontFamily: 'Cairo_600SemiBold' }]}>
+                <Text style={[styles.loginLink, { color: linkColor, fontFamily: 'Poppins_600SemiBold' }]}>
                   Login
                 </Text>
               </TouchableOpacity>
@@ -242,7 +242,7 @@ export default function SignupScreen() {
 
             <View style={[styles.dividerRow, { marginBottom: 12 }]}>
               <View style={[styles.dividerLine, { backgroundColor: dividerColor }]} />
-              <Text style={[styles.dividerText, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+              <Text style={[styles.dividerText, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
                 OR CONTINUE WITH
               </Text>
               <View style={[styles.dividerLine, { backgroundColor: dividerColor }]} />

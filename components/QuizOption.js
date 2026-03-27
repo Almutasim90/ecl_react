@@ -82,13 +82,13 @@ export default function QuizOption({ optionNumber, text, state = 'default', onPr
         ]}
       >
         <View style={[styles.letterBadge, { backgroundColor: c.letterBg }]}>
-          <Text style={[styles.letter, { color: c.letterColor, fontFamily: 'Cairo_800ExtraBold' }]}>
+          <Text style={[styles.letter, { color: c.letterColor, fontFamily: 'Poppins_800ExtraBold' }]}>
             {letter}
           </Text>
         </View>
 
         <Text
-          style={[styles.optionText, { color: c.text, fontFamily: 'Cairo_800ExtraBold' }]}
+          style={[styles.optionText, { color: c.text, fontFamily: 'Poppins_800ExtraBold' }]}
           numberOfLines={4}
         >
           {text}

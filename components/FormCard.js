@@ -44,7 +44,7 @@ export default function FormCard({ formNumber, title, questionCount, type, onPre
           style={styles.badge}
         >
           <View style={styles.badgeDecor} />
-          <Text style={[styles.badgeNum, { fontFamily: 'Cairo_800ExtraBold' }]}>
+          <Text style={[styles.badgeNum, { fontFamily: 'Poppins_800ExtraBold' }]}>
             {String(formNumber).padStart(2, '0')}
           </Text>
           <Ionicons
@@ -57,13 +57,13 @@ export default function FormCard({ formNumber, title, questionCount, type, onPre
         {/* Info */}
         <View style={styles.content}>
           <View style={styles.titleRow}>
-            <Text style={[styles.title, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.title, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
               {title || `Form ${formNumber}`}
             </Text>
             {progress && (
               <View style={[styles.resumeBadge, { backgroundColor: `${accentColor}18` }]}>
                 <Ionicons name="time" size={12} color={accentColor} />
-                <Text style={[styles.resumeText, { color: accentColor, fontFamily: 'Cairo_800ExtraBold' }]}>
+                <Text style={[styles.resumeText, { color: accentColor, fontFamily: 'Poppins_800ExtraBold' }]}>
                   {answeredCount}/{questionCount}
                 </Text>
               </View>
@@ -71,12 +71,12 @@ export default function FormCard({ formNumber, title, questionCount, type, onPre
           </View>
           <View style={styles.metaRow}>
             <Ionicons name="help-circle" size={14} color={colors.textSecondary} />
-            <Text style={[styles.metaText, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.metaText, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
               {questionCount} Questions
             </Text>
             <View style={[styles.dot, { backgroundColor: colors.textSecondary }]} />
             <Ionicons name="timer" size={14} color={colors.textSecondary} />
-            <Text style={[styles.metaText, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.metaText, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
               {estimatedMinutes}m
             </Text>
           </View>

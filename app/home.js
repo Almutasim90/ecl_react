@@ -77,10 +77,10 @@ export default function HomeScreen() {
       >
         <View style={styles.headerInner}>
           <View style={styles.headerText}>
-            <Text style={[styles.headerEye, { fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.headerEye, { fontFamily: 'Poppins_700Bold' }]}>
               English Learning
             </Text>
-            <Text style={[styles.headerTitle, { fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.headerTitle, { fontFamily: 'Poppins_800ExtraBold' }]}>
               Explore Topics
             </Text>
           </View>
@@ -96,7 +96,7 @@ export default function HomeScreen() {
       >
 
         {/* ── Topic cards ── */}
-        <Text style={[styles.sectionLabel, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+        <Text style={[styles.sectionLabel, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
           Pick a Skill
         </Text>
 
@@ -121,10 +121,10 @@ export default function HomeScreen() {
               </View>
 
               <View style={styles.topicBody}>
-                <Text style={[styles.topicTitle, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+                <Text style={[styles.topicTitle, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
                   {topic.title}
                 </Text>
-                <Text style={[styles.topicDesc, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+                <Text style={[styles.topicDesc, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
                   {topic.desc}
                 </Text>
               </View>
@@ -137,7 +137,7 @@ export default function HomeScreen() {
         ))}
 
         {/* ── Study tips ── */}
-        <Text style={[styles.sectionLabel, { color: colors.text, fontFamily: 'Cairo_800ExtraBold', marginTop: 10 }]}>
+        <Text style={[styles.sectionLabel, { color: colors.text, fontFamily: 'Poppins_800ExtraBold', marginTop: 10 }]}>
           Study Tips
         </Text>
 
@@ -152,7 +152,7 @@ export default function HomeScreen() {
               <View style={[styles.tipIcon, { backgroundColor: tip.color + (isDark ? '30' : '15') }]}>
                 <Ionicons name={tip.icon} size={20} color={tip.color} />
               </View>
-              <Text style={[styles.tipText, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+              <Text style={[styles.tipText, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
                 {tip.text}
               </Text>
             </View>
@@ -175,12 +175,12 @@ export default function HomeScreen() {
               <View style={styles.ctaGlow} />
               <View style={styles.ctaLeft}>
                 <View style={styles.ctaBadgePill}>
-                  <Text style={[styles.ctaBadgeText, { fontFamily: 'Cairo_800ExtraBold' }]}>NEW</Text>
+                  <Text style={[styles.ctaBadgeText, { fontFamily: 'Poppins_800ExtraBold' }]}>NEW</Text>
                 </View>
-                <Text style={[styles.ctaTitle, { fontFamily: 'Cairo_800ExtraBold' }]}>
+                <Text style={[styles.ctaTitle, { fontFamily: 'Poppins_800ExtraBold' }]}>
                   Grammar Guide
                 </Text>
-                <Text style={[styles.ctaSub, { fontFamily: 'Cairo_600SemiBold' }]}>
+                <Text style={[styles.ctaSub, { fontFamily: 'Poppins_600SemiBold' }]}>
                   Learn with interactive lessons
                 </Text>
               </View>

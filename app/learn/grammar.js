@@ -79,10 +79,10 @@ export default function GrammarLearnScreen() {
             </TouchableOpacity>
 
             <View style={styles.heroTextBlock}>
-              <Text style={[styles.heroEyebrow, { fontFamily: 'Cairo_700Bold' }]}>
+              <Text style={[styles.heroEyebrow, { fontFamily: 'Poppins_700Bold' }]}>
                 GRAMMAR GUIDE
               </Text>
-              <Text style={[styles.heroTitle, { fontFamily: 'Cairo_800ExtraBold' }]}>
+              <Text style={[styles.heroTitle, { fontFamily: 'Poppins_800ExtraBold' }]}>
                 Master Topics
               </Text>
             </View>
@@ -92,7 +92,7 @@ export default function GrammarLearnScreen() {
             </View>
           </View>
 
-          <Text style={[styles.heroSub, { fontFamily: 'Cairo_600SemiBold' }]}>
+          <Text style={[styles.heroSub, { fontFamily: 'Poppins_600SemiBold' }]}>
             Dive deep into English rules with our interactive guides. Complete lessons to unlock practice tests.
           </Text>
         </LinearGradient>
@@ -102,14 +102,14 @@ export default function GrammarLearnScreen() {
       {loading ? (
         <View style={styles.centered}>
           <ActivityIndicator color={colors.accent} size="large" />
-          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
             Loading topics...
           </Text>
         </View>
       ) : error ? (
         <View style={styles.centered}>
           <Ionicons name="cloud-offline" size={64} color={colors.textSecondary} />
-          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
             {error}
           </Text>
         </View>
@@ -119,7 +119,7 @@ export default function GrammarLearnScreen() {
           contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 120 }]}
         >
           <View style={styles.listHeader}>
-            <Text style={[styles.sectionLabel, { color: colors.textSecondary, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.sectionLabel, { color: colors.textSecondary, fontFamily: 'Poppins_800ExtraBold' }]}>
               {forms.length} CATEGORIES
             </Text>
             <Ionicons name="filter" size={16} color={colors.textSecondary} />
@@ -158,17 +158,17 @@ export default function GrammarLearnScreen() {
 
                   {/* Info */}
                   <View style={styles.topicInfo}>
-                    <Text style={[styles.topicTitle, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+                    <Text style={[styles.topicTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
                       {form.title}
                     </Text>
                     <View style={styles.metaRow}>
                       <View style={[styles.metaPill, { backgroundColor: colors.accentSoft }]}>
-                        <Text style={[styles.metaText, { color: colors.accent, fontFamily: 'Cairo_700Bold' }]}>
+                        <Text style={[styles.metaText, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
                           {form.questions.length} QUESTIONS
                         </Text>
                       </View>
                       <View style={[styles.metaPill, { backgroundColor: colors.background }]}>
-                        <Text style={[styles.metaText, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+                        <Text style={[styles.metaText, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
                           5 CARDS
                         </Text>
                       </View>

@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        cairo: ["Cairo_400Regular", "Cairo_600SemiBold", "Cairo_700Bold"],
+        cairo: ["Poppins_400Regular", "Poppins_600SemiBold", "Poppins_700Bold"],
         inter: ["Inter_400Regular", "Inter_500Medium", "Inter_600SemiBold"],
       },
       borderRadius: {

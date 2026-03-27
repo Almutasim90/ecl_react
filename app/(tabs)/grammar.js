@@ -108,13 +108,13 @@ export default function GrammarScreen() {
 
           <View style={styles.heroRow}>
             <View style={styles.heroTextBlock}>
-              <Text style={[styles.heroEyebrow, { fontFamily: 'Cairo_700Bold' }]}>
+              <Text style={[styles.heroEyebrow, { fontFamily: 'Poppins_700Bold' }]}>
                 ECL Practice
               </Text>
-              <Text style={[styles.heroTitle, { fontFamily: 'Cairo_800ExtraBold' }]}>
+              <Text style={[styles.heroTitle, { fontFamily: 'Poppins_800ExtraBold' }]}>
                 Grammar Quiz
               </Text>
-              <Text style={[styles.heroSub, { fontFamily: 'Cairo_600SemiBold' }]}>
+              <Text style={[styles.heroSub, { fontFamily: 'Poppins_600SemiBold' }]}>
                 Master rules, usage & structure
               </Text>
             </View>
@@ -128,14 +128,14 @@ export default function GrammarScreen() {
               <View style={styles.pillsRow}>
                 <View style={styles.pill}>
                   <Ionicons name="layers-outline" size={13} color="rgba(255,255,255,0.85)" />
-                  <Text style={[styles.pillText, { fontFamily: 'Cairo_600SemiBold' }]}>
+                  <Text style={[styles.pillText, { fontFamily: 'Poppins_600SemiBold' }]}>
                     {forms.length} Forms
                   </Text>
                 </View>
                 <View style={styles.pillDot} />
                 <View style={styles.pill}>
                   <Ionicons name="help-circle-outline" size={13} color="rgba(255,255,255,0.85)" />
-                  <Text style={[styles.pillText, { fontFamily: 'Cairo_600SemiBold' }]}>
+                  <Text style={[styles.pillText, { fontFamily: 'Poppins_600SemiBold' }]}>
                     {totalQuestions} Questions
                   </Text>
                 </View>
@@ -148,7 +148,7 @@ export default function GrammarScreen() {
                   onChangeText={setQuery}
                   placeholder="Search by title or form number..."
                   placeholderTextColor="rgba(255,255,255,0.40)"
-                  style={[styles.searchInput, { fontFamily: 'Cairo_400Regular' }]}
+                  style={[styles.searchInput, { fontFamily: 'Poppins_400Regular' }]}
                   keyboardType="default"
                   returnKeyType="search"
                   clearButtonMode="never"
@@ -170,24 +170,24 @@ export default function GrammarScreen() {
       {loading ? (
         <View style={styles.centered}>
           <ActivityIndicator color={colors.grammarAccent} size="large" />
-          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
+          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Poppins_400Regular' }]}>
             Loading forms...
           </Text>
         </View>
       ) : error ? (
         <View style={styles.centered}>
           <Ionicons name="cloud-offline-outline" size={52} color={colors.textSecondary} />
-          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
+          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Poppins_400Regular' }]}>
             {error}
           </Text>
         </View>
       ) : forms.length === 0 ? (
         <View style={styles.centered}>
           <Ionicons name="language-outline" size={52} color={colors.textSecondary} />
-          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
+          <Text style={[styles.stateText, { color: colors.textSecondary, fontFamily: 'Poppins_400Regular' }]}>
             No grammar forms available.
           </Text>
-          <Text style={[styles.stateHint, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
+          <Text style={[styles.stateHint, { color: colors.textSecondary, fontFamily: 'Poppins_400Regular' }]}>
             Add rows to grammarquestions in Supabase (GrammarType, questiontext, options).
           </Text>
         </View>
@@ -219,10 +219,10 @@ export default function GrammarScreen() {
                     <Ionicons name="book-outline" size={22} color="#ffffff" />
                   </LinearGradient>
                   <View style={styles.randomInfo}>
-                    <Text style={[styles.randomTitle, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+                    <Text style={[styles.randomTitle, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
                       Grammar Guide
                     </Text>
-                    <Text style={[styles.randomSub, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
+                    <Text style={[styles.randomSub, { color: colors.textSecondary, fontFamily: 'Poppins_400Regular' }]}>
                       Learn before you practice
                     </Text>
                   </View>
@@ -254,10 +254,10 @@ export default function GrammarScreen() {
                   <Ionicons name="shuffle" size={22} color="#ffffff" />
                 </LinearGradient>
                 <View style={styles.randomInfo}>
-                  <Text style={[styles.randomTitle, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+                  <Text style={[styles.randomTitle, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
                     Random Practice
                   </Text>
-                  <Text style={[styles.randomSub, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
+                  <Text style={[styles.randomSub, { color: colors.textSecondary, fontFamily: 'Poppins_400Regular' }]}>
                     30 questions from all forms
                   </Text>
                 </View>
@@ -268,7 +268,7 @@ export default function GrammarScreen() {
             </MotiView>
           )}
 
-          <Text style={[styles.listLabel, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+          <Text style={[styles.listLabel, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
             {query.trim()
               ? `${filteredForms.length} of ${forms.length} forms found`
               : `${forms.length} FORM${forms.length !== 1 ? 'S' : ''} AVAILABLE`}
@@ -284,17 +284,17 @@ export default function GrammarScreen() {
               <View style={[styles.noResultsIcon, { backgroundColor: `${colors.grammarAccent}18` }]}>
                 <Ionicons name="search" size={28} color={colors.grammarAccent} />
               </View>
-              <Text style={[styles.noResultsTitle, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+              <Text style={[styles.noResultsTitle, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
                 No forms found
               </Text>
-              <Text style={[styles.noResultsSub, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
+              <Text style={[styles.noResultsSub, { color: colors.textSecondary, fontFamily: 'Poppins_400Regular' }]}>
                 No form matches "{query}"
               </Text>
               <TouchableOpacity
                 onPress={() => setQuery('')}
                 style={[styles.clearBtn, { backgroundColor: `${colors.grammarAccent}18` }]}
               >
-                <Text style={[styles.clearBtnText, { color: colors.grammarAccent, fontFamily: 'Cairo_700Bold' }]}>
+                <Text style={[styles.clearBtnText, { color: colors.grammarAccent, fontFamily: 'Poppins_700Bold' }]}>
                   Clear search
                 </Text>
               </TouchableOpacity>

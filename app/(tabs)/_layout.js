@@ -38,7 +38,7 @@ export default function TabsLayout() {
         },
         tabBarLabelStyle: {
           fontSize: 11,
-          fontFamily: 'Cairo_600SemiBold',
+          fontFamily: 'Poppins_600SemiBold',
           marginTop: 2,
           letterSpacing: 0.2,
         },

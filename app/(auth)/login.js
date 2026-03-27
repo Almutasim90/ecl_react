@@ -94,10 +94,10 @@ export default function LoginScreen() {
             >
               <Ionicons name="school" size={42} color="#fff" />
             </LinearGradient>
-            <Text style={[styles.appName, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.appName, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
               ECL QUEST
             </Text>
-            <Text style={[styles.appTagline, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
+            <Text style={[styles.appTagline, { color: colors.textSecondary, fontFamily: 'Poppins_400Regular' }]}>
               Level up your English today
             </Text>
           </MotiView>
@@ -114,7 +114,7 @@ export default function LoginScreen() {
               tint={isDark ? 'dark' : 'light'}
               style={[styles.glassCard, { borderColor: colors.border }]}
             >
-              <Text style={[styles.title, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+              <Text style={[styles.title, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
                 Welcome Back
               </Text>
 
@@ -141,7 +141,7 @@ export default function LoginScreen() {
                     style={styles.errorContainer}
                   >
                     <Ionicons name="alert-circle" size={16} color={colors.error} />
-                    <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Cairo_400Regular' }]}>
+                    <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Poppins_400Regular' }]}>
                       {error}
                     </Text>
                   </MotiView>
@@ -163,7 +163,7 @@ export default function LoginScreen() {
                   {loading ? (
                     <ActivityIndicator color="#ffffff" size="small" />
                   ) : (
-                    <Text style={[styles.loginBtnText, { fontFamily: 'Cairo_700Bold' }]}>SIGN IN</Text>
+                    <Text style={[styles.loginBtnText, { fontFamily: 'Poppins_700Bold' }]}>SIGN IN</Text>
                   )}
                 </LinearGradient>
               </TouchableOpacity>
@@ -173,20 +173,20 @@ export default function LoginScreen() {
                 onPress={handleGuestLogin}
                 style={styles.guestBtn}
               >
-                <Text style={[styles.guestBtnText, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+                <Text style={[styles.guestBtnText, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
                   Continue as Guest
                 </Text>
               </TouchableOpacity>
 
               <View style={styles.footerRow}>
                 <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
-                  <Text style={[styles.footerLink, { color: colors.accent, fontFamily: 'Cairo_600SemiBold' }]}>
+                  <Text style={[styles.footerLink, { color: colors.accent, fontFamily: 'Poppins_600SemiBold' }]}>
                     Create Account
                   </Text>
                 </TouchableOpacity>
                 <View style={[styles.dot, { backgroundColor: colors.border }]} />
                 <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
-                  <Text style={[styles.footerLink, { color: colors.textSecondary, fontFamily: 'Cairo_400Regular' }]}>
+                  <Text style={[styles.footerLink, { color: colors.textSecondary, fontFamily: 'Poppins_400Regular' }]}>
                     Forgot Password?
                   </Text>
                 </TouchableOpacity>
@@ -203,7 +203,7 @@ export default function LoginScreen() {
           >
             <View style={styles.dividerRow}>
               <View style={[styles.line, { backgroundColor: colors.border }]} />
-              <Text style={[styles.dividerText, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+              <Text style={[styles.dividerText, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
                 OR CONTINUE WITH
               </Text>
               <View style={[styles.line, { backgroundColor: colors.border }]} />

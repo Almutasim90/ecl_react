@@ -26,7 +26,7 @@ export default function ProfileScreen() {
   const [attempts, setAttempts] = useState([]);
   const [progressLoading, setProgressLoading] = useState(true);
 
-  const displayName = profile?.full_name || user?.user_metadata?.full_name || 'Guest Student';
+  const displayName = profile?.full_name || user?.user_metadata?.full_name || 'Guest ';
   const displayEmail = user?.email || 'No email provided';
   const initial = displayName.charAt(0).toUpperCase();
 
@@ -78,23 +78,23 @@ export default function ProfileScreen() {
           {/* Avatar ring */}
           <View style={styles.avatarOuter}>
             <LinearGradient colors={['#f97316', '#fb923c']} style={styles.avatarGrad}>
-              <Text style={[styles.avatarLetter, { fontFamily: 'Cairo_800ExtraBold' }]}>
+              <Text style={[styles.avatarLetter, { fontFamily: 'Poppins_800ExtraBold' }]}>
                 {initial}
               </Text>
             </LinearGradient>
           </View>
 
-          <Text style={[styles.heroName, { fontFamily: 'Cairo_800ExtraBold' }]}>
+          <Text style={[styles.heroName, { fontFamily: 'Poppins_800ExtraBold' }]}>
             {displayName}
           </Text>
-          <Text style={[styles.heroEmail, { fontFamily: 'Cairo_600SemiBold' }]}>
+          <Text style={[styles.heroEmail, { fontFamily: 'Poppins_600SemiBold' }]}>
             {displayEmail}
           </Text>
 
           {/* Level badge */}
           <View style={styles.levelBadge}>
             <Ionicons name="star" size={12} color="#fbbf24" />
-            <Text style={[styles.levelText, { fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.levelText, { fontFamily: 'Poppins_700Bold' }]}>
               {totalAttempts >= 20 ? 'Advanced' : totalAttempts >= 10 ? 'Intermediate' : 'Beginner'}
             </Text>
           </View>
@@ -110,7 +110,7 @@ export default function ProfileScreen() {
             transition={{ type: 'spring', damping: 16, delay: 80 }}
             style={styles.section}
           >
-            <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
               Your Stats
             </Text>
             <View style={styles.statsRow}>
@@ -142,7 +142,7 @@ export default function ProfileScreen() {
             transition={{ type: 'spring', damping: 16, delay: 140 }}
             style={styles.section}
           >
-            <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
               Settings
             </Text>
 
@@ -176,8 +176,8 @@ function StatBox({ label, value, emoji, color }) {
   return (
     <View style={[styles.statBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <Text style={styles.statEmoji}>{emoji}</Text>
-      <Text style={[styles.statValue, { color, fontFamily: 'Cairo_800ExtraBold' }]}>{value}</Text>
-      <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+      <Text style={[styles.statValue, { color, fontFamily: 'Poppins_800ExtraBold' }]}>{value}</Text>
+      <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
         {label}
       </Text>
     </View>
@@ -198,12 +198,12 @@ function MenuButton({ label, icon, onPress, value, danger }) {
       <View style={[styles.menuIconWrap, { backgroundColor: (danger ? '#ef4444' : colors.accent) + '18' }]}>
         <Ionicons name={icon} size={20} color={iconColor} />
       </View>
-      <Text style={[styles.menuLabel, { color: labelColor, fontFamily: 'Cairo_700Bold' }]}>
+      <Text style={[styles.menuLabel, { color: labelColor, fontFamily: 'Poppins_700Bold' }]}>
         {label}
       </Text>
       <View style={styles.menuRight}>
         {value && (
-          <Text style={[styles.menuValue, { color: colors.textSecondary, fontFamily: 'Cairo_600SemiBold' }]}>
+          <Text style={[styles.menuValue, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
             {value}
           </Text>
         )}

@@ -219,13 +219,13 @@ export default function AudioPlayer({ audioUrl, onPlaybackStatusUpdate }) {
         {/* Info */}
         <View style={styles.info}>
           <View style={styles.timeRow}>
-            <Text style={[styles.timeText, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.timeText, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
               {formatTime(position)}
             </Text>
-            <Text style={[styles.statusText, { color: colors.accent, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.statusText, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
               {statusLabel}
             </Text>
-            <Text style={[styles.timeText, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.timeText, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
               {formatTime(duration)}
             </Text>
           </View>

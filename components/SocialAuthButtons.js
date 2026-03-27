@@ -34,7 +34,7 @@ export default function SocialAuthButtons({ onGoogle, onApple }) {
         ]}
       >
         <Text style={styles.googleIcon}>G</Text>
-        <Text style={[styles.btnLabel, { fontFamily: 'Cairo_700Bold', color: isDark ? '#e2e8f0' : GOOGLE_TEXT }]}>
+        <Text style={[styles.btnLabel, { fontFamily: 'Poppins_700Bold', color: isDark ? '#e2e8f0' : GOOGLE_TEXT }]}>
           Google
         </Text>
       </TouchableOpacity>
@@ -44,7 +44,7 @@ export default function SocialAuthButtons({ onGoogle, onApple }) {
         style={[styles.btn, { backgroundColor: appleBg }]}
       >
         <Text style={[styles.appleIcon, { color: appleText }]}></Text>
-        <Text style={[styles.btnLabel, { fontFamily: 'Cairo_700Bold', color: appleText }]}>
+        <Text style={[styles.btnLabel, { fontFamily: 'Poppins_700Bold', color: appleText }]}>
           Apple
         </Text>
       </TouchableOpacity>

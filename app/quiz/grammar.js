@@ -136,10 +136,10 @@ export default function GrammarQuizScreen() {
           </TouchableOpacity>
 
           <View style={styles.headerTitleBlock}>
-            <Text style={[styles.headerEyebrow, { fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.headerEyebrow, { fontFamily: 'Poppins_700Bold' }]}>
               GRAMMAR QUIZ
             </Text>
-            <Text style={[styles.headerTitle, { fontFamily: 'Cairo_800ExtraBold' }]} numberOfLines={1}>
+            <Text style={[styles.headerTitle, { fontFamily: 'Poppins_800ExtraBold' }]} numberOfLines={1}>
               {typeName || `Form ${formNumber}`}
             </Text>
           </View>
@@ -151,10 +151,10 @@ export default function GrammarQuizScreen() {
 
         <View style={styles.progressSection}>
           <View style={styles.progressMeta}>
-            <Text style={[styles.progressLabel, { fontFamily: 'Cairo_600SemiBold' }]}>
+            <Text style={[styles.progressLabel, { fontFamily: 'Poppins_600SemiBold' }]}>
               Question {currentIndex + 1} of {totalQuestions}
             </Text>
-            <Text style={[styles.progressPct, { fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.progressPct, { fontFamily: 'Poppins_800ExtraBold' }]}>
               {Math.round(progress * 100)}%
             </Text>
           </View>
@@ -180,7 +180,7 @@ export default function GrammarQuizScreen() {
           transition={{ type: 'timing', duration: 300 }}
         >
           <View style={styles.questionHeader}>
-            <Text style={[styles.questionNum, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.questionNum, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
               Question {currentIndex + 1} of {totalQuestions}
             </Text>
           </View>
@@ -188,12 +188,12 @@ export default function GrammarQuizScreen() {
           {/* Question text card */}
           <View style={[styles.questionCard, { backgroundColor: colors.surface }]}>
             <View style={[styles.questionDecorBar, { backgroundColor: colors.grammarAccent }]} />
-            <Text style={[styles.questionText, { color: colors.text, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.questionText, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
               {currentQuestion.questiontext}
             </Text>
           </View>
 
-          <Text style={[styles.pickLabel, { color: colors.textSecondary, fontFamily: 'Cairo_700Bold' }]}>
+          <Text style={[styles.pickLabel, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
             Choose one answer:
           </Text>
 
@@ -224,7 +224,7 @@ export default function GrammarQuizScreen() {
             ]}
           >
             <Ionicons name="arrow-back" size={20} color={colors.text} />
-            <Text style={[styles.navBtnText, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.navBtnText, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
               PREVIOUS
             </Text>
           </TouchableOpacity>
@@ -234,7 +234,7 @@ export default function GrammarQuizScreen() {
             onPress={handleNext}
             style={[styles.navBtn, { backgroundColor: colors.grammarAccent }]}
           >
-            <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
               {isLastQuestion ? 'FINISH' : answered ? 'NEXT' : 'SKIP'}
             </Text>
             <Ionicons

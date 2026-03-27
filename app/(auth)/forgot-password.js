@@ -91,13 +91,13 @@ export default function ForgotPasswordScreen() {
                 <Ionicons name="checkmark-circle" size={64} color="#10b981" />
               </MotiView>
 
-              <Text style={[styles.title, { color: textColor, fontFamily: 'Cairo_700Bold' }]}>
+              <Text style={[styles.title, { color: textColor, fontFamily: 'Poppins_700Bold' }]}>
                 Email Sent!
               </Text>
-              <Text style={[styles.subtitle, { color: subtextColor, fontFamily: 'Cairo_400Regular' }]}>
+              <Text style={[styles.subtitle, { color: subtextColor, fontFamily: 'Poppins_400Regular' }]}>
                 We have sent a password reset link to your email. Please check your inbox.
               </Text>
-              <Text style={[styles.emailText, { color: textColor, fontFamily: 'Cairo_600SemiBold' }]}>
+              <Text style={[styles.emailText, { color: textColor, fontFamily: 'Poppins_600SemiBold' }]}>
                 {email}
               </Text>
 
@@ -112,14 +112,14 @@ export default function ForgotPasswordScreen() {
                   end={{ x: 1, y: 1 }}
                   style={styles.resetBtnGradient}
                 >
-                  <Text style={[styles.resetBtnText, { fontFamily: 'Cairo_700Bold' }]}>
+                  <Text style={[styles.resetBtnText, { fontFamily: 'Poppins_700Bold' }]}>
                     BACK TO LOGIN
                   </Text>
                 </LinearGradient>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={handleResetPassword} disabled={loading} style={styles.resendBtn}>
-                <Text style={[styles.resendText, { color: accentColor, fontFamily: 'Cairo_600SemiBold' }]}>
+                <Text style={[styles.resendText, { color: accentColor, fontFamily: 'Poppins_600SemiBold' }]}>
                   {"Didn't receive it? Resend"}
                 </Text>
               </TouchableOpacity>
@@ -161,10 +161,10 @@ export default function ForgotPasswordScreen() {
               <Ionicons name="lock-open-outline" size={48} color={accentColor} />
             </MotiView>
 
-            <Text style={[styles.title, { color: textColor, fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.title, { color: textColor, fontFamily: 'Poppins_700Bold' }]}>
               Forgot Password?
             </Text>
-            <Text style={[styles.subtitle, { color: subtextColor, fontFamily: 'Cairo_400Regular' }]}>
+            <Text style={[styles.subtitle, { color: subtextColor, fontFamily: 'Poppins_400Regular' }]}>
               {"Don't worry! Enter your email and we'll send you a link to reset your password."}
             </Text>
 
@@ -183,7 +183,7 @@ export default function ForgotPasswordScreen() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ type: 'timing', duration: 200 }}
               >
-                <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Cairo_400Regular' }]}>{error}</Text>
+                <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Poppins_400Regular' }]}>{error}</Text>
               </MotiView>
             ) : null}
 
@@ -202,7 +202,7 @@ export default function ForgotPasswordScreen() {
                 {loading ? (
                   <ActivityIndicator color="#ffffff" size="small" />
                 ) : (
-                  <Text style={[styles.resetBtnText, { fontFamily: 'Cairo_700Bold' }]}>
+                  <Text style={[styles.resetBtnText, { fontFamily: 'Poppins_700Bold' }]}>
                     SEND RESET LINK
                   </Text>
                 )}
@@ -211,7 +211,7 @@ export default function ForgotPasswordScreen() {
 
             <TouchableOpacity onPress={() => router.back()} style={styles.backToLoginBtn}>
               <Ionicons name="arrow-back" size={18} color={accentColor} style={{ marginRight: 6 }} />
-              <Text style={[styles.backToLoginText, { color: accentColor, fontFamily: 'Cairo_600SemiBold' }]}>
+              <Text style={[styles.backToLoginText, { color: accentColor, fontFamily: 'Poppins_600SemiBold' }]}>
                 Back to Login
               </Text>
             </TouchableOpacity>

@@ -8,7 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MotiView } from 'moti';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,7 +21,7 @@ import QuizOption from '../../components/QuizOption';
 
 export default function ReadingQuizScreen() {
   const router = useRouter();
-  const { form } = useLocalSearchParams();
+
   const { colors } = useTheme();
   const {
     type,
@@ -134,10 +134,10 @@ export default function ReadingQuizScreen() {
           </TouchableOpacity>
 
           <View style={styles.headerTitleBlock}>
-            <Text style={[styles.headerEyebrow, { fontFamily: 'Cairo_700Bold' }]}>
+            <Text style={[styles.headerEyebrow, { fontFamily: 'Poppins_700Bold' }]}>
               READING QUIZ
             </Text>
-            <Text style={[styles.headerTitle, { fontFamily: 'Cairo_800ExtraBold' }]} numberOfLines={1}>
+            <Text style={[styles.headerTitle, { fontFamily: 'Poppins_800ExtraBold' }]} numberOfLines={1}>
               Form {formNumber}
             </Text>
           </View>
@@ -149,10 +149,10 @@ export default function ReadingQuizScreen() {
 
         <View style={styles.progressSection}>
           <View style={styles.progressMeta}>
-            <Text style={[styles.progressLabel, { fontFamily: 'Cairo_600SemiBold' }]}>
+            <Text style={[styles.progressLabel, { fontFamily: 'Poppins_600SemiBold' }]}>
               Question {currentIndex + 1} of {totalQuestions}
             </Text>
-            <Text style={[styles.progressPct, { fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.progressPct, { fontFamily: 'Poppins_800ExtraBold' }]}>
               {Math.round(progress * 100)}%
             </Text>
           </View>
@@ -178,7 +178,7 @@ export default function ReadingQuizScreen() {
           transition={{ type: 'timing', duration: 300 }}
         >
           <View style={styles.questionHeader}>
-            <Text style={[styles.questionNum, { color: colors.textSecondary, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.questionNum, { color: colors.textSecondary, fontFamily: 'Poppins_800ExtraBold' }]}>
               Question {currentIndex + 1} of {totalQuestions}
             </Text>
           </View>
@@ -186,12 +186,12 @@ export default function ReadingQuizScreen() {
           {/* Question text card */}
           <View style={[styles.questionCard, { backgroundColor: colors.surface }]}>
             <View style={[styles.questionDecorBar, { backgroundColor: colors.accent }]} />
-            <Text style={[styles.questionText, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.questionText, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
               {currentQuestion.questiontext}
             </Text>
           </View>
 
-          <Text style={[styles.pickLabel, { color: colors.textSecondary, fontFamily: 'Cairo_800ExtraBold' }]}>
+          <Text style={[styles.pickLabel, { color: colors.textSecondary, fontFamily: 'Poppins_800ExtraBold' }]}>
             Choose one answer:
           </Text>
 
@@ -222,7 +222,7 @@ export default function ReadingQuizScreen() {
             ]}
           >
             <Ionicons name="arrow-back" size={20} color={colors.text} />
-            <Text style={[styles.navBtnText, { color: colors.text, fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.navBtnText, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
               PREVIOUS
             </Text>
           </TouchableOpacity>
@@ -232,7 +232,7 @@ export default function ReadingQuizScreen() {
             onPress={handleNext}
             style={[styles.navBtn, { backgroundColor: colors.accent }]}
           >
-            <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Cairo_800ExtraBold' }]}>
+            <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
               {isLastQuestion ? 'FINISH' : answered ? 'NEXT' : 'SKIP'}
             </Text>
             <Ionicons

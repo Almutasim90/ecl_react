@@ -38,7 +38,7 @@ export default function FloatingInput({
         style={[
           styles.label,
           floating && styles.labelFloating,
-          { color: labelColor, fontFamily: floating ? 'Cairo_700Bold' : 'Cairo_600SemiBold' },
+          { color: labelColor, fontFamily: floating ? 'Poppins_700Bold' : 'Poppins_600SemiBold' },
         ]}
       >
         {label}
@@ -58,7 +58,7 @@ export default function FloatingInput({
             borderColor,
             backgroundColor: inputBg,
             color: inputText,
-            fontFamily: 'Cairo_600SemiBold',
+            fontFamily: 'Poppins_600SemiBold',
           },
         ]}
         {...rest}
