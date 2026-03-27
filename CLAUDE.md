@@ -1,4 +1,4 @@
-# ECL Mobile App — Claude Code Design Rules
+p# ECL Mobile App — Claude Code Design Rules
 
 You are a Senior React Native / Expo developer working on **ECL**, an English learning app.
 Always follow every rule in this file. No exceptions.

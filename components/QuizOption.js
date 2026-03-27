@@ -88,7 +88,7 @@ export default function QuizOption({ optionNumber, text, state = 'default', onPr
         </View>
 
         <Text
-          style={[styles.optionText, { color: c.text, fontFamily: 'Poppins_800ExtraBold' }]}
+          style={[styles.optionText, { color: c.text, fontFamily: 'Poppins_600SemiBold' }]}
           numberOfLines={4}
         >
           {text}
@@ -104,21 +104,21 @@ const styles = StyleSheet.create({
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    gap: 14,
-    elevation: 3,
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 8,
+    gap: 10,
+    elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
   },
   letterBadge: {
-    width: 42, height: 42, borderRadius: 12,
+    width: 36, height: 36, borderRadius: 10,
     justifyContent: 'center', alignItems: 'center', flexShrink: 0,
   },
-  letter: { fontSize: 18, letterSpacing: 0.5 },
-  optionText: { flex: 1, fontSize: 16, lineHeight: 24 },
-  statusIcon: { width: 26, alignItems: 'center', justifyContent: 'center' },
+  letter: { fontSize: 14, letterSpacing: 0.5 },
+  optionText: { flex: 1, fontSize: 13, lineHeight: 20 },
+  statusIcon: { width: 22, alignItems: 'center', justifyContent: 'center' },
 });

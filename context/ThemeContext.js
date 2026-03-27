@@ -10,31 +10,31 @@ const ThemeContext = createContext({ colorScheme: 'light', isDark: false });
  */
 
 export const darkColors = {
-  background: '#0a0a0f',
-  surface: '#12121f',
-  surfaceAlt: '#1a1a2e',
+  background: '#141416',
+  surface: '#1e1e24',
+  surfaceAlt: '#25252d',
 
-  text: '#f8fafc',
-  textSecondary: '#94a3b8',
+  text: '#f1f5f9',
+  textSecondary: '#8b95a8',
 
-  border: '#1e1e38',
+  border: '#30303c',
 
-  // Unified Brand Primary
-  accent: '#6366f1',
-  accentDark: '#4f46e5',
-  accentSoft: 'rgba(99,102,241,0.12)',
-  accentIcon: 'rgba(99,102,241,0.2)',
+  // Unified Brand Primary — lighter indigo so it pops on dark bg
+  accent: '#818cf8',
+  accentDark: '#6366f1',
+  accentSoft: 'rgba(129,140,248,0.16)',
+  accentIcon: 'rgba(129,140,248,0.22)',
 
-  // Semantic category colors - unified to Indigo variations for identity
-  listeningAccent: '#818cf8',
-  readingAccent: '#6366f1',
-  grammarAccent: '#4f46e5',
+  // Indigo variations — stepped lighter for dark readability
+  listeningAccent: '#a5b4fc',
+  readingAccent: '#818cf8',
+  grammarAccent: '#6366f1',
 
-  success: '#10b981',
-  successSoft: 'rgba(16,185,129,0.12)',
-  error: '#ef4444',
-  errorSoft: 'rgba(239,68,68,0.12)',
-  warning: '#f59e0b',
+  success: '#14b8a6',
+  successSoft: 'rgba(20,184,166,0.14)',
+  error: '#f87171',
+  errorSoft: 'rgba(248,113,113,0.13)',
+  warning: '#fbbf24',
 
   // Unified Gradients
   gradientHero: ['#4f46e5', '#6366f1', '#818cf8'],
@@ -63,8 +63,8 @@ export const lightColors = {
   readingAccent: '#4f46e5',
   grammarAccent: '#4f46e5',
 
-  success: '#059669',
-  successSoft: 'rgba(5,150,105,0.08)',
+  success: '#047857',
+  successSoft: 'rgba(4,120,87,0.12)',
   error: '#dc2626',
   errorSoft: 'rgba(220,38,38,0.08)',
   warning: '#d97706',

@@ -57,15 +57,6 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="quest"
-        options={{
-          title: 'Quest',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'map' : 'map-outline'} color={color} size={26} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="listening"
         options={{
           title: 'Listening',
@@ -89,6 +80,15 @@ export default function TabsLayout() {
           title: 'Grammar',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'language' : 'language-outline'} color={color} size={26} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="quest"
+        options={{
+          title: 'Quest',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'map' : 'map-outline'} color={color} size={26} />
           ),
         }}
       />

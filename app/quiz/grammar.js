@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: { paddingHorizontal: 20, paddingTop: 16 },
   questionHeader: { marginBottom: 12 },
-  questionNum: { fontSize: 14 },
+  questionNum: { fontSize: 12 },
   questionCard: {
     borderRadius: 16, padding: 16, paddingLeft: 20, marginBottom: 20,
     shadowColor: '#000',
@@ -312,8 +312,8 @@ const styles = StyleSheet.create({
     position: 'relative', overflow: 'hidden',
   },
   questionDecorBar: { width: 4, borderRadius: 2, minHeight: 40, flexShrink: 0 },
-  questionText: { flex: 1, fontSize: 16, lineHeight: 26 },
-  pickLabel: { fontSize: 14, marginBottom: 12 },
+  questionText: { flex: 1, fontSize: 14, lineHeight: 22 },
+  pickLabel: { fontSize: 12, marginBottom: 8 },
   bottomBar: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
     paddingHorizontal: 20, paddingTop: 16,

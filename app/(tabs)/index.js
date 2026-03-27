@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  StyleSheet, ActivityIndicator,
+  StyleSheet,
 } from 'react-native';
 import { MotiView } from 'moti';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,14 +12,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { fetchQuizQuestionCounts } from '../../lib/api';
+import { spacing, font, fontSize, gradients, radius, shadow, categoryColors } from '@/theme/tokens';
 
 // ── Category chip data ────────────────────────────────────────────────────
 const CATEGORIES = [
-  { id: 'listening', label: 'Listening', emoji: '🎧', bg: '#7c3aed', route: '/(tabs)/listening' },
-  { id: 'reading',   label: 'Reading',   emoji: '📖', bg: '#0891b2', route: '/(tabs)/reading' },
-  { id: 'grammar',   label: 'Grammar',   emoji: '✏️', bg: '#059669', route: '/(tabs)/grammar' },
-  { id: 'learn',     label: 'Guide',     emoji: '💡', bg: '#d97706', route: '/learn/grammar' },
-  { id: 'quest',     label: 'Quest',     emoji: '🎮', bg: '#dc2626', route: '/(tabs)/quest' },
+  { id: 'listening', label: 'Listening', emoji: '🎧', bg: categoryColors.Listening, route: '/(tabs)/listening' },
+  { id: 'reading',   label: 'Reading',   emoji: '📖', bg: categoryColors.Reading,   route: '/(tabs)/reading' },
+  { id: 'grammar',   label: 'Grammar',   emoji: '✏️', bg: categoryColors.Grammar,   route: '/(tabs)/grammar' },
+  { id: 'learn',     label: 'Guide',     emoji: '💡', bg: categoryColors.Guide,     route: '/learn/grammar' },
+  { id: 'quest',     label: 'Quest',     emoji: '🎮', bg: categoryColors.Quest,     route: '/(tabs)/quest' },
 ];
 
 // ── Activity card data ────────────────────────────────────────────────────
@@ -30,7 +31,6 @@ const ACTIVITIES = [
     sub: 'Interactive lessons',
     emoji: '📚',
     badge: 'NEW',
-    gradients: ['#4f46e5', '#7c3aed', '#a855f7'],
     route: '/learn/grammar',
   },
   {
@@ -39,7 +39,6 @@ const ACTIVITIES = [
     sub: 'Games & challenges',
     emoji: '🏆',
     badge: 'HOT',
-    gradients: ['#0f766e', '#0d9488', '#2dd4bf'],
     route: '/(tabs)/quest',
   },
 ];
@@ -71,14 +70,14 @@ export default function HomeScreen() {
     router.push(route);
   };
 
+  const cardShadow = isDark ? shadow.card.dark : shadow.card.light;
+
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
 
-      {/* ── Full-page gradient hero background ── */}
+      {/* ── Hero gradient background ── */}
       <LinearGradient
-        colors={isDark
-          ? ['#1a0840', '#2e1065', '#1e1b4b']
-          : ['#4338ca', '#5b21b6', '#7c3aed']}
+        colors={isDark ? gradients.homeHero.dark : gradients.homeHero.light}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.heroBg, { height: insets.top + 280 }]}
@@ -88,7 +87,7 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.scroll,
-          { paddingTop: insets.top + 18, paddingBottom: insets.bottom + 110 },
+          { paddingTop: insets.top + spacing.md + 2, paddingBottom: insets.bottom + spacing.tabBarClear },
         ]}
       >
 
@@ -100,10 +99,10 @@ export default function HomeScreen() {
           style={styles.header}
         >
           <View style={styles.greetingCol}>
-            <Text style={[styles.greetingLine, { fontFamily: 'Poppins_700Bold' }]}>
+            <Text style={[styles.greetingLine, { fontFamily: font.bold }]}>
               {greetingEmoji}  {greeting}
             </Text>
-            <Text style={[styles.userName, { fontFamily: 'Poppins_800ExtraBold' }]}>
+            <Text style={[styles.userName, { fontFamily: font.extraBold }]}>
               {userName} 👋
             </Text>
           </View>
@@ -113,8 +112,8 @@ export default function HomeScreen() {
             activeOpacity={0.85}
             style={styles.avatarRing}
           >
-            <LinearGradient colors={['#5b21b6', '#7c3aed']} style={styles.avatarBtn}>
-              <Text style={[styles.avatarLetter, { fontFamily: 'Poppins_800ExtraBold' }]}>
+            <LinearGradient colors={gradients.avatarButton} style={styles.avatarBtn}>
+              <Text style={[styles.avatarLetter, { fontFamily: font.extraBold }]}>
                 {initial}
               </Text>
             </LinearGradient>
@@ -130,36 +129,35 @@ export default function HomeScreen() {
           <TouchableOpacity
             activeOpacity={0.88}
             onPress={() => handleNav('/(tabs)/listening')}
-            style={styles.featuredCard}
+            style={[styles.featuredCard, cardShadow]}
           >
-            {/* Solid white card on blue hero — high contrast */}
             <LinearGradient
-              colors={isDark ? ['#1e293b', '#0f172a'] : ['#ffffff', '#f5f3ff']}
-              style={styles.featuredInner}
+              colors={isDark ? gradients.featuredCard.dark : gradients.featuredCard.light}
+              style={[styles.featuredInner, { borderColor: isDark ? colors.border : 'rgba(124,58,237,0.12)' }]}
             >
               <View style={styles.featuredDecor1} />
               <View style={styles.featuredDecor2} />
 
               <View style={styles.featuredLeft}>
-                <View style={styles.featuredBadge}>
-                  <Text style={[styles.featuredBadgeText, { fontFamily: 'Poppins_800ExtraBold' }]}>
+                <View style={[styles.featuredBadge, { backgroundColor: colors.accent }]}>
+                  <Text style={[styles.featuredBadgeText, { fontFamily: font.extraBold }]}>
                     🔥 TODAY'S CHALLENGE
                   </Text>
                 </View>
-                <Text style={[styles.featuredTitle, { color: isDark ? '#f1f5f9' : '#0f172a', fontFamily: 'Poppins_800ExtraBold', paddingTop:22 }]}>
+                <Text style={[styles.featuredTitle, { color: colors.text, fontFamily: font.extraBold }]}>
                   Start your{'\n'}daily practice!
                 </Text>
                 <View style={styles.featuredMeta}>
                   <View style={styles.featuredStat}>
-                    <Ionicons name="help-circle" size={13} color="#7c3aed" />
-                    <Text style={[styles.featuredStatText, { color: isDark ? '#94a3b8' : '#475569', fontFamily: 'Poppins_700Bold' }]}>
+                    <Ionicons name="help-circle" size={13} color={colors.accent} />
+                    <Text style={[styles.featuredStatText, { color: colors.textSecondary, fontFamily: font.bold }]}>
                       {loading ? '…' : `${total} Questions`}
                     </Text>
                   </View>
-                  <View style={[styles.featuredStatDot, { backgroundColor: isDark ? '#334155' : '#cbd5e1' }]} />
+                  <View style={[styles.featuredStatDot, { backgroundColor: colors.border }]} />
                   <View style={styles.featuredStat}>
-                    <Ionicons name="layers" size={13} color="#7c3aed" />
-                    <Text style={[styles.featuredStatText, { color: isDark ? '#94a3b8' : '#475569', fontFamily: 'Poppins_700Bold' }]}>
+                    <Ionicons name="layers" size={13} color={colors.accent} />
+                    <Text style={[styles.featuredStatText, { color: colors.textSecondary, fontFamily: font.bold }]}>
                       3 Topics
                     </Text>
                   </View>
@@ -168,8 +166,8 @@ export default function HomeScreen() {
 
               <View style={styles.featuredEmojiWrap}>
                 <Text style={styles.featuredEmoji}>🎓</Text>
-                <View style={styles.startPill}>
-                  <Text style={[styles.startPillText, { fontFamily: 'Poppins_800ExtraBold' }]}>
+                <View style={[styles.startPill, { backgroundColor: colors.accent }]}>
+                  <Text style={[styles.startPillText, { fontFamily: font.extraBold }]}>
                     START
                   </Text>
                   <Ionicons name="arrow-forward" size={12} color="#fff" />
@@ -179,15 +177,15 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </MotiView>
 
-        {/* ── Quiz Cards Row ── */}
+        {/* ── Content Section ── */}
         <View style={[styles.cardSection, { backgroundColor: colors.background }]}>
 
-          {/* ── Quiz Categories ── */}
+          {/* ── Practice Categories ── */}
           <View style={styles.sectionRow}>
-            <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
+            <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: font.extraBold }]}>
               Practice
             </Text>
-            <Text style={[styles.sectionSub, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
+            <Text style={[styles.sectionSub, { color: colors.textSecondary, fontFamily: font.bold }]}>
               Choose a topic
             </Text>
           </View>
@@ -212,7 +210,7 @@ export default function HomeScreen() {
                   <View style={[styles.chipIconWrap, { backgroundColor: cat.bg }]}>
                     <Text style={styles.chipEmoji}>{cat.emoji}</Text>
                   </View>
-                  <Text style={[styles.chipLabel, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
+                  <Text style={[styles.chipLabel, { color: colors.text, fontFamily: font.bold }]}>
                     {cat.label}
                   </Text>
                 </TouchableOpacity>
@@ -220,9 +218,9 @@ export default function HomeScreen() {
             ))}
           </ScrollView>
 
-          {/* ── Activity cards ── */}
+          {/* ── More Activities ── */}
           <View style={styles.sectionRow2}>
-            <Text style={[styles.sectionTitle2, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
+            <Text style={[styles.sectionTitle2, { color: colors.text, fontFamily: font.extraBold }]}>
               More Activities
             </Text>
           </View>
@@ -239,23 +237,27 @@ export default function HomeScreen() {
                 <TouchableOpacity
                   activeOpacity={0.82}
                   onPress={() => handleNav(act.route)}
-                  style={[styles.activityCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                  style={[
+                    styles.activityCard,
+                    { backgroundColor: colors.surface, borderColor: colors.border },
+                    cardShadow,
+                  ]}
                 >
-                  <View style={styles.activityGrad}>
-                    <View style={[styles.activityBadge, { backgroundColor: colors.border }]}>
-                      <Text style={[styles.activityBadgeText, { color: colors.textSecondary, fontFamily: 'Poppins_800ExtraBold' }]}>
+                  <View style={styles.activityContent}>
+                    <View style={[styles.activityBadge, { backgroundColor: colors.accentSoft }]}>
+                      <Text style={[styles.activityBadgeText, { color: colors.accent, fontFamily: font.extraBold }]}>
                         {act.badge}
                       </Text>
                     </View>
                     <Text style={styles.activityEmoji}>{act.emoji}</Text>
-                    <Text style={[styles.activityTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
+                    <Text style={[styles.activityTitle, { color: colors.text, fontFamily: font.extraBold }]}>
                       {act.title}
                     </Text>
-                    <Text style={[styles.activitySub, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
+                    <Text style={[styles.activitySub, { color: colors.textSecondary, fontFamily: font.bold }]}>
                       {act.sub}
                     </Text>
-                    <View style={[styles.activityArrow, { backgroundColor: colors.border }]}>
-                      <Ionicons name="arrow-forward" size={14} color={colors.textSecondary} />
+                    <View style={[styles.activityArrow, { backgroundColor: colors.accentSoft }]}>
+                      <Ionicons name="arrow-forward" size={14} color={colors.accent} />
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -263,17 +265,21 @@ export default function HomeScreen() {
             ))}
           </View>
 
-          {/* ── Stats overview ── */}
+          {/* ── Question Bank Stats ── */}
           {!loading && total > 0 && (
             <MotiView
               from={{ opacity: 0, translateY: 14 }}
               animate={{ opacity: 1, translateY: 0 }}
               transition={{ type: 'spring', damping: 16, delay: 200 }}
-              style={[styles.statsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              style={[
+                styles.statsCard,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                cardShadow,
+              ]}
             >
               <View style={styles.statsHeader}>
                 <View style={[styles.statsAccentBar, { backgroundColor: colors.accent }]} />
-                <Text style={[styles.statsTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
+                <Text style={[styles.statsTitle, { color: colors.text, fontFamily: font.extraBold }]}>
                   Question Bank
                 </Text>
               </View>
@@ -319,10 +325,10 @@ function StatCell({ emoji, label, count, color, pct }) {
       <View style={[styles.statIconWrap, { backgroundColor: color + '18' }]}>
         <Text style={styles.statEmoji}>{emoji}</Text>
       </View>
-      <Text style={[styles.statCount, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
+      <Text style={[styles.statCount, { color: colors.text, fontFamily: font.extraBold }]}>
         {count}
       </Text>
-      <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
+      <Text style={[styles.statLabel, { color: colors.textSecondary, fontFamily: font.bold }]}>
         {label}
       </Text>
       <View style={[styles.statBar, { backgroundColor: colors.border }]}>
@@ -337,45 +343,39 @@ function StatCell({ emoji, label, count, color, pct }) {
 const styles = StyleSheet.create({
   root: { flex: 1 },
 
-  heroBg: {
-    position: 'absolute', top: 0, left: 0, right: 0,
-  },
+  heroBg: { position: 'absolute', top: 0, left: 0, right: 0 },
 
-  scroll: { paddingHorizontal: 20 },
+  scroll: { paddingHorizontal: spacing.screenH },
 
   // Header
   header: {
     flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'center', marginBottom: 22,
+    alignItems: 'center', marginBottom: spacing.lg - 2,
   },
-  greetingCol: { gap: 1 },
-  greetingLine: { fontSize: 15, color: 'rgba(255,255,255,0.75)' },
-  userName: { fontSize: 26, color: '#ffffff' },
+  greetingCol: { gap: spacing.xs / 2 },
+  greetingLine: { fontSize: fontSize.label, color: 'rgba(255,255,255,0.75)' },
+  userName: { fontSize: fontSize.heroHeading, color: '#ffffff' },
   avatarRing: {
-    borderRadius: 26, borderWidth: 2.5, borderColor: 'rgba(255,255,255,0.35)',
-    padding: 2,
-    elevation: 8,
-    shadowColor: '#7c3aed', shadowOpacity: 0.45,
-    shadowRadius: 14, shadowOffset: { width: 0, height: 4 },
+    borderRadius: radius.xl / 2,
+    borderWidth: 2.5,
+    borderColor: 'rgba(255,255,255,0.35)',
+    padding: spacing.xs / 2,
   },
   avatarBtn: {
-    width: 46, height: 46, borderRadius: 23,
+    width: 46, height: 46,
+    borderRadius: 23,
     alignItems: 'center', justifyContent: 'center',
   },
-  avatarLetter: { fontSize: 26, color: '#ffffff' },
+  avatarLetter: { fontSize: fontSize.heroHeading, color: '#ffffff' },
 
   // Featured card
   featuredCard: {
-    borderRadius: 26, overflow: 'hidden', marginBottom: 15,
-    elevation: 12,
-    shadowColor: '#000', shadowOpacity: 0.35,
-    shadowRadius: 20, shadowOffset: { width: 0, height: 8 },
+    borderRadius: radius.lg, overflow: 'hidden', marginBottom: spacing.md - 1,
   },
   featuredInner: {
     flexDirection: 'row', alignItems: 'center',
-    padding: 22, borderRadius: 26,
-    borderWidth: 1.5, borderColor: 'rgba(37,99,235,0.15)',
-    overflow: 'hidden',
+    padding: spacing.lg - 2, borderRadius: radius.lg,
+    borderWidth: 1.5, overflow: 'hidden',
   },
   featuredDecor1: {
     position: 'absolute', width: 180, height: 180, borderRadius: 90,
@@ -385,137 +385,103 @@ const styles = StyleSheet.create({
     position: 'absolute', width: 80, height: 80, borderRadius: 40,
     backgroundColor: 'rgba(255,255,255,0.05)', bottom: -30, left: 20,
   },
-  featuredLeft: { flex: 1, gap: 8 },
+  featuredLeft: { flex: 1, gap: spacing.sm },
   featuredBadge: {
-    backgroundColor: '#7c3aed',
     alignSelf: 'flex-start',
-    paddingHorizontal: 10, paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: spacing.sm + 2, paddingVertical: spacing.xs,
+    borderRadius: spacing.sm,
   },
-  featuredBadgeText: { fontSize: 14, color: '#fff', letterSpacing: 0.8 , paddingBottom:22},
-  featuredTitle: { fontSize: 22, lineHeight: 22, marginBottom:12, paddingBottom:22 },
-  featuredMeta: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  featuredStat: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  featuredStatText: { fontSize: 11 },
-  featuredStatDot: {
-    width: 3, height: 3, borderRadius: 1.5,
-  },
-  featuredEmojiWrap: { alignItems: 'center', gap: 12 },
+  featuredBadgeText: { fontSize: fontSize.meta, color: '#fff', letterSpacing: 0.8, paddingBottom: spacing.lg - 2 },
+  featuredTitle: { fontSize: fontSize.cardTitle, lineHeight: fontSize.cardTitle, marginBottom: spacing.sm + 4, paddingBottom: spacing.lg - 2 },
+  featuredMeta: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  featuredStat: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  featuredStatText: { fontSize: fontSize.eyebrow },
+  featuredStatDot: { width: 3, height: 3, borderRadius: 1.5 },
+  featuredEmojiWrap: { alignItems: 'center', gap: spacing.sm + 4 },
   featuredEmoji: { fontSize: 54 },
   startPill: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: '#7c3aed',
-    paddingHorizontal: 14, paddingVertical: 8,
-    borderRadius: 20,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.xs,
+    paddingHorizontal: spacing.md - 2, paddingVertical: spacing.sm,
+    borderRadius: spacing.xl / 2,
   },
-  startPillText: { fontSize: 12, color: '#fff', letterSpacing: 0.8 },
+  startPillText: { fontSize: fontSize.badge, color: '#fff', letterSpacing: 0.8 },
 
   // Section headers
   sectionRow: {
     flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'baseline', marginBottom: 14,
+    alignItems: 'baseline', marginBottom: spacing.md - 2,
   },
-  sectionTitle: { fontSize: 20 },
-  sectionSub: { fontSize: 14, color: 'rgba(255,255,255,0.75)' , alignItems: 'center', justifyContent: 'center', gap: 2, paddingBottom:12, paddingTop:12 },
+  sectionTitle: { fontSize: fontSize.sectionTitle },
+  sectionSub: { fontSize: fontSize.meta, paddingBottom: spacing.sm + 4, paddingTop: spacing.sm + 4 },
 
-  // Category chips (horizontal scroll)
+  // Category chips
   chipsScroll: {
-    paddingRight: 20, gap: 14, marginBottom: 6,
-    paddingBottom: 8,
+    paddingRight: spacing.screenH, gap: spacing.md - 2,
+    marginBottom: spacing.xs + 2, paddingBottom: spacing.sm,
   },
-  chip: { alignItems: 'center', gap: 8 },
+  chip: { alignItems: 'center', gap: spacing.sm },
   chipIconWrap: {
-    width: 62, height: 62, borderRadius: 20,
+    width: 62, height: 62, borderRadius: spacing.md + 4,
     alignItems: 'center', justifyContent: 'center',
     elevation: 4,
     shadowColor: '#000', shadowOpacity: 0.3,
     shadowRadius: 8, shadowOffset: { width: 0, height: 4 },
   },
   chipEmoji: { fontSize: 28 },
-  chipLabel: { fontSize: 11, textAlign: 'center' },
+  chipLabel: { fontSize: fontSize.eyebrow, textAlign: 'center' },
 
-  // Transition to content area
+  // Content section
   cardSection: {
-    marginHorizontal: -20, paddingHorizontal: 20,
-    marginTop: 20, paddingTop: 35,
-    borderTopLeftRadius: 32, borderTopRightRadius: 32,
+    marginHorizontal: -spacing.screenH, paddingHorizontal: spacing.screenH,
+    marginTop: spacing.md, paddingTop: 35,
+    borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl,
   },
-  sectionRow2: { marginBottom: 14 },
-  sectionTitle2: { fontSize: 20 },
+  sectionRow2: { marginBottom: spacing.md - 2 },
+  sectionTitle2: { fontSize: fontSize.sectionTitle },
 
-  // Quiz cards (3-col)
-  quizRow: { flexDirection: 'row', gap: 6, marginBottom: 20 },
-  quizCardWrap: { flex: 1 , alignItems:'center'},
-  quizCardGrad: {
-    borderRadius: 22, paddingTop: 16, paddingBottom: 14,
-    paddingHorizontal: 30, minHeight: 100,
-    justifyContent: 'center', overflow: 'hidden',
-  },
-  quizCardDecor: {
-    position: 'absolute', width: 80, height: 80, borderRadius: 40,
-    backgroundColor: 'rgba(255,255,255,0.1)', top: -25, right: -25,
-  },
-  quizCardEmoji: { fontSize: 30, marginBottom: 4 },
-  quizCardCount: { fontSize: 22, color: '#ffffff' },
-  quizCardQs: { fontSize: 10, color: 'rgba(255,255,255,0.75)', marginTop: -2 },
-  quizCardFooter: { marginTop: 8 },
-  quizCardTitle: { fontSize: 13, color: '#ffffff' },
-
-  // Activity cards (2-col)
-  activitiesRow: { flexDirection: 'row', gap: 10, marginBottom: 20, justifyContent: 'center' },
+  // Activity cards
+  activitiesRow: { flexDirection: 'row', gap: spacing.sm + 2, marginBottom: spacing.md + 4, justifyContent: 'center' },
   activityWrap: { flex: 1 },
   activityCard: {
-    borderRadius: 22, overflow: 'hidden', borderWidth: 1.5,
-    elevation: 3,
-    shadowColor: '#000', shadowOpacity: 0.08,
-    shadowRadius: 8, shadowOffset: { width: 0, height: 3 },
+    borderRadius: radius.md + 2, overflow: 'hidden', borderWidth: 1.5,
   },
-  activityGrad: {
-    paddingTop: 14, paddingBottom: 14, paddingHorizontal: 14,
-    minHeight: 148, overflow: 'hidden',
+  activityContent: {
+    paddingTop: spacing.md - 2, paddingBottom: spacing.md - 2, paddingHorizontal: spacing.md - 2,
+    minHeight: 148,
     alignItems: 'center', justifyContent: 'center',
-  },
-  activityDecor: {
-    position: 'absolute', width: 110, height: 110, borderRadius: 55,
-    backgroundColor: 'rgba(255,255,255,0.08)', top: -35, right: -28,
   },
   activityBadge: {
     alignSelf: 'center',
-    backgroundColor: 'rgba(255,255,255,0.25)',
-    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, marginBottom: 6,
+    paddingHorizontal: spacing.sm, paddingVertical: spacing.xs - 1,
+    borderRadius: spacing.xs + 2, marginBottom: spacing.xs + 2,
   },
-  activityBadgeText: { fontSize: 9, color: '#fff', letterSpacing: 1 },
-  activityEmoji: { fontSize: 34, marginBottom: 6, textAlign: 'center' },
-  activityTitle: { fontSize: 14, color: '#ffffff', marginBottom: 2, textAlign: 'center' },
-  activitySub: { fontSize: 10, color: 'rgba(255,255,255,0.72)', textAlign: 'center' },
+  activityBadgeText: { fontSize: fontSize.eyebrow - 2, letterSpacing: 1 },
+  activityEmoji: { fontSize: 34, marginBottom: spacing.xs + 2, textAlign: 'center' },
+  activityTitle: { fontSize: fontSize.meta, marginBottom: spacing.xs / 2, textAlign: 'center' },
+  activitySub: { fontSize: fontSize.subLabel, textAlign: 'center' },
   activityArrow: {
-    marginTop: 10,
+    marginTop: spacing.sm + 2,
     width: 26, height: 26, borderRadius: 13,
-    backgroundColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center', justifyContent: 'center',
   },
 
   // Stats card
   statsCard: {
-    borderRadius: 24, borderWidth: 1.5, padding: 20, marginBottom: 16,
-    elevation: 3,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06, shadowRadius: 10,
+    borderRadius: radius.lg - 4, borderWidth: 1.5,
+    padding: spacing.md + 4, marginBottom: spacing.md,
   },
-  statsHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 18 },
-  statsAccentBar: { width: 4, height: 20, borderRadius: 2 },
-  statsTitle: { fontSize: 18 },
-  statsRow: { flexDirection: 'row', gap: 8 },
-  statCell: { flex: 1, alignItems: 'center', gap: 6 },
+  statsHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm + 2, marginBottom: spacing.md + 2 },
+  statsAccentBar: { width: 4, height: 20, borderRadius: spacing.xs / 2 },
+  statsTitle: { fontSize: fontSize.button },
+  statsRow: { flexDirection: 'row', gap: spacing.sm },
+  statCell: { flex: 1, alignItems: 'center', gap: spacing.xs + 2 },
   statIconWrap: {
-    width: 48, height: 48, borderRadius: 14,
+    width: 48, height: 48, borderRadius: radius.sm,
     alignItems: 'center', justifyContent: 'center',
   },
   statEmoji: { fontSize: 26 },
-  statCount: { fontSize: 20 },
-  statLabel: { fontSize: 16 },
-  statBar: {
-    width: '80%', height: 6, borderRadius: 4, overflow: 'hidden',
-  },
-  statBarFill: { height: 6, borderRadius: 4 },
+  statCount: { fontSize: fontSize.sectionTitle },
+  statLabel: { fontSize: fontSize.body },
+  statBar: { width: '80%', height: 6, borderRadius: spacing.xs / 2, overflow: 'hidden' },
+  statBarFill: { height: 6, borderRadius: spacing.xs / 2 },
 });

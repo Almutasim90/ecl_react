@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MotiView } from 'moti';
 import { Ionicons } from '@expo/vector-icons';
@@ -45,6 +45,16 @@ export default function ListeningQuizScreen() {
   const [trackWidth, setTrackWidth] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
   const bottomInset = insets.bottom;
+  const audioRef = useRef(null);
+
+  // Kill audio immediately when leaving the screen
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        audioRef.current?.stop();
+      };
+    }, [])
+  );
 
   const answered = currentAnswer !== undefined && currentAnswer !== null;
 
@@ -190,7 +200,7 @@ export default function ListeningQuizScreen() {
           </View>
 
           <View style={styles.audioWrapper}>
-            <AudioPlayer audioUrl={getAudioUrl(currentQuestion.audiofile)} />
+            <AudioPlayer ref={audioRef} audioUrl={getAudioUrl(currentQuestion.audiofile)} />
           </View>
 
           <View style={styles.pickHeader}>
@@ -313,7 +323,7 @@ const styles = StyleSheet.create({
     borderRadius: 8, marginBottom: 12,
   },
   qBadgeText: { fontSize: 12, letterSpacing: 1 },
-  questionTitle: { fontSize: 20, lineHeight: 30 },
+  questionTitle: { fontSize: 14, lineHeight: 22 },
   audioWrapper: { marginBottom: 24 },
   pickHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
   pickLabel: { fontSize: 12, letterSpacing: 1 },

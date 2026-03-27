@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import {
   View,
   Text,
@@ -24,7 +24,7 @@ const RING_STROKE = 4;
 const RING_R = (RING_SIZE - RING_STROKE) / 2;
 const RING_CIRC = 2 * Math.PI * RING_R;
 
-export default function AudioPlayer({ audioUrl, onPlaybackStatusUpdate }) {
+const AudioPlayer = forwardRef(function AudioPlayer({ audioUrl, onPlaybackStatusUpdate }, ref) {
   const { colors } = useTheme();
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -34,6 +34,21 @@ export default function AudioPlayer({ audioUrl, onPlaybackStatusUpdate }) {
   const [error, setError] = useState(null);
   const autoplayTimer = useRef(null);
   const soundRef = useRef(null);
+
+  // Expose stop() so parent screens can kill audio on blur
+  useImperativeHandle(ref, () => ({
+    stop: async () => {
+      clearTimeout(autoplayTimer.current);
+      if (soundRef.current) {
+        try { await soundRef.current.stopAsync(); } catch {}
+        try { await soundRef.current.unloadAsync(); } catch {}
+        soundRef.current = null;
+        setSound(null);
+        setIsPlaying(false);
+        setPosition(0);
+      }
+    },
+  }));
 
   // Unload on unmount
   useEffect(() => {
@@ -238,7 +253,9 @@ export default function AudioPlayer({ audioUrl, onPlaybackStatusUpdate }) {
       </View>
     </View>
   );
-}
+});
+
+export default AudioPlayer;
 
 const styles = StyleSheet.create({
   card: {

@@ -1,1010 +1,689 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-  Animated,
-  ActivityIndicator,
+  View, Text, StyleSheet, TouchableOpacity,
+  ScrollView, Animated, Dimensions,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MotiView } from 'moti';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Reanimated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSequence,
-  interpolate,
-  Extrapolation,
-} from 'react-native-reanimated';
+import { MotiView } from 'moti';
+import Svg, { Rect, Path, Circle } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../../context/ThemeContext';
-import { useQuiz } from '../../context/QuizContext';
-import { fetchGrammarQuestions } from '../../lib/api';
 import { getLessonContent, ROLE_COLORS } from '../../lib/grammarContent';
 
 const { width: SCREEN_W } = Dimensions.get('window');
-const TOTAL_CARDS = 5;
 const COMPLETION_KEY = 'lesson_completed_v1';
 
-export default function GrammarLessonScreen() {
-  const router = useRouter();
-  const insets = useSafeAreaInsets();
-  const { colors, isDark } = useTheme();
-  const { startQuiz } = useQuiz();
-  const { type, form } = useLocalSearchParams();
+// ─── Chalkboard SVG Background ───────────────────────────────────────────────
+function ChalkboardFrame({ width, height }) {
+  return (
+    <Svg width={width} height={height} style={StyleSheet.absoluteFill}>
+      {/* Board surface */}
+      <Rect x={0} y={0} width={width} height={height} rx={16} fill="#1a3d2b" />
+      {/* Wood frame */}
+      <Rect x={0} y={0} width={width} height={10} rx={5} fill="#6d4c41" />
+      <Rect x={0} y={height - 10} width={width} height={10} rx={5} fill="#6d4c41" />
+      <Rect x={0} y={0} width={10} height={height} rx={5} fill="#6d4c41" />
+      <Rect x={width - 10} y={0} width={10} height={height} rx={5} fill="#6d4c41" />
+      {/* Ruled chalk lines */}
+      <Path d={`M 18 ${height * 0.38} Q ${width / 2} ${height * 0.36} ${width - 18} ${height * 0.38}`}
+        stroke="rgba(255,255,255,0.07)" strokeWidth="1" fill="none" />
+      <Path d={`M 18 ${height * 0.62} Q ${width / 2} ${height * 0.60} ${width - 18} ${height * 0.62}`}
+        stroke="rgba(255,255,255,0.07)" strokeWidth="1" fill="none" />
+      {/* Chalk dust spots */}
+      <Circle cx={width - 24} cy={height - 20} r={3} fill="rgba(255,255,255,0.12)" />
+      <Circle cx={width - 32} cy={height - 18} r={1.5} fill="rgba(255,255,255,0.08)" />
+      <Circle cx={width - 18} cy={height - 26} r={2} fill="rgba(255,255,255,0.10)" />
+    </Svg>
+  );
+}
 
-  const formNumber = Number(form);
-  const content = getLessonContent(type);
+// ─── Pen / Writing Icon ───────────────────────────────────────────────────────
+function WritingIcon({ color = '#fff', size = 18 }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+        fill={color}
+      />
+    </Svg>
+  );
+}
 
-  // ── Card navigation state ──────────────────────────────────────────────────
-  const [cardIndex, setCardIndex] = useState(0);
-  const [animKey, setAnimKey] = useState(0);
-  const [direction, setDirection] = useState(1);
+// ─── Typewriter Hook ──────────────────────────────────────────────────────────
+function useTypewriter(text, { delay = 0, speed = 38, active = true } = {}) {
+  const [chars, setChars] = useState(0);
+  const [cursorOn, setCursorOn] = useState(true);
+  const done = chars >= text.length;
 
-  // ── Mini quiz state ────────────────────────────────────────────────────────
-  const [quizQuestion, setQuizQuestion] = useState(null);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [quizAnswered, setQuizAnswered] = useState(false);
-  const [startVisible, setStartVisible] = useState(false);
-  const [startLoading, setStartLoading] = useState(false);
-  const [quizQuestions, setQuizQuestions] = useState([]);
-
-  // ── Tip card flip (Reanimated) ─────────────────────────────────────────────
-  const flipVal = useSharedValue(0);
-  const [isFlipped, setIsFlipped] = useState(false);
-
-  const frontStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(flipVal.value, [0, 0.5, 1], [1, 0, 0], Extrapolation.CLAMP),
-    transform: [{ rotateY: `${interpolate(flipVal.value, [0, 1], [0, 180], Extrapolation.CLAMP)}deg` }],
-  }));
-
-  const backStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(flipVal.value, [0, 0.5, 1], [0, 0, 1], Extrapolation.CLAMP),
-    transform: [{ rotateY: `${interpolate(flipVal.value, [0, 1], [180, 360], Extrapolation.CLAMP)}deg` }],
-  }));
-
-  // ── Wrong answer shake (Reanimated) ───────────────────────────────────────
-  const shakeX = useSharedValue(0);
-  const shakeStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: shakeX.value }],
-  }));
-
-  // ── Underline draw-in (React Native Animated) ─────────────────────────────
-  const underlineW = useRef(new Animated.Value(0)).current;
-
-  // ── Chip tap state for rule card ──────────────────────────────────────────
-  const [tappedChip, setTappedChip] = useState(null);
-
-  // ── Start button fade ──────────────────────────────────────────────────────
-  const startOpacity = useRef(new Animated.Value(0)).current;
-
-  // ── Load quiz questions ────────────────────────────────────────────────────
   useEffect(() => {
-    fetchGrammarQuestions().then((questions) => {
-      const forForm = questions.filter((q) => q.formnumber === formNumber);
-      setQuizQuestions(forForm);
-      if (forForm.length > 0) {
-        const pick = forForm[Math.floor(Math.random() * forForm.length)];
-        setQuizQuestion(pick);
-      }
-    }).catch(() => {});
-  }, [formNumber]);
+    if (!active) { setChars(text.length); return; }
+    setChars(0);
+    let writeTimer, blinkTimer;
 
-  // ── Reset per-card state when card changes ────────────────────────────────
-  useEffect(() => {
-    setTappedChip(null);
-    setIsFlipped(false);
-    flipVal.value = 0;
+    writeTimer = setTimeout(() => {
+      let i = 0;
+      const tick = setInterval(() => {
+        i += 1;
+        setChars(i);
+        if (i >= text.length) clearInterval(tick);
+      }, speed);
+      return () => clearInterval(tick);
+    }, delay);
 
-    if (cardIndex === 2) {
-      underlineW.setValue(0);
-      Animated.timing(underlineW, {
-        toValue: 1,
-        duration: 700,
-        delay: 400,
-        useNativeDriver: false,
-      }).start();
-    }
+    blinkTimer = setInterval(() => setCursorOn(p => !p), 520);
+    return () => { clearTimeout(writeTimer); clearInterval(blinkTimer); };
+  }, [text, delay, speed, active]);
 
-    if (cardIndex === 4) {
-      setSelectedOption(null);
-      setQuizAnswered(false);
-      setStartVisible(false);
-      startOpacity.setValue(0);
-    }
-  }, [cardIndex, animKey]);
+  return { text: text.slice(0, chars), done, cursor: !done && cursorOn };
+}
 
-  // ── Navigation ─────────────────────────────────────────────────────────────
-  const goTo = useCallback((idx, dir) => {
-    if (idx < 0 || idx >= TOTAL_CARDS) return;
-    setDirection(dir);
-    setAnimKey((k) => k + 1);
-    setCardIndex(idx);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, []);
-
-  const handleTap = (x) => {
-    const isLeft = x < SCREEN_W * 0.3;
-    if (isLeft) {
-      goTo(cardIndex - 1, -1);
-    } else {
-      goTo(cardIndex + 1, 1);
-    }
-  };
-
-  const handleFlip = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const target = isFlipped ? 0 : 1;
-    flipVal.value = withTiming(target, { duration: 400 });
-    setIsFlipped(!isFlipped);
-  };
-
-  const handleQuizAnswer = (optNum) => {
-    if (quizAnswered) return;
-    setSelectedOption(optNum);
-    setQuizAnswered(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
-    const correct = quizQuestion?.correctoption;
-    if (optNum === correct) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      setTimeout(() => {
-        setStartVisible(true);
-        Animated.timing(startOpacity, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }).start();
-      }, 600);
-    } else {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      shakeX.value = withSequence(
-        withTiming(-10, { duration: 50 }),
-        withTiming(10, { duration: 50 }),
-        withTiming(-8, { duration: 50 }),
-        withTiming(8, { duration: 50 }),
-        withTiming(0, { duration: 50 }),
-      );
-    }
-  };
-
-  const handleStartPractice = async () => {
-    setStartLoading(true);
-    try {
-      const raw = await AsyncStorage.getItem(COMPLETION_KEY);
-      const completed = raw ? JSON.parse(raw) : [];
-      if (!completed.includes(type)) {
-        await AsyncStorage.setItem(COMPLETION_KEY, JSON.stringify([...completed, type]));
-      }
-    } catch (_) {}
-
-    try {
-      startQuiz({ type: 'grammar', formNumber, questions: quizQuestions });
-      router.replace({ pathname: '/quiz/grammar', params: { form: formNumber, typeName: type } });
-    } catch (_) {
-      setStartLoading(false);
-    }
-  };
-
-  const renderDots = () => (
-    <View style={styles.dotsRow}>
-      {Array.from({ length: TOTAL_CARDS }).map((_, i) => (
-        <View
-          key={i}
-          style={[
-            styles.dot,
-            i === cardIndex ? { backgroundColor: '#ffffff', width: 24 } : { backgroundColor: 'rgba(255,255,255,0.35)' },
-          ]}
-        />
-      ))}
-    </View>
-  );
-
-  const renderIntro = () => (
-    <View style={styles.cardContent}>
-      <MotiView
-        from={{ opacity: 0, scale: 0.6, translateY: 20 }}
-        animate={{ opacity: 1, scale: 1, translateY: 0 }}
-        transition={{ type: 'spring', delay: 100, damping: 14 }}
-        style={styles.introIconWrap}
-      >
-        <LinearGradient
-          colors={colors.gradientHero}
-          style={styles.introIconGrad}
-        >
-          <Ionicons name={content.icon} size={64} color="#ffffff" />
-        </LinearGradient>
-      </MotiView>
-
-      <MotiView
-        from={{ opacity: 0, translateY: 18 }}
-        animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: 'timing', delay: 220, duration: 380 }}
-        style={{ alignItems: 'center' }}
-      >
-        <Text style={[styles.introEyebrow, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
-          GRAMMAR GUIDE
-        </Text>
-        <Text style={[styles.introTitle, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
-          {type}
-        </Text>
-        <Text style={[styles.introHook, { color: 'rgba(255,255,255,0.85)', fontFamily: 'Poppins_600SemiBold' }]}>
-          {content.hook}
-        </Text>
-      </MotiView>
-
-      <MotiView
-        from={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ type: 'timing', delay: 600, duration: 400 }}
-        style={styles.introFooter}
-      >
-        <Text style={[styles.introFooterText, { color: 'rgba(255,255,255,0.6)', fontFamily: 'Poppins_600SemiBold' }]}>
-          5 Cards · Tap right to continue
-        </Text>
-        <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.6)" />
-      </MotiView>
-    </View>
-  );
-
-  const renderRule = () => {
-    const { parts, label } = content.ruleFormula;
-    return (
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={styles.ruleScroll}>
-        <MotiView
-          from={{ opacity: 0, translateY: -10 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 300 }}
-        >
-          <Text style={[styles.cardEyebrow, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
-            THE FORMULA
-          </Text>
-          <Text style={[styles.cardTitle, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
-            {label}
-          </Text>
-        </MotiView>
-
-        <View style={styles.chipsRow}>
-          {parts.map((part, i) => {
-            const chipColor = ROLE_COLORS[part.role] || colors.accent;
-            const isConnector = part.role === 'connector';
-            return (
-              <MotiView
-                key={i}
-                from={{ opacity: 0, scale: 0.7, translateY: 10 }}
-                animate={{ opacity: 1, scale: 1, translateY: 0 }}
-                transition={{ type: 'spring', delay: 80 * i, damping: 14 }}
-              >
-                {isConnector ? (
-                  <Text style={[styles.connectorText, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
-                    {part.text}
-                  </Text>
-                ) : (
-                  <TouchableOpacity
-                    activeOpacity={0.75}
-                    onPress={() => {
-                      if (part.note) {
-                        setTappedChip(tappedChip === i ? null : i);
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      }
-                    }}
-                    style={[
-                      styles.chip,
-                      { backgroundColor: chipColor + '33', borderColor: chipColor },
-                      tappedChip === i && { backgroundColor: chipColor + '66' },
-                    ]}
-                  >
-                    <Text style={[styles.chipLabel, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
-                      {part.text}
-                    </Text>
-                    <Text style={[styles.chipRole, { color: '#ffffff', opacity: 0.8, fontFamily: 'Poppins_600SemiBold' }]}>
-                      {part.role.toUpperCase()}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </MotiView>
-            );
-          })}
-        </View>
-
-        {tappedChip !== null && parts[tappedChip]?.note && (
-          <MotiView
-            from={{ opacity: 0, translateY: 8, scale: 0.96 }}
-            animate={{ opacity: 1, translateY: 0, scale: 1 }}
-            transition={{ type: 'spring', damping: 16 }}
-            style={[styles.noteCard, { backgroundColor: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)' }]}
-          >
-            <Ionicons name="information-circle" size={20} color={colors.accent} />
-            <Text style={[styles.noteText, { color: '#ffffff', fontFamily: 'Poppins_600SemiBold' }]}>
-              {parts[tappedChip].note}
-            </Text>
-          </MotiView>
-        )}
-
-        {tappedChip === null && (
-          <Text style={[styles.tapHint, { color: 'rgba(255,255,255,0.5)', fontFamily: 'Poppins_600SemiBold' }]}>
-            TAP A CHIP TO LEARN MORE
-          </Text>
-        )}
-      </ScrollView>
-    );
-  };
-
-  const renderExamples = () => (
-    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={styles.examplesScroll}>
-      <MotiView
-        from={{ opacity: 0, translateY: -10 }}
-        animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: 'timing', duration: 300 }}
-      >
-        <Text style={[styles.cardEyebrow, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
-          REAL EXAMPLES
-        </Text>
-        <Text style={[styles.cardTitle, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
-          Context is Key
-        </Text>
-      </MotiView>
-
-      {content.examples.map((ex, exIdx) => (
-        <View key={exIdx} style={styles.exampleBlock}>
-          <View style={styles.exampleWordsRow}>
-            {ex.parts.map((part, pIdx) => {
-              const chipColor = ROLE_COLORS[part.role] || colors.accent;
-              return (
-                <MotiView
-                  key={pIdx}
-                  from={{ opacity: 0, scale: 0.5, translateY: 12 }}
-                  animate={{ opacity: 1, scale: 1, translateY: 0 }}
-                  transition={{ type: 'spring', delay: exIdx * 200 + pIdx * 70, damping: 14 }}
-                >
-                  <View style={[styles.wordChip, { backgroundColor: chipColor + '33', borderColor: chipColor + '66' }]}>
-                    <Text style={[styles.wordChipText, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
-                      {part.word}
-                    </Text>
-                    <Text style={[styles.wordChipRole, { color: '#ffffff', opacity: 0.7, fontFamily: 'Poppins_600SemiBold' }]}>
-                      {part.role.toUpperCase()}
-                    </Text>
-                  </View>
-                </MotiView>
-              );
-            })}
-          </View>
-
-          <View style={styles.sentenceRow}>
-            <Text style={[styles.sentenceText, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
-              "{ex.sentence}"
-            </Text>
-            {exIdx === 0 && (
-              <View style={styles.underlineTrack}>
-                <Animated.View
-                  style={[
-                    styles.underlineFill,
-                    {
-                      backgroundColor: colors.accent,
-                      width: underlineW.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }),
-                    },
-                  ]}
-                />
-              </View>
-            )}
-          </View>
-        </View>
-      ))}
-    </ScrollView>
-  );
-
-  const renderTip = () => (
-    <View style={styles.cardContent}>
-      <MotiView
-        from={{ opacity: 0, translateY: -10 }}
-        animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: 'timing', duration: 300 }}
-      >
-        <Text style={[styles.cardEyebrow, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
-          LEARNING HACK
-        </Text>
-        <Text style={[styles.cardTitle, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
-          Avoid the Trap
-        </Text>
-      </MotiView>
-
-      <TouchableOpacity activeOpacity={0.9} onPress={handleFlip} style={styles.flipOuter}>
-        <Reanimated.View style={[styles.flipFace, styles.flipFront, frontStyle, { backgroundColor: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)' }]}>
-          <Ionicons name="bulb" size={48} color={colors.warning} style={{ marginBottom: 20 }} />
-          <Text style={[styles.flipLabel, { color: colors.warning, fontFamily: 'Poppins_800ExtraBold' }]}>
-            PRO TIP
-          </Text>
-          <Text style={[styles.flipBody, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
-            {content.tip}
-          </Text>
-          <View style={styles.flipHint}>
-            <Ionicons name="sync" size={16} color="rgba(255,255,255,0.5)" />
-            <Text style={[styles.flipHintText, { color: 'rgba(255,255,255,0.5)', fontFamily: 'Poppins_600SemiBold' }]}>
-              TAP TO FLIP
-            </Text>
-          </View>
-        </Reanimated.View>
-
-        <Reanimated.View style={[styles.flipFace, styles.flipBack, backStyle, { backgroundColor: colors.errorSoft, borderColor: colors.error }]}>
-          <Ionicons name="warning" size={48} color={colors.error} style={{ marginBottom: 20 }} />
-          <Text style={[styles.flipLabel, { color: colors.error, fontFamily: 'Poppins_800ExtraBold' }]}>
-            COMMON MISTAKE
-          </Text>
-          <Text style={[styles.flipBody, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
-            {content.commonMistake}
-          </Text>
-          <View style={styles.flipHint}>
-            <Ionicons name="sync" size={16} color="rgba(255,255,255,0.5)" />
-            <Text style={[styles.flipHintText, { color: 'rgba(255,255,255,0.5)', fontFamily: 'Poppins_600SemiBold' }]}>
-              TAP TO FLIP BACK
-            </Text>
-          </View>
-        </Reanimated.View>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderMiniQuiz = () => {
-    if (!quizQuestion) {
-      return (
-        <View style={[styles.cardContent, { justifyContent: 'center' }]}>
-          <ActivityIndicator color={colors.accent} size="large" />
-          <Text style={[styles.loadingText, { color: 'rgba(255,255,255,0.6)', fontFamily: 'Poppins_600SemiBold' }]}>
-            Preparing challenge...
-          </Text>
-        </View>
-      );
-    }
-
-    const opts = [
-      { num: 1, text: quizQuestion.optiona },
-      { num: 2, text: quizQuestion.optionb },
-      { num: 3, text: quizQuestion.optionc },
-      { num: 4, text: quizQuestion.optiond },
-    ];
-
-    const correct = quizQuestion.correctoption;
-
-    return (
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={styles.quizScroll}>
-        <MotiView
-          from={{ opacity: 0, translateY: -10 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 300 }}
-        >
-          <Text style={[styles.cardEyebrow, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
-            FINAL CHALLENGE
-          </Text>
-          <Text style={[styles.cardTitle, { color: '#ffffff', fontFamily: 'Poppins_800ExtraBold' }]}>
-            Are you ready?
-          </Text>
-        </MotiView>
-
-        <Reanimated.View style={shakeStyle}>
-          <View style={[styles.quizQuestionCard, { backgroundColor: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)' }]}>
-            <Text style={[styles.quizQuestion, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
-              {quizQuestion.questiontext}
-            </Text>
-          </View>
-        </Reanimated.View>
-
-        <View style={styles.quizOptions}>
-          {opts.map((opt, i) => {
-            let bg = 'rgba(255,255,255,0.08)';
-            let border = 'rgba(255,255,255,0.15)';
-            let textColor = '#ffffff';
-
-            if (quizAnswered) {
-              if (opt.num === correct) {
-                bg = colors.successSoft;
-                border = colors.success;
-                textColor = colors.success;
-              } else if (opt.num === selectedOption) {
-                bg = colors.errorSoft;
-                border = colors.error;
-                textColor = colors.error;
-              }
-            }
-
-            return (
-              <MotiView
-                key={opt.num}
-                from={{ opacity: 0, translateX: 30 }}
-                animate={{ opacity: 1, translateX: 0 }}
-                transition={{ type: 'timing', delay: 80 * i, duration: 280 }}
-              >
-                <TouchableOpacity
-                  activeOpacity={0.75}
-                  onPress={() => handleQuizAnswer(opt.num)}
-                  disabled={quizAnswered}
-                  style={[styles.quizOpt, { backgroundColor: bg, borderColor: border }]}
-                >
-                  <View style={[styles.quizOptNum, { backgroundColor: border + '33' }]}>
-                    <Text style={[styles.quizOptNumText, { color: textColor, fontFamily: 'Poppins_800ExtraBold' }]}>
-                      {String.fromCharCode(64 + opt.num)}
-                    </Text>
-                  </View>
-                  <Text style={[styles.quizOptText, { color: textColor, fontFamily: 'Poppins_700Bold' }]}>
-                    {opt.text}
-                  </Text>
-                  {quizAnswered && opt.num === correct && (
-                    <Ionicons name="checkmark-circle" size={24} color={colors.success} />
-                  )}
-                  {quizAnswered && opt.num === selectedOption && opt.num !== correct && (
-                    <Ionicons name="close-circle" size={24} color={colors.error} />
-                  )}
-                </TouchableOpacity>
-              </MotiView>
-            );
-          })}
-        </View>
-
-        {startVisible && (
-          <Animated.View style={{ opacity: startOpacity, marginTop: 24 }}>
-            <MotiView
-              from={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', damping: 14 }}
-            >
-              <TouchableOpacity
-                activeOpacity={0.82}
-                onPress={handleStartPractice}
-                disabled={startLoading}
-                style={styles.startBtn}
-              >
-                <LinearGradient
-                  colors={colors.gradientHero}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.startGrad}
-                >
-                  {startLoading ? (
-                    <ActivityIndicator color="#fff" size="small" />
-                  ) : (
-                    <>
-                      <Text style={[styles.startText, { fontFamily: 'Poppins_800ExtraBold' }]}>
-                        START PRACTICE TEST
-                      </Text>
-                      <Ionicons name="play" size={20} color="#ffffff" />
-                    </>
-                  )}
-                </LinearGradient>
-              </TouchableOpacity>
-            </MotiView>
-          </Animated.View>
-        )}
-
-        {quizAnswered && !startVisible && (
-          <MotiView
-            from={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ type: 'timing', duration: 300 }}
-            style={styles.tryAgainRow}
-          >
-            <Text style={[styles.tryAgainLabel, { color: 'rgba(255,255,255,0.6)', fontFamily: 'Poppins_600SemiBold' }]}>
-              NOT QUITE — TRY AGAIN
-            </Text>
-            <TouchableOpacity onPress={() => {
-              setSelectedOption(null);
-              setQuizAnswered(false);
-              setStartVisible(false);
-              startOpacity.setValue(0);
-              shakeX.value = 0;
-            }} style={styles.retryBtn}>
-              <Ionicons name="refresh" size={18} color={colors.accent} />
-              <Text style={[styles.retryBtnText, { color: colors.accent, fontFamily: 'Poppins_800ExtraBold' }]}>
-                RETRY
-              </Text>
-            </TouchableOpacity>
-          </MotiView>
-        )}
-      </ScrollView>
-    );
-  };
-
-  const renderCard = () => {
-    switch (cardIndex) {
-      case 0: return renderIntro();
-      case 1: return renderRule();
-      case 2: return renderExamples();
-      case 3: return renderTip();
-      case 4: return renderMiniQuiz();
-      default: return null;
-    }
-  };
-
-  const cardGradients = [
-    [colors.surfaceAlt, colors.background],
-    [colors.surfaceAlt, colors.background],
-    [colors.surfaceAlt, colors.background],
-    [colors.surfaceAlt, colors.background],
-    [colors.surfaceAlt, colors.background],
-  ];
+// ─── Single Chalkboard Example ────────────────────────────────────────────────
+function ChalkExample({ sentence, parts, delay = 0, active = true }) {
+  const { text, done, cursor } = useTypewriter(sentence, { delay, speed: 42, active });
+  const boardW = SCREEN_W - 80;
 
   return (
-    <View style={[styles.screen, { backgroundColor: isDark ? '#0a0a0f' : colors.background }]}>
-      <LinearGradient
-        colors={isDark ? ['#1a1a2e', '#0a0a0f'] : ['#4338ca', '#4f46e5']}
-        style={StyleSheet.absoluteFill}
-      />
-
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <TouchableOpacity
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            router.back();
-          }}
-          style={styles.closeBtn}
-        >
-          <Ionicons name="close" size={24} color="#ffffff" />
-        </TouchableOpacity>
-
-        {renderDots()}
-
-        <View style={[styles.closeBtn, { opacity: 0 }]} />
-      </View>
-
-      {/* Story progress bar */}
-      <View style={styles.storyBar}>
-        {Array.from({ length: TOTAL_CARDS }).map((_, i) => (
-          <View key={i} style={[styles.storySegment, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
-            {i < cardIndex && (
-              <View style={[styles.storyFill, { backgroundColor: '#ffffff' }]} />
-            )}
-            {i === cardIndex && (
-              <MotiView
-                from={{ width: '0%' }}
-                animate={{ width: '100%' }}
-                transition={{ type: 'timing', duration: 8000 }}
-                style={[styles.storyFill, { backgroundColor: '#ffffff' }]}
-              />
-            )}
-          </View>
-        ))}
-      </View>
-
-      {/* Card content with tap zones */}
-      <TouchableOpacity
-        activeOpacity={1}
-        onPress={(e) => {
-          if (cardIndex === 3) return;
-          handleTap(e.nativeEvent.locationX);
-        }}
-        style={styles.tapZone}
-      >
-        <MotiView
-          key={animKey}
-          from={{ opacity: 0, translateX: direction * 60 }}
-          animate={{ opacity: 1, translateX: 0 }}
-          transition={{ type: 'timing', duration: 250 }}
-          style={styles.cardWrap}
-        >
-          {renderCard()}
-        </MotiView>
-      </TouchableOpacity>
-
-      {/* Bottom nav */}
-      <View style={[styles.bottomNav, { paddingBottom: Math.max(insets.bottom, 20) }]}>
-        <TouchableOpacity
-          onPress={() => goTo(cardIndex - 1, -1)}
-          disabled={cardIndex === 0}
-          style={[styles.navBtn, { opacity: cardIndex === 0 ? 0 : 1 }]}
-        >
-          <Ionicons name="chevron-back" size={20} color="#ffffff" />
-          <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
-            BACK
-          </Text>
-        </TouchableOpacity>
-
-        <View style={styles.navCenter}>
-          <Text style={[styles.navCardNum, { color: 'rgba(255,255,255,0.6)', fontFamily: 'Poppins_800ExtraBold' }]}>
-            {cardIndex + 1} / {TOTAL_CARDS}
-          </Text>
+    <View style={chalk.wrap}>
+      <ChalkboardFrame width={boardW} height={110} />
+      <View style={[chalk.inner, { width: boardW, height: 110 }]}>
+        {/* Pen icon + label */}
+        <View style={chalk.topRow}>
+          <WritingIcon color="rgba(255,255,255,0.55)" size={14} />
+          <Text style={chalk.exampleLabel}>Example</Text>
         </View>
 
-        {cardIndex < TOTAL_CARDS - 1 ? (
-          <TouchableOpacity
-            onPress={() => goTo(cardIndex + 1, 1)}
-            style={styles.navBtn}
+        {/* Typewriter sentence */}
+        <Text style={chalk.sentence}>
+          {text}
+          {cursor ? <Text style={chalk.cursor}>|</Text> : null}
+        </Text>
+
+        {/* Color-coded word chips — shown after writing done */}
+        {done && parts && (
+          <MotiView
+            from={{ opacity: 0, translateY: 4 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: 'timing', duration: 320 }}
+            style={chalk.chipsRow}
           >
-            <Text style={[styles.navBtnText, { color: '#ffffff', fontFamily: 'Poppins_700Bold' }]}>
-              NEXT
-            </Text>
-            <Ionicons name="chevron-forward" size={20} color="#ffffff" />
-          </TouchableOpacity>
-        ) : (
-          <View style={[styles.navBtn, { opacity: 0 }]} />
+            {parts.map((p, i) => (
+              <View
+                key={i}
+                style={[chalk.chip, { backgroundColor: (ROLE_COLORS[p.role] || ROLE_COLORS.default) + '30',
+                  borderColor: ROLE_COLORS[p.role] || ROLE_COLORS.default }]}
+              >
+                <Text style={[chalk.chipWord, { color: ROLE_COLORS[p.role] || ROLE_COLORS.default }]}>
+                  {p.word}
+                </Text>
+                <Text style={chalk.chipRole}>{p.role}</Text>
+              </View>
+            ))}
+          </MotiView>
         )}
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+// ─── Formula Part Chip ────────────────────────────────────────────────────────
+function FormulaPart({ part, colors }) {
+  if (part.role === 'connector') {
+    return <Text style={[formula.plus, { color: colors.textSecondary }]}>{part.text}</Text>;
+  }
+  const roleColor = ROLE_COLORS[part.role] || ROLE_COLORS.default;
+  return (
+    <View style={[formula.part, { borderColor: roleColor, backgroundColor: roleColor + '30' }]}>
+      <View style={[formula.roleTag, { backgroundColor: roleColor }]}>
+        <Text style={formula.roleTagText}>{part.role.toUpperCase()}</Text>
+      </View>
+      <Text style={[formula.partText, { color: roleColor }]}>{part.text}</Text>
+      {part.note && (
+        <Text style={[formula.partNote, { color: roleColor }]}>{part.note}</Text>
+      )}
+    </View>
+  );
+}
+
+// ─── Main Screen ──────────────────────────────────────────────────────────────
+export default function GrammarLessonScreen() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { colors, isDark } = useTheme();
+  const { type, form } = useLocalSearchParams();
+
+  const content = getLessonContent(type);
+  const CARDS = ['overview', 'formula', 'examples', 'tips'];
+  const [cardIndex, setCardIndex] = useState(0);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+
+  const goTo = (next) => {
+    const dir = next > cardIndex ? 1 : -1;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Animated.sequence([
+      Animated.timing(slideAnim, { toValue: -dir * 18, duration: 120, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 160, useNativeDriver: true }),
+    ]).start();
+    setCardIndex(next);
+  };
+
+  const markDone = useCallback(async () => {
+    try {
+      const raw = await AsyncStorage.getItem(COMPLETION_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+      if (!list.includes(type)) {
+        await AsyncStorage.setItem(COMPLETION_KEY, JSON.stringify([...list, type]));
+      }
+    } catch {}
+    router.back();
+  }, [type]);
+
+  const cardLabel = ['Overview', 'Formula', 'Examples', 'Tips & Mistakes'];
+
+  return (
+    <View style={[styles.root, { backgroundColor: colors.background }]}>
+
+      {/* ── Header ── */}
+      <LinearGradient
+        colors={isDark ? ['#1a0840', '#2e1065', '#1e1b4b'] : ['#4338ca', '#5b21b6', '#7c3aed']}
+        start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+        style={[styles.header, { paddingTop: insets.top + 14 }]}
+      >
+        <View style={styles.headerBlob1} />
+        <View style={styles.headerBlob2} />
+
+        <View style={styles.headerRow}>
+          <TouchableOpacity
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.back(); }}
+            style={styles.backBtn}
+          >
+            <Ionicons name="arrow-back" size={20} color="#fff" />
+          </TouchableOpacity>
+
+          <View style={styles.headerCenter}>
+            <Text style={styles.headerEyebrow}>GRAMMAR GUIDE</Text>
+            <Text style={styles.headerTitle} numberOfLines={1}>{type}</Text>
+          </View>
+
+          <View style={[styles.headerIcon, { backgroundColor: 'rgba(255,255,255,0.18)' }]}>
+            <Ionicons name={content.icon || 'book'} size={20} color="#fff" />
+          </View>
+        </View>
+
+        {/* Step indicator */}
+        <View style={styles.stepsRow}>
+          {CARDS.map((_, i) => (
+            <TouchableOpacity key={i} onPress={() => goTo(i)} style={styles.stepTouch}>
+              <View style={[
+                styles.stepDot,
+                i === cardIndex && styles.stepDotActive,
+                i < cardIndex && styles.stepDotDone,
+              ]} />
+            </TouchableOpacity>
+          ))}
+          <Text style={styles.stepLabel}>{cardLabel[cardIndex]}</Text>
+        </View>
+      </LinearGradient>
+
+      {/* ── Card Content ── */}
+      <Animated.View style={[styles.cardArea, { transform: [{ translateX: slideAnim }] }]}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 120 }]}
+        >
+
+          {/* ══ CARD 0: Overview ══ */}
+          {cardIndex === 0 && (
+            <MotiView from={{ opacity: 0, translateY: 10 }} animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 300 }}>
+
+              {/* Hook banner */}
+              <View style={[styles.hookCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <View style={[styles.hookAccent, { backgroundColor: colors.accent }]} />
+                <View style={styles.hookBody}>
+                  <Text style={[styles.hookLabel, { color: colors.accent }]}>WHAT IS IT?</Text>
+                  <Text style={[styles.hookText, { color: colors.text }]}>{content.hook}</Text>
+                </View>
+                <Text style={styles.hookEmoji}>💡</Text>
+              </View>
+
+              {/* When to use */}
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>When do we use it?</Text>
+              {[
+                'To describe habits and routines',
+                'To state facts and general truths',
+                'For scheduled / timetabled events',
+              ].map((item, i) => (
+                <MotiView key={i}
+                  from={{ opacity: 0, translateX: -12 }} animate={{ opacity: 1, translateX: 0 }}
+                  transition={{ type: 'timing', duration: 260, delay: 80 * i }}
+                >
+                  <View style={[styles.usageRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                    <View style={[styles.usageDot, { backgroundColor: colors.accent }]} />
+                    <Text style={[styles.usageText, { color: colors.text }]}>{item}</Text>
+                  </View>
+                </MotiView>
+              ))}
+
+              {/* Signal words */}
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Signal words</Text>
+              <View style={styles.signalRow}>
+                {['always', 'usually', 'often', 'sometimes', 'never', 'every day', 'on Mondays'].map((w) => (
+                  <View key={w} style={[styles.signalChip, { backgroundColor: colors.accentSoft, borderColor: colors.accent }]}>
+                    <Text style={[styles.signalText, { color: colors.accent }]}>{w}</Text>
+                  </View>
+                ))}
+              </View>
+            </MotiView>
+          )}
+
+          {/* ══ CARD 1: Formula ══ */}
+          {cardIndex === 1 && (
+            <MotiView from={{ opacity: 0, translateY: 10 }} animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 300 }}>
+
+              {/* Label */}
+              <View style={styles.formulaLabelRow}>
+                <View style={[styles.formulaLabelBadge, { backgroundColor: colors.accentSoft }]}>
+                  <Ionicons name="git-merge-outline" size={14} color={colors.accent} />
+                  <Text style={[styles.formulaLabelText, { color: colors.accent }]}>
+                    {content.ruleFormula?.label?.toUpperCase() || 'STRUCTURE'}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Formula parts card */}
+              <View style={[styles.formulaCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                {/* Subtle tinted top strip */}
+                <View style={[styles.formulaCardStrip, { backgroundColor: colors.accent + '18' }]} />
+                <View style={styles.formulaPartsRow}>
+                  {content.ruleFormula?.parts?.map((part, i) => (
+                    <FormulaPart key={i} part={part} colors={colors} />
+                  ))}
+                </View>
+              </View>
+
+              {/* Color guide */}
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Color Guide</Text>
+              <View style={styles.legendGrid}>
+                {Object.entries(ROLE_COLORS).filter(([k]) => k !== 'default').map(([role, color]) => (
+                  <View key={role} style={[styles.legendItem, { backgroundColor: color + '28', borderColor: color + 'aa' }]}>
+                    <View style={[styles.legendDot, { backgroundColor: color }]} />
+                    <Text style={[styles.legendLabel, { color }]}>{role}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Negative form note */}
+              <View style={[styles.noteCard, { backgroundColor: colors.errorSoft, borderColor: colors.error }]}>
+                <Ionicons name="information-circle" size={18} color={colors.error} />
+                <Text style={[styles.noteText, { color: colors.text }]}>
+                  <Text style={{ fontFamily: 'Poppins_700Bold' }}>Negative: </Text>
+                  Subject + <Text style={{ color: colors.error, fontFamily: 'Poppins_700Bold' }}>do not / does not</Text> + verb (base)
+                </Text>
+              </View>
+            </MotiView>
+          )}
+
+          {/* ══ CARD 2: Examples ══ */}
+          {cardIndex === 2 && (
+            <MotiView from={{ opacity: 0, translateY: 10 }} animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 300 }}>
+
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Live examples</Text>
+              <Text style={[styles.sectionSub, { color: colors.textSecondary }]}>
+                Watch each sentence being written — then see how it breaks down.
+              </Text>
+
+              {/* Chalkboard examples */}
+              {content.examples?.slice(0, 2).map((ex, i) => (
+                <ChalkExample
+                  key={i}
+                  sentence={ex.sentence}
+                  parts={ex.parts}
+                  delay={i === 0 ? 300 : 0}
+                  active={i === 0}
+                />
+              ))}
+
+              {/* Extra named examples */}
+              <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 20 }]}>More examples</Text>
+              {[
+                { s: 'Ali reads his story every night.', role: 'Ali = subject, reads = verb (+s for he)' },
+                { s: 'Sara does not like cold weather.', role: 'does not = negative auxiliary' },
+                { s: 'The sun rises in the east.', role: 'A general truth — always true' },
+                { s: 'Do they play football on Fridays?', role: 'Question form with "Do"' },
+              ].map((ex, i) => (
+                <MotiView key={i}
+                  from={{ opacity: 0, translateX: -10 }} animate={{ opacity: 1, translateX: 0 }}
+                  transition={{ type: 'timing', duration: 250, delay: 60 * i }}
+                >
+                  <View style={[styles.namedExample, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                    <View style={[styles.namedBullet, { backgroundColor: colors.accent }]}>
+                      <WritingIcon color="#fff" size={12} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={[styles.namedSentence, { color: colors.text }]}>{ex.s}</Text>
+                      <Text style={[styles.namedNote, { color: colors.textSecondary }]}>{ex.role}</Text>
+                    </View>
+                  </View>
+                </MotiView>
+              ))}
+            </MotiView>
+          )}
+
+          {/* ══ CARD 3: Tips ══ */}
+          {cardIndex === 3 && (
+            <MotiView from={{ opacity: 0, translateY: 10 }} animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 300 }}>
+
+              {/* Pro tip */}
+              <View style={[styles.tipCard, { backgroundColor: colors.successSoft, borderColor: colors.success }]}>
+                <View style={styles.tipHeader}>
+                  <Ionicons name="bulb" size={20} color={colors.success} />
+                  <Text style={[styles.tipTitle, { color: colors.success }]}>Pro Tip</Text>
+                </View>
+                <Text style={[styles.tipBody, { color: colors.text }]}>{content.tip}</Text>
+              </View>
+
+              {/* Common mistake */}
+              <View style={[styles.tipCard, { backgroundColor: colors.errorSoft, borderColor: colors.error, marginTop: 16 }]}>
+                <View style={styles.tipHeader}>
+                  <Ionicons name="warning" size={20} color={colors.error} />
+                  <Text style={[styles.tipTitle, { color: colors.error }]}>Common Mistake</Text>
+                </View>
+                <Text style={[styles.tipBody, { color: colors.text }]}>{content.commonMistake}</Text>
+              </View>
+
+              {/* Quick summary */}
+              <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>Quick Summary</Text>
+              {[
+                { icon: 'checkmark-circle', color: colors.success, text: 'Use base verb for I / You / We / They' },
+                { icon: 'checkmark-circle', color: colors.success, text: 'Add -s or -es for He / She / It' },
+                { icon: 'close-circle', color: colors.error, text: 'Never add -s after "do not / does not"' },
+              ].map((item, i) => (
+                <View key={i} style={[styles.summaryRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                  <Ionicons name={item.icon} size={18} color={item.color} />
+                  <Text style={[styles.summaryText, { color: colors.text }]}>{item.text}</Text>
+                </View>
+              ))}
+
+              {/* Mark complete */}
+              <TouchableOpacity
+                onPress={markDone}
+                activeOpacity={0.85}
+                style={styles.doneBtn}
+              >
+                <LinearGradient
+                  colors={isDark ? ['#1a0840', '#2e1065', '#1e1b4b'] : ['#4338ca', '#5b21b6', '#7c3aed']}
+                  start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                  style={styles.doneBtnGrad}
+                >
+                  <Ionicons name="checkmark-done" size={20} color="#fff" />
+                  <Text style={styles.doneBtnText}>Mark as Complete</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </MotiView>
+          )}
+
+        </ScrollView>
+      </Animated.View>
+
+      {/* ── Bottom Navigation ── */}
+      <View style={[styles.navBar, { backgroundColor: colors.surface, borderTopColor: colors.border, paddingBottom: insets.bottom + 12 }]}>
+        <TouchableOpacity
+          onPress={() => cardIndex > 0 && goTo(cardIndex - 1)}
+          style={[styles.navBtn, { borderColor: colors.border, opacity: cardIndex === 0 ? 0.3 : 1 }]}
+          disabled={cardIndex === 0}
+        >
+          <Ionicons name="arrow-back" size={18} color={colors.text} />
+          <Text style={[styles.navBtnText, { color: colors.text }]}>Back</Text>
+        </TouchableOpacity>
+
+        <Text style={[styles.navCount, { color: colors.textSecondary }]}>
+          {cardIndex + 1} / {CARDS.length}
+        </Text>
+
+        <TouchableOpacity
+          onPress={() => cardIndex < CARDS.length - 1 ? goTo(cardIndex + 1) : markDone()}
+          style={[styles.navBtnPrimary, { backgroundColor: colors.accent }]}
+        >
+          <Text style={styles.navBtnPrimaryText}>
+            {cardIndex === CARDS.length - 1 ? 'Finish' : 'Next'}
+          </Text>
+          <Ionicons name="arrow-forward" size={18} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
+    </View>
+  );
+}
+
+// ─── Chalk Styles ─────────────────────────────────────────────────────────────
+const chalk = StyleSheet.create({
+  wrap: {
+    marginBottom: 20,
+    alignSelf: 'center',
+    width: SCREEN_W - 80,
+    height: 110,
+  },
+  inner: {
+    position: 'absolute', top: 0, left: 0,
+    padding: 14,
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingBottom: 16,
   },
-  closeBtn: {
-    width: 44, height: 44, borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    justifyContent: 'center', alignItems: 'center',
+  topRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  exampleLabel: {
+    fontSize: 10, color: 'rgba(255,255,255,0.5)',
+    fontFamily: 'Poppins_600SemiBold', letterSpacing: 1.2,
   },
-  dotsRow: {
-    flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
+  sentence: {
+    fontSize: 15, color: '#e8f5e9',
+    fontFamily: 'Poppins_600SemiBold',
+    lineHeight: 22,
   },
-  dot: {
-    width: 8, height: 8, borderRadius: 4,
-  },
-  storyBar: {
-    flexDirection: 'row',
-    paddingHorizontal: 24,
-    gap: 6,
-    marginBottom: 12,
-  },
-  storySegment: {
-    flex: 1, height: 4, borderRadius: 2,
-    overflow: 'hidden',
-  },
-  storyFill: {
-    height: '100%', borderRadius: 2,
-  },
-  tapZone: {
-    flex: 1,
-    paddingHorizontal: 24,
-  },
-  cardWrap: { flex: 1 },
-  cardContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 32,
-  },
-  cardEyebrow: {
-    fontSize: 12,
-    letterSpacing: 2,
-    marginBottom: 8,
-  },
-  cardTitle: {
-    fontSize: 32,
-    marginBottom: 28,
-  },
-  introIconWrap: {
-    marginBottom: 32,
-  },
-  introIconGrad: {
-    width: 120, height: 120, borderRadius: 36,
-    justifyContent: 'center', alignItems: 'center',
-    elevation: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 10 },
-  },
-  introEyebrow: {
-    fontSize: 14,
-    letterSpacing: 2,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  introTitle: {
-    fontSize: 42,
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  introHook: {
-    fontSize: 18,
-    lineHeight: 28,
-    textAlign: 'center',
-    paddingHorizontal: 20,
-  },
-  introFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 48,
-  },
-  introFooterText: { fontSize: 14, letterSpacing: 0.5 },
-  ruleScroll: {
-    paddingTop: 24,
-    paddingBottom: 48,
-  },
-  chipsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    justifyContent: 'center',
-    marginBottom: 24,
-  },
+  cursor: { color: 'rgba(232,245,233,0.9)' },
+  chipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginTop: 4 },
   chip: {
-    borderRadius: 16,
-    borderWidth: 2,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    alignItems: 'center',
-    minWidth: 90,
-  },
-  chipLabel: { fontSize: 16 },
-  chipRole: { fontSize: 10, letterSpacing: 1, marginTop: 4 },
-  connectorText: {
-    fontSize: 28,
-    lineHeight: 56,
-    paddingHorizontal: 6,
-  },
-  noteCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    padding: 18,
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  noteText: { fontSize: 15, lineHeight: 24, flex: 1 },
-  tapHint: { fontSize: 12, textAlign: 'center', marginTop: 12, letterSpacing: 1 },
-  examplesScroll: {
-    paddingTop: 24,
-    paddingBottom: 48,
-  },
-  exampleBlock: {
-    marginBottom: 32,
-  },
-  exampleWordsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 16,
-  },
-  wordChip: {
-    borderRadius: 12,
-    borderWidth: 1.5,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 7, paddingVertical: 2,
+    borderRadius: 5, borderWidth: 1,
     alignItems: 'center',
   },
-  wordChipText: { fontSize: 15 },
-  wordChipRole: { fontSize: 9, letterSpacing: 1, marginTop: 4 },
-  sentenceRow: {
-    gap: 8,
+  chipWord: { fontSize: 10, fontFamily: 'Poppins_700Bold' },
+  chipRole: { fontSize: 8, color: 'rgba(255,255,255,0.45)', fontFamily: 'Poppins_400Regular' },
+});
+
+// ─── Formula Styles ───────────────────────────────────────────────────────────
+const formula = StyleSheet.create({
+  plus: {
+    fontSize: 22, fontFamily: 'Poppins_700Bold',
+    paddingHorizontal: 4, alignSelf: 'center',
   },
-  sentenceText: {
-    fontSize: 20,
-    lineHeight: 30,
+  part: {
+    borderWidth: 2, borderRadius: 14,
+    paddingHorizontal: 12, paddingVertical: 10,
+    alignItems: 'center', minWidth: 80,
+    gap: 4,
   },
-  underlineTrack: {
-    height: 4,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 2,
-    marginTop: 4,
+  roleTag: {
+    paddingHorizontal: 6, paddingVertical: 2,
+    borderRadius: 4, alignSelf: 'center',
   },
-  underlineFill: {
-    height: 4,
-    borderRadius: 2,
+  roleTagText: {
+    fontSize: 8, color: '#fff',
+    fontFamily: 'Poppins_700Bold', letterSpacing: 0.8,
   },
-  flipOuter: {
-    width: '100%',
-    height: 280,
-    marginTop: 12,
+  partText: { fontSize: 14, fontFamily: 'Poppins_800ExtraBold', textAlign: 'center' },
+  partNote: { fontSize: 10, fontFamily: 'Poppins_400Regular', textAlign: 'center', opacity: 0.85, lineHeight: 14 },
+});
+
+// ─── Main Styles ──────────────────────────────────────────────────────────────
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+
+  // Header
+  header: { paddingHorizontal: 24, paddingBottom: 20, position: 'relative' },
+  headerBlob1: {
+    position: 'absolute', width: 160, height: 160, borderRadius: 80,
+    backgroundColor: 'rgba(255,255,255,0.06)', top: -50, right: -30,
   },
-  flipFace: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 32,
-    borderWidth: 2,
-    padding: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backfaceVisibility: 'hidden',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 15,
+  headerBlob2: {
+    position: 'absolute', width: 80, height: 80, borderRadius: 40,
+    backgroundColor: 'rgba(255,255,255,0.04)', bottom: -20, left: 30,
   },
-  flipLabel: {
-    fontSize: 14,
-    letterSpacing: 2,
-    marginBottom: 16,
-  },
-  flipBody: {
-    fontSize: 18,
-    lineHeight: 28,
-    textAlign: 'center',
-  },
-  flipHint: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 24,
-  },
-  flipHintText: { fontSize: 12, letterSpacing: 1 },
-  quizScroll: {
-    paddingTop: 24,
-    paddingBottom: 48,
-  },
-  quizQuestionCard: {
-    borderRadius: 20,
-    borderWidth: 1.5,
-    padding: 24,
-    marginBottom: 24,
-  },
-  quizQuestion: { fontSize: 18, lineHeight: 28 },
-  quizOptions: { gap: 12 },
-  quizOpt: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    borderRadius: 18,
-    borderWidth: 2,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-  },
-  quizOptNum: {
-    width: 32, height: 32, borderRadius: 10,
+  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 18 },
+  backBtn: {
+    width: 40, height: 40, borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     justifyContent: 'center', alignItems: 'center',
   },
-  quizOptNumText: { fontSize: 15 },
-  quizOptText: { fontSize: 16, flex: 1, lineHeight: 24 },
-  loadingText: { marginTop: 20, fontSize: 16, textAlign: 'center' },
-  startBtn: {
-    borderRadius: 20,
-    overflow: 'hidden',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
+  headerCenter: { flex: 1 },
+  headerEyebrow: {
+    fontSize: 10, color: 'rgba(255,255,255,0.6)',
+    fontFamily: 'Poppins_700Bold', letterSpacing: 1.5,
   },
-  startGrad: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-    paddingVertical: 20,
+  headerTitle: { fontSize: 18, color: '#fff', fontFamily: 'Poppins_800ExtraBold' },
+  headerIcon: {
+    width: 40, height: 40, borderRadius: 12,
+    justifyContent: 'center', alignItems: 'center',
   },
-  startText: { color: '#ffffff', fontSize: 18, letterSpacing: 1 },
-  tryAgainRow: {
-    alignItems: 'center',
-    gap: 12,
-    marginTop: 24,
+  stepsRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  stepTouch: { padding: 4 },
+  stepDot: {
+    width: 8, height: 8, borderRadius: 4,
+    backgroundColor: 'rgba(255,255,255,0.25)',
   },
-  tryAgainLabel: { fontSize: 12, letterSpacing: 1 },
-  retryBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 12
+  stepDotActive: { backgroundColor: '#fff', width: 22, borderRadius: 4 },
+  stepDotDone: { backgroundColor: 'rgba(255,255,255,0.6)' },
+  stepLabel: {
+    marginLeft: 8, fontSize: 11, color: 'rgba(255,255,255,0.7)',
+    fontFamily: 'Poppins_600SemiBold',
   },
-  retryBtnText: { fontSize: 14, letterSpacing: 1 },
-  bottomNav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 16,
+
+  // Content
+  cardArea: { flex: 1 },
+  scroll: { paddingHorizontal: 20, paddingTop: 20 },
+  sectionTitle: { fontSize: 14, fontFamily: 'Poppins_800ExtraBold', marginBottom: 12, marginTop: 4 },
+  sectionSub: { fontSize: 12, fontFamily: 'Poppins_400Regular', marginBottom: 16, marginTop: -8, lineHeight: 18 },
+
+  // Overview card
+  hookCard: {
+    flexDirection: 'row', alignItems: 'center',
+    borderRadius: 16, borderWidth: 1.5,
+    marginBottom: 20, overflow: 'hidden',
+  },
+  hookAccent: { width: 5, alignSelf: 'stretch' },
+  hookBody: { flex: 1, padding: 14, gap: 4 },
+  hookLabel: { fontSize: 10, fontFamily: 'Poppins_700Bold', letterSpacing: 1 },
+  hookText: { fontSize: 14, fontFamily: 'Poppins_600SemiBold', lineHeight: 22 },
+  hookEmoji: { fontSize: 28, paddingRight: 14 },
+
+  usageRow: {
+    flexDirection: 'row', alignItems: 'center',
+    borderRadius: 12, borderWidth: 1,
+    padding: 12, gap: 12, marginBottom: 8,
+  },
+  usageDot: { width: 8, height: 8, borderRadius: 4 },
+  usageText: { flex: 1, fontSize: 13, fontFamily: 'Poppins_600SemiBold' },
+
+  signalRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  signalChip: {
+    paddingHorizontal: 10, paddingVertical: 5,
+    borderRadius: 20, borderWidth: 1.5,
+  },
+  signalText: { fontSize: 12, fontFamily: 'Poppins_600SemiBold' },
+
+  // Formula label
+  formulaLabelRow: { marginBottom: 14 },
+  formulaLabelBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12, paddingVertical: 6,
+    borderRadius: 10,
+  },
+  formulaLabelText: { fontSize: 11, fontFamily: 'Poppins_800ExtraBold', letterSpacing: 1 },
+
+  // Formula card
+  formulaCard: {
+    borderRadius: 18, borderWidth: 2,
+    marginBottom: 20, overflow: 'hidden',
+  },
+  formulaCardStrip: { height: 6, width: '100%' },
+  formulaPartsRow: {
+    flexDirection: 'row', flexWrap: 'wrap',
+    gap: 10, alignItems: 'flex-start',
+    padding: 16,
+  },
+
+  legendGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
+  legendItem: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: 12, paddingVertical: 6,
+    borderRadius: 10, borderWidth: 1.5,
+  },
+  legendDot: { width: 8, height: 8, borderRadius: 4 },
+  legendLabel: { fontSize: 12, fontFamily: 'Poppins_700Bold', textTransform: 'capitalize' },
+
+  noteCard: {
+    flexDirection: 'row', alignItems: 'flex-start',
+    gap: 10, padding: 14,
+    borderRadius: 12, borderWidth: 1.5,
+  },
+  noteText: { flex: 1, fontSize: 13, fontFamily: 'Poppins_400Regular', lineHeight: 20 },
+
+  // Named examples
+  namedExample: {
+    flexDirection: 'row', alignItems: 'flex-start',
+    gap: 12, padding: 12,
+    borderRadius: 12, borderWidth: 1, marginBottom: 10,
+  },
+  namedBullet: {
+    width: 28, height: 28, borderRadius: 8,
+    justifyContent: 'center', alignItems: 'center', flexShrink: 0,
+  },
+  namedSentence: { fontSize: 13, fontFamily: 'Poppins_600SemiBold', lineHeight: 20 },
+  namedNote: { fontSize: 11, fontFamily: 'Poppins_400Regular', marginTop: 3, lineHeight: 16 },
+
+  // Tips
+  tipCard: { borderRadius: 14, borderWidth: 1.5, padding: 16 },
+  tipHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  tipTitle: { fontSize: 13, fontFamily: 'Poppins_800ExtraBold' },
+  tipBody: { fontSize: 13, fontFamily: 'Poppins_400Regular', lineHeight: 20 },
+
+  summaryRow: {
+    flexDirection: 'row', alignItems: 'center',
+    gap: 10, padding: 12,
+    borderRadius: 10, borderWidth: 1, marginBottom: 8,
+  },
+  summaryText: { flex: 1, fontSize: 13, fontFamily: 'Poppins_600SemiBold' },
+
+  doneBtn: { marginTop: 24, borderRadius: 16, overflow: 'hidden' },
+  doneBtnGrad: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 10, paddingVertical: 16,
+  },
+  doneBtnText: { fontSize: 15, color: '#fff', fontFamily: 'Poppins_800ExtraBold' },
+
+  // Bottom nav
+  navBar: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 20, paddingTop: 14,
+    borderTopWidth: 1,
   },
   navBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingVertical: 10,
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingVertical: 10, paddingHorizontal: 16,
+    borderRadius: 12, borderWidth: 1.5, minWidth: 90,
   },
-  navBtnText: { fontSize: 14, letterSpacing: 1 },
-  navCenter: { flex: 1, alignItems: 'center' },
-  navCardNum: { fontSize: 14, letterSpacing: 1 },
+  navBtnText: { fontSize: 13, fontFamily: 'Poppins_700Bold' },
+  navCount: { fontSize: 12, fontFamily: 'Poppins_600SemiBold' },
+  navBtnPrimary: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingVertical: 10, paddingHorizontal: 16,
+    borderRadius: 12, minWidth: 90, justifyContent: 'center',
+  },
+  navBtnPrimaryText: { fontSize: 13, color: '#fff', fontFamily: 'Poppins_700Bold' },
 });
