@@ -44,6 +44,8 @@ const SECTIONS = [
       'Past Simple',
       'Past Continuous',
       'Past Perfect',
+      'Past Perfect Continuous',
+      'Future in the Past',
     ],
   },
   {
@@ -53,7 +55,10 @@ const SECTIONS = [
     icon: 'rocket',
     topics: [
       'Future Simple',
+      'Future (Going To)',
       'Future Continuous',
+      'Future Perfect',
+      'Future Perfect Continuous',
     ],
   },
   {
@@ -104,25 +109,59 @@ export default function GrammarLearnScreen() {
 
   const handleTopicPress = (form) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (form.isStatic) {
+      router.push({
+        pathname: '/learn/grammar-lesson',
+        params: { type: form.title, form: -1 },
+      });
+      return;
+    }
     router.push({
       pathname: '/learn/grammar-lesson',
       params: { type: form.title, form: form.formNumber },
     });
   };
 
+  const toggleCompleted = useCallback(async (title) => {
+    try {
+      const raw = await AsyncStorage.getItem(COMPLETION_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+      const nextList = list.includes(title)
+        ? list.filter((item) => item !== title)
+        : [...list, title];
+      await AsyncStorage.setItem(COMPLETION_KEY, JSON.stringify(nextList));
+      setCompleted(nextList);
+    } catch {}
+  }, []);
+
   // Build a lookup: title -> form object
   const formsByTitle = {};
   forms.forEach((f) => { formsByTitle[f.title] = f; });
+
+  const allTopicTitles = SECTIONS.flatMap((section) => section.topics);
+  const topicForms = allTopicTitles.map((title, index) => {
+    const existing = formsByTitle[title];
+    if (existing) return { ...existing, isStatic: false };
+    return {
+      title,
+      formNumber: -(index + 1),
+      questions: [],
+      isStatic: true,
+    };
+  });
+
+  const topicFormsByTitle = {};
+  topicForms.forEach((f) => { topicFormsByTitle[f.title] = f; });
 
   const query = search.trim().toLowerCase();
 
   // In search mode: flat filtered list across all topics
   const searchResults = query
-    ? forms.filter((f) => f.title.toLowerCase().includes(query))
+    ? topicForms.filter((f) => f.title.toLowerCase().includes(query))
     : null;
 
-  const completedCount = completed.length;
-  const totalCount = forms.length;
+  const completedCount = completed.filter((t) => allTopicTitles.includes(t)).length;
+  const totalCount = topicForms.length;
 
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
@@ -245,6 +284,7 @@ export default function GrammarLearnScreen() {
                     idx={idx}
                     isDone={completed.includes(form.title)}
                     colors={colors}
+                    onToggleDone={toggleCompleted}
                     onPress={() => handleTopicPress(form)}
                   />
                 ))}
@@ -254,7 +294,7 @@ export default function GrammarLearnScreen() {
             /* ── Sectioned list ── */
             SECTIONS.map((section) => {
               const sectionForms = section.topics
-                .map((t) => formsByTitle[t])
+                .map((t) => topicFormsByTitle[t])
                 .filter(Boolean);
 
               if (sectionForms.length === 0) return null;
@@ -294,6 +334,7 @@ export default function GrammarLearnScreen() {
                       idx={idx}
                       isDone={completed.includes(form.title)}
                       colors={colors}
+                      onToggleDone={toggleCompleted}
                       onPress={() => handleTopicPress(form)}
                     />
                   ))}
@@ -307,7 +348,7 @@ export default function GrammarLearnScreen() {
   );
 }
 
-function TopicCard({ form, idx, isDone, colors, onPress }) {
+function TopicCard({ form, idx, isDone, colors, onPress, onToggleDone }) {
   const lessonContent = getLessonContent(form.title);
 
   return (
@@ -339,12 +380,12 @@ function TopicCard({ form, idx, isDone, colors, onPress }) {
           <Text style={[styles.topicTitle, { color: colors.text, fontFamily: 'Poppins_800ExtraBold' }]}>
             {form.title}
           </Text>
-          <View style={styles.metaRow}>
-            <View style={[styles.metaPill, { backgroundColor: colors.accentSoft }]}>
-              <Text style={[styles.metaText, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
-                {form.questions.length} QUESTIONS
-              </Text>
-            </View>
+              <View style={styles.metaRow}>
+                <View style={[styles.metaPill, { backgroundColor: colors.accentSoft }]}>
+                  <Text style={[styles.metaText, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
+                    {form.isStatic ? 'GUIDE' : `${form.questions.length} QUESTIONS`}
+                  </Text>
+                </View>
             {isDone && (
               <View style={[styles.metaPill, { backgroundColor: colors.success + '22' }]}>
                 <Text style={[styles.metaText, { color: colors.success, fontFamily: 'Poppins_700Bold' }]}>
@@ -356,15 +397,36 @@ function TopicCard({ form, idx, isDone, colors, onPress }) {
         </View>
 
         <View style={styles.topicRight}>
-          {isDone ? (
-            <View style={[styles.actionCircle, { backgroundColor: colors.success }]}>
-              <Ionicons name="checkmark" size={18} color="#ffffff" />
+          <TouchableOpacity
+            onPress={(event) => {
+              event?.stopPropagation?.();
+              onToggleDone(form.title);
+            }}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            style={styles.toggleBtn}
+          >
+            <View style={[styles.actionCircle, { backgroundColor: isDone ? colors.success : colors.accentSoft }]}
+            >
+              <Ionicons
+                name={isDone ? 'close' : 'checkmark'}
+                size={18}
+                color={isDone ? colors.onAccent : colors.accent}
+              />
             </View>
-          ) : (
-            <View style={[styles.actionCircle, { backgroundColor: colors.accentSoft }]}>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={(event) => {
+              event?.stopPropagation?.();
+              onPress();
+            }}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            style={styles.toggleBtn}
+          >
+            <View style={[styles.actionCircle, { backgroundColor: colors.accentSoft }]}
+            >
               <Ionicons name="chevron-forward" size={20} color={colors.accent} />
             </View>
-          )}
+          </TouchableOpacity>
         </View>
       </TouchableOpacity>
     </MotiView>
@@ -457,6 +519,7 @@ const styles = StyleSheet.create({
   metaPill: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 },
   metaText: { fontSize: 10, letterSpacing: 0.5 },
   topicRight: { paddingRight: 18 },
+  toggleBtn: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   actionCircle: {
     width: 36, height: 36, borderRadius: 18,
     justifyContent: 'center', alignItems: 'center',

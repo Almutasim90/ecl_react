@@ -32,7 +32,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const { isDark, colors } = useTheme();
   const { cardMaxWidth, horizontalPadding } = useResponsive();
-  const { signIn, signInAsGuest, isLoading } = useAuth();
+  const { signIn, signInAsGuest, signInWithGoogle, signInWithApple, isLoading } = useAuth();
   const { redirect } = useLocalSearchParams();
 
   const resolveRedirect = () => {
@@ -58,6 +58,40 @@ export default function LoginScreen() {
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError(result.error || 'Login failed');
+    }
+    setLocalLoading(false);
+  };
+
+  const handleGoogleLogin = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setError('');
+    setLocalLoading(true);
+    const result = await signInWithGoogle();
+    if (result.success) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.replace(resolveRedirect());
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      if (result.error !== 'Authentication cancelled') {
+        setError('Google sign in failed. Please try again.');
+      }
+    }
+    setLocalLoading(false);
+  };
+
+  const handleAppleLogin = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setError('');
+    setLocalLoading(true);
+    const result = await signInWithApple();
+    if (result.success) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.replace(resolveRedirect());
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      if (result.error !== 'Authentication cancelled') {
+        setError('Apple sign in failed. Please try again.');
+      }
     }
     setLocalLoading(false);
   };
@@ -209,7 +243,7 @@ export default function LoginScreen() {
               <View style={[styles.line, { backgroundColor: colors.border }]} />
             </View>
 
-            <SocialAuthButtons />
+            <SocialAuthButtons onGoogle={handleGoogleLogin} onApple={handleAppleLogin} />
           </MotiView>
         </ScrollView>
       </KeyboardAvoidingView>

@@ -15,7 +15,13 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.almutasimsorganization.ecl"
+      "bundleIdentifier": "com.almutasimsorganization.ecl",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["https", "http"]
+      },
+      "entitlements": {
+        "com.apple.developer.applesignin": ["Default"]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +30,21 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.almutasimsorganization.ecl",
-      "usesCleartextTraffic": true
+      "usesCleartextTraffic": true,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "eclapp",
+              "host": "auth",
+              "pathPrefix": "/callback"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"

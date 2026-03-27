@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../context/ThemeContext';
 import { useRouter } from 'expo-router';
+import { useAuth } from '../../context/AuthContext';
+import { fetchUserProgress } from '../../lib/api';
 
 const { width } = Dimensions.get('window');
 
@@ -33,6 +35,26 @@ export default function QuestScreen() {
   const insets = useSafeAreaInsets();
   const { colors, isDark } = useTheme();
   const router = useRouter();
+  const { user } = useAuth();
+  const [attempts, setAttempts] = useState([]);
+
+  useEffect(() => {
+    if (!user) return;
+    fetchUserProgress(user.id).then(result => {
+      setAttempts(Array.isArray(result?.data) ? result.data : []);
+    });
+  }, [user]);
+
+  const totalAttempts = attempts.length;
+  // Each completed quiz = 100 XP, bonus 50 XP per 100% score
+  const xp = attempts.reduce((sum, a) => sum + 100 + (a.percentage === 100 ? 50 : 0), 0);
+  const level = totalAttempts === 0 ? 1
+    : totalAttempts < 3 ? 1
+    : totalAttempts < 6 ? 2
+    : totalAttempts < 10 ? 3
+    : totalAttempts < 15 ? 4
+    : totalAttempts < 20 ? 5
+    : 6;
 
   const renderPath = () => {
     return LEVELS.map((level, index) => {
@@ -151,12 +173,12 @@ export default function QuestScreen() {
               <View style={styles.statsRow}>
                 <View style={styles.statItem}>
                   <Ionicons name="flash" size={14} color="#fbbf24" />
-                  <Text style={[styles.statText, { fontFamily: 'Poppins_700Bold' }]}>Level 4</Text>
+                  <Text style={[styles.statText, { fontFamily: 'Poppins_700Bold' }]}>Level {level}</Text>
                 </View>
                 <View style={styles.statDivider} />
                 <View style={styles.statItem}>
                   <Ionicons name="star" size={14} color="#60a5fa" />
-                  <Text style={[styles.statText, { fontFamily: 'Poppins_700Bold' }]}>1,240 XP</Text>
+                  <Text style={[styles.statText, { fontFamily: 'Poppins_700Bold' }]}>{xp.toLocaleString()} XP</Text>
                 </View>
               </View>
             </View>

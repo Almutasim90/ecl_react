@@ -32,8 +32,8 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     if (!user) { setProgressLoading(false); return; }
-    fetchUserProgress(user.id).then(data => {
-      setAttempts(data || []);
+    fetchUserProgress(user.id).then(result => {
+      setAttempts(Array.isArray(result?.data) ? result.data : []);
       setProgressLoading(false);
     });
   }, [user]);
@@ -42,6 +42,8 @@ export default function ProfileScreen() {
   const bestListening = attempts.filter(a => a.quiz_type === 'listening')
     .reduce((best, a) => Math.max(best, a.percentage), 0);
   const bestReading = attempts.filter(a => a.quiz_type === 'reading')
+    .reduce((best, a) => Math.max(best, a.percentage), 0);
+  const bestGrammar = attempts.filter(a => a.quiz_type === 'grammar')
     .reduce((best, a) => Math.max(best, a.percentage), 0);
 
   const handleLogout = async () => {
@@ -120,6 +122,14 @@ export default function ProfileScreen() {
                 emoji="🏆"
                 color="#fbbf24"
               />
+              <StatBox
+                label="Grammar"
+                value={`${bestGrammar}%`}
+                emoji="✏️"
+                color="#059669"
+              />
+            </View>
+            <View style={[styles.statsRow, { marginTop: 10 }]}>
               <StatBox
                 label="Listening"
                 value={`${bestListening}%`}
