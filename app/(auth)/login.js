@@ -24,30 +24,46 @@ import FloatingInput from '../../components/FloatingInput';
 import SocialAuthButtons from '../../components/SocialAuthButtons';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail]             = useState('');
+  const [password, setPassword]       = useState('');
+  const [error, setError]             = useState('');
   const [localLoading, setLocalLoading] = useState(false);
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
-  const { isDark, colors } = useTheme();
-  const { cardMaxWidth, horizontalPadding } = useResponsive();
+
+  const insets                        = useSafeAreaInsets();
+  const router                        = useRouter();
+  const { isDark, colors }            = useTheme();
+  const { width, height, isTablet, cardMaxWidth, horizontalPadding } = useResponsive();
   const { signIn, signInAsGuest, signInWithGoogle, signInWithApple, isLoading } = useAuth();
-  const { redirect } = useLocalSearchParams();
+  const { redirect }                  = useLocalSearchParams();
+
+  const loading    = isLoading || localLoading;
+  const isCompact  = height < 700;
+
+  // ── Responsive sizing ─────────────────────────────────────────────────────
+  const badgeSize   = isTablet ? 82 : isCompact ? 58 : 70;
+  const badgeRadius = isTablet ? 26 : isCompact ? 18 : 22;
+  const iconSize    = isTablet ? 40 : isCompact ? 26 : 32;
+  const nameSize    = isTablet ? 30 : isCompact ? 21 : 26;
+  const taglineSize = isTablet ? 14 : isCompact ? 12 : 13;
+  const badgeGap    = isCompact ? 10 : 13;
+
+  const cardPadH    = isTablet ? 32 : isCompact ? 20 : 26;
+  const cardPadV    = isTablet ? 26 : isCompact ? 16 : 22;
+  const titleSize   = isTablet ? 24 : isCompact ? 18 : 22;
+  const titleGap    = isCompact ? 12 : 16;
+
+  const topPad      = Math.max(insets.top, 16) + (isCompact ? 6 : 12);
+  const bottomPad   = Math.max(insets.bottom, 12) + 6;
+  const logoGap     = isCompact ? 12 : 16;
+  // ─────────────────────────────────────────────────────────────────────────
 
   const resolveRedirect = () => {
-    const target = typeof redirect === 'string' ? redirect : null;
-    if (target && target.startsWith('/')) return target;
-    return '/(tabs)';
+    const t = typeof redirect === 'string' ? redirect : null;
+    return t?.startsWith('/') ? t : '/(tabs)';
   };
 
-  const loading = isLoading || localLoading;
-
   const handleLogin = async () => {
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
+    if (!email || !password) { setError('Please fill in all fields'); return; }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setError('');
     setLocalLoading(true);
@@ -72,9 +88,7 @@ export default function LoginScreen() {
       router.replace(resolveRedirect());
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      if (result.error !== 'Authentication cancelled') {
-        setError('Google sign in failed. Please try again.');
-      }
+      if (result.error !== 'Authentication cancelled') setError('Google sign in failed. Please try again.');
     }
     setLocalLoading(false);
   };
@@ -89,9 +103,7 @@ export default function LoginScreen() {
       router.replace(resolveRedirect());
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      if (result.error !== 'Authentication cancelled') {
-        setError('Apple sign in failed. Please try again.');
-      }
+      if (result.error !== 'Authentication cancelled') setError('Apple sign in failed. Please try again.');
     }
     setLocalLoading(false);
   };
@@ -107,48 +119,76 @@ export default function LoginScreen() {
       <LiquidGlassBackground />
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.keyboard}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.kav}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
       >
         <ScrollView
-          contentContainerStyle={[styles.scrollContent, { paddingHorizontal: horizontalPadding }]}
+          contentContainerStyle={[
+            styles.scroll,
+            { paddingHorizontal: horizontalPadding, paddingTop: topPad, paddingBottom: bottomPad },
+          ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Logo Section */}
+
+          {/* ── Logo ──────────────────────────────────────────────────────── */}
           <MotiView
-            from={{ opacity: 0, scale: 0.5 }}
+            from={{ opacity: 0, scale: 0.6 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: 'spring', delay: 200 }}
-            style={styles.logoContainer}
+            transition={{ type: 'spring', delay: 150 }}
+            style={[styles.logoSection, { marginBottom: logoGap }]}
           >
             <LinearGradient
               colors={colors.gradientHero}
-              style={styles.logoGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.badge, {
+                width: badgeSize, height: badgeSize, borderRadius: badgeRadius,
+                marginBottom: badgeGap,
+              }]}
             >
-              <Ionicons name="school" size={42} color="#fff" />
+              <Ionicons name="school" size={iconSize} color="#fff" />
             </LinearGradient>
-            <Text style={[styles.appName, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
+
+            <Text style={[styles.appName, {
+              fontFamily: 'Poppins_800ExtraBold',
+              fontSize: nameSize,
+              color: colors.text,
+            }]}>
               ECL QUEST
             </Text>
-            <Text style={[styles.appTagline, { color: colors.textSecondary, fontFamily: 'Poppins_400Regular' }]}>
+            <Text style={[styles.tagline, {
+              fontFamily: 'Poppins_600SemiBold',
+              fontSize: taglineSize,
+              color: colors.textSecondary,
+            }]}>
               Level up your English today
             </Text>
           </MotiView>
 
-          {/* Frosted Glass Login Card */}
+          {/* ── Card ──────────────────────────────────────────────────────── */}
           <MotiView
-            from={{ opacity: 0, translateY: 40 }}
+            from={{ opacity: 0, translateY: 30 }}
             animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: 'spring', delay: 400 }}
-            style={[styles.cardContainer, { maxWidth: cardMaxWidth }]}
+            transition={{ type: 'spring', delay: 280 }}
+            style={[styles.cardWrap, { maxWidth: cardMaxWidth }]}
           >
             <BlurView
-              intensity={isDark ? 30 : 70}
+              intensity={isDark ? 30 : 65}
               tint={isDark ? 'dark' : 'light'}
-              style={[styles.glassCard, { borderColor: colors.border }]}
+              style={[styles.card, {
+                borderColor: colors.border,
+                paddingHorizontal: cardPadH,
+                paddingVertical: cardPadV,
+              }]}
             >
-              <Text style={[styles.title, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
+              <Text style={[styles.title, {
+                color: colors.text,
+                fontFamily: 'Poppins_800ExtraBold',
+                fontSize: titleSize,
+                marginBottom: titleGap,
+              }]}>
                 Welcome Back
               </Text>
 
@@ -167,60 +207,87 @@ export default function LoginScreen() {
               />
 
               <AnimatePresence>
-                {error && (
+                {error ? (
                   <MotiView
                     from={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 35 }}
+                    animate={{ opacity: 1, height: 28 }}
                     exit={{ opacity: 0, height: 0 }}
-                    style={styles.errorContainer}
+                    style={styles.errorRow}
                   >
-                    <Ionicons name="alert-circle" size={16} color={colors.error} />
-                    <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Poppins_400Regular' }]}>
+                    <Ionicons name="alert-circle" size={14} color={colors.error} />
+                    <Text style={[styles.errorText, { color: colors.error, fontFamily: 'Poppins_600SemiBold' }]}>
                       {error}
                     </Text>
                   </MotiView>
-                )}
+                ) : null}
               </AnimatePresence>
 
+              {/* Sign In */}
               <TouchableOpacity
-                activeOpacity={0.8}
+                activeOpacity={0.85}
                 onPress={handleLogin}
                 disabled={loading}
-                style={styles.loginBtn}
+                style={[styles.signInBtn, { marginTop: isCompact ? 8 : 12 }]}
               >
                 <LinearGradient
                   colors={colors.gradientHero}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  style={styles.loginBtnGradient}
+                  style={[styles.signInGradient, { paddingVertical: isCompact ? 13 : 15 }]}
                 >
                   {loading ? (
-                    <ActivityIndicator color="#ffffff" size="small" />
+                    <ActivityIndicator color="#fff" size="small" />
                   ) : (
-                    <Text style={[styles.loginBtnText, { fontFamily: 'Poppins_700Bold' }]}>SIGN IN</Text>
+                    <Text style={[styles.signInText, { fontFamily: 'Poppins_800ExtraBold', fontSize: isCompact ? 15 : 17 }]}>
+                      SIGN IN
+                    </Text>
                   )}
                 </LinearGradient>
               </TouchableOpacity>
 
+              {/* Guest */}
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={handleGuestLogin}
-                style={styles.guestBtn}
+                style={[styles.guestBtn, { marginTop: isCompact ? 6 : 8 }]}
               >
-                <Text style={[styles.guestBtnText, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
+                <Text style={[styles.guestText, {
+                  color: colors.signInText,
+                  fontFamily: 'Poppins_700Bold',
+                  fontSize: isCompact ? 13 : 14,
+                }]}>
                   Continue as Guest
                 </Text>
               </TouchableOpacity>
 
-              <View style={styles.footerRow}>
+              {/* Divider */}
+              <View style={[styles.divRow, { marginTop: isCompact ? 10 : 14 }]}>
+                <View style={[styles.divLine, { backgroundColor: colors.border }]} />
+                <Text style={[styles.divLabel, {
+                  color: colors.textSecondary,
+
+                  marginBottom:4,
+                  fontFamily: 'Poppins_700Bold',
+                  fontSize: isCompact ? 10 : 11,
+                }]}>
+                  OR CONTINUE WITH
+                </Text>
+                <View style={[styles.divLine, { backgroundColor: colors.border }]} />
+              </View>
+
+              {/* Social */}
+              <SocialAuthButtons onGoogle={handleGoogleLogin} onApple={handleAppleLogin} />
+
+              {/* Footer */}
+              <View style={[styles.footerRow, { marginTop: isCompact ? 8 : 12 , paddingTop:8}]}>
                 <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
-                  <Text style={[styles.footerLink, { color: colors.accent, fontFamily: 'Poppins_600SemiBold' }]}>
+                  <Text style={[styles.footerLink, { color: colors.accent, fontFamily: 'Poppins_700Bold', marginBottom:8 }]}>
                     Create Account
                   </Text>
                 </TouchableOpacity>
                 <View style={[styles.dot, { backgroundColor: colors.border }]} />
                 <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
-                  <Text style={[styles.footerLink, { color: colors.textSecondary, fontFamily: 'Poppins_400Regular' }]}>
+                  <Text style={[styles.footerLink, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
                     Forgot Password?
                   </Text>
                 </TouchableOpacity>
@@ -228,23 +295,6 @@ export default function LoginScreen() {
             </BlurView>
           </MotiView>
 
-          {/* Social Login */}
-          <MotiView
-            from={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 600 }}
-            style={styles.socialSection}
-          >
-            <View style={styles.dividerRow}>
-              <View style={[styles.line, { backgroundColor: colors.border }]} />
-              <Text style={[styles.dividerText, { color: colors.textSecondary, fontFamily: 'Poppins_600SemiBold' }]}>
-                OR CONTINUE WITH
-              </Text>
-              <View style={[styles.line, { backgroundColor: colors.border }]} />
-            </View>
-
-            <SocialAuthButtons onGoogle={handleGoogleLogin} onApple={handleAppleLogin} />
-          </MotiView>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -252,82 +302,62 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  keyboard: { flex: 1 },
-  scrollContent: {
-    flexGrow: 1,
-    paddingTop: 60,
-    paddingBottom: 40,
-    justifyContent: 'center',
+  screen:     { flex: 1 },
+  kav:        { flex: 1 },
+  scroll:     { flexGrow: 1, justifyContent: 'center' },
+
+  // Logo
+  logoSection: { alignItems: 'center' },
+  badge: {
+    justifyContent: 'center', alignItems: 'center',
+    shadowColor: '#5b21b6', shadowOpacity: 0.4, shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 }, elevation: 10,
   },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 40,
+  appName:  { letterSpacing: 1.5 },
+  tagline:  { marginTop: 2, opacity: 0.85 },
+
+  // Card
+  cardWrap: {
+    width: '100%', alignSelf: 'center',
+    borderRadius: 32, overflow: 'hidden',
+    elevation: 14, shadowOpacity: 0.2, shadowRadius: 24,
+    shadowOffset: { width: 0, height: 10 },
   },
-  logoGradient: {
-    width: 86,
-    height: 86,
-    borderRadius: 26,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-    elevation: 8,
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
+  card: { borderRadius: 32, borderWidth: 1.5 },
+  title: { textAlign: 'center' },
+
+  // Error
+  errorRow: {
+    flexDirection: 'row', alignItems: 'center',
+    gap: 6, justifyContent: 'center',
+    marginBottom: 4, overflow: 'hidden',
   },
-  appName: { fontSize: 32, letterSpacing: 1 },
-  appTagline: { fontSize: 16, marginTop: 2, opacity: 0.8 },
-  cardContainer: {
-    width: '100%',
-    alignSelf: 'center',
-    borderRadius: 32,
-    overflow: 'hidden',
-    elevation: 12,
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 12 },
-  },
-  glassCard: {
-    padding: 30,
-    borderRadius: 32,
-    borderWidth: 1.5,
-  },
-  title: { fontSize: 26, textAlign: 'center', marginBottom: 30 },
-  errorContainer: { flexDirection: 'row', alignItems: 'center', gap: 8, justifyContent: 'center', marginBottom: 12 },
-  errorText: { fontSize: 14 },
-  loginBtn: {
-    marginTop: 20,
-    borderRadius: 18,
-    overflow: 'hidden',
-    elevation: 4,
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
+  errorText: { fontSize: 12 },
+
+  // Sign In
+  signInBtn: {
+    borderRadius: 16, overflow: 'hidden',
+    elevation: 6, shadowColor: '#5b21b6',
+    shadowOpacity: 0.38, shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
   },
-  loginBtnGradient: {
-    paddingVertical: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loginBtnText: { color: '#fff', fontSize: 18, letterSpacing: 1.5 },
-  guestBtn: {
-    marginTop: 15,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  guestBtnText: { fontSize: 16, textDecorationLine: 'underline' },
+  signInGradient: { alignItems: 'center', justifyContent: 'center' },
+  signInText:     { color: '#fff', letterSpacing: 1.5 },
+
+  // Guest
+  guestBtn:  { alignItems: 'center', paddingVertical: 6 },
+  guestText: { textDecorationLine: 'underline' },
+
+  // Divider
+  divRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
+  divLine:  { flex: 1, height: 1.5, opacity: 0.4 },
+  divLabel: { letterSpacing: 0.8 },
+
+  // Footer
   footerRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-    gap: 15,
+    flexDirection: 'row', justifyContent: 'center',
+    alignItems: 'center', gap: 12,
   },
-  footerLink: { fontSize: 14 },
-  dot: { width: 5, height: 5, borderRadius: 2.5 },
-  socialSection: { marginTop: 40 },
-  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 15, marginBottom: 25 },
-  line: { flex: 1, height: 1.5, opacity: 0.4 },
-  dividerText: { fontSize: 12, letterSpacing: 1 },
+  footerLink: { fontSize: 13 },
+  dot: { width: 4, height: 4, borderRadius: 2 },
 });

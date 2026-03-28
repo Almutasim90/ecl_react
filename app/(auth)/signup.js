@@ -35,7 +35,15 @@ export default function SignupScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { isDark, colors } = useTheme();
-  const { cardMaxWidth, horizontalPadding, cardPadding } = useResponsive();
+  const { height, isTablet, cardMaxWidth, horizontalPadding } = useResponsive();
+  const isCompact = height < 700;
+  const cardPadding   = isTablet ? 36 : isCompact ? 18 : 28;
+  const brandGap      = isTablet ? 32 : isCompact ? 16 : 24;
+  const titleSize     = isTablet ? 28 : isCompact ? 20 : 24;
+  const titleGap      = isTablet ? 24 : isCompact ? 14 : 22;
+  const brandNameSize = isTablet ? 28 : isCompact ? 22 : 26;
+  const topPad        = Math.max(insets.top, 16) + (isCompact ? 8 : 16);
+  const bottomPad     = Math.max(insets.bottom, 16) + 8;
   const { signUp, signInWithGoogle, signInWithApple, isLoading } = useAuth();
   const { redirect } = useLocalSearchParams();
 
@@ -135,11 +143,15 @@ export default function SignupScreen() {
     <View style={styles.screen}>
       <LiquidGlassBackground />
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={[styles.keyboard, { paddingTop: insets.top, paddingBottom: insets.bottom }]}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboard}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
       >
         <ScrollView
-          contentContainerStyle={[styles.scrollContent, { paddingHorizontal: horizontalPadding }]}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingHorizontal: horizontalPadding, paddingTop: topPad, paddingBottom: bottomPad },
+          ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -148,12 +160,12 @@ export default function SignupScreen() {
             from={{ opacity: 0, translateY: -10 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: 'timing', duration: 600, delay: 50 }}
-            style={styles.brandRow}
+            style={[styles.brandRow, { marginBottom: brandGap }]}
           >
             <View style={[styles.brandIcon, { backgroundColor: accentColor }]}>
-              <Ionicons name="school" size={22} color="#ffffff" />
+              <Ionicons name="school" size={isCompact ? 18 : 22} color="#ffffff" />
             </View>
-            <Text style={[styles.brandName, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
+            <Text style={[styles.brandName, { color: colors.text, fontFamily: 'Poppins_700Bold', fontSize: brandNameSize }]}>
               ECL QUEST
             </Text>
           </MotiView>
@@ -164,7 +176,7 @@ export default function SignupScreen() {
             transition={{ type: 'timing', duration: ENTER_DURATION, delay: ENTER_DELAY }}
             style={[styles.card, { backgroundColor: cardBg, maxWidth: cardMaxWidth, padding: cardPadding, borderColor: colors.border, borderWidth: 1 }]}
           >
-            <Text style={[styles.title, { color: colors.text, fontFamily: 'Poppins_700Bold' }]}>
+            <Text style={[styles.title, { color: colors.text, fontFamily: 'Poppins_700Bold', fontSize: titleSize, marginBottom: titleGap }]}>
               Create Account
             </Text>
 
@@ -262,14 +274,12 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingVertical: 32,
   },
   brandRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
-    marginBottom: 32,
   },
   brandIcon: {
     width: 44,
@@ -282,7 +292,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
   },
-  brandName: { fontSize: 28, letterSpacing: 2 },
+  brandName: { letterSpacing: 2 },
   card: {
     borderRadius: 32,
     width: '100%',
@@ -293,7 +303,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.12,
     shadowRadius: 24,
   },
-  title: { fontSize: 26, marginBottom: 28, textAlign: 'center' },
+  title: { textAlign: 'center' },
   signupBtn: {
     marginTop: 8,
     marginBottom: 20,

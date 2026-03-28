@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
+  BackHandler,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -47,7 +48,7 @@ export default function ListeningQuizScreen() {
   const bottomInset = insets.bottom;
   const audioRef = useRef(null);
 
-  // Kill audio immediately when leaving the screen
+  // Kill audio immediately when leaving the screen (tab switch, swipe back, etc.)
   useFocusEffect(
     useCallback(() => {
       return () => {
@@ -55,6 +56,15 @@ export default function ListeningQuizScreen() {
       };
     }, [])
   );
+
+  // Android hardware back button — stop audio before popping the screen
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      audioRef.current?.stop();
+      return false; // let the default back navigation proceed
+    });
+    return () => subscription.remove();
+  }, []);
 
   const answered = currentAnswer !== undefined && currentAnswer !== null;
 
@@ -108,11 +118,13 @@ export default function ListeningQuizScreen() {
 
   const handlePrev = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    audioRef.current?.stop();
     prevQuestion();
   };
 
   const handleNext = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    audioRef.current?.stop();
     if (currentIndex === totalQuestions - 1) {
       finishQuiz();
     } else {
@@ -137,6 +149,7 @@ export default function ListeningQuizScreen() {
           <TouchableOpacity
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              audioRef.current?.stop();
               router.back();
             }}
             style={styles.headerBackBtn}

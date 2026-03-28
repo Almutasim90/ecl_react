@@ -11,13 +11,7 @@ import Svg, { Circle } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../context/ThemeContext';
-
-let Audio;
-try {
-  Audio = require('expo-av').Audio;
-} catch (e) {
-  Audio = null;
-}
+import { useAudioPlayer, useAudioPlayerStatus, setAudioModeAsync } from 'expo-audio';
 
 const RING_SIZE = 64;
 const RING_STROKE = 4;
@@ -26,127 +20,76 @@ const RING_CIRC = 2 * Math.PI * RING_R;
 
 const AudioPlayer = forwardRef(function AudioPlayer({ audioUrl, onPlaybackStatusUpdate }, ref) {
   const { colors } = useTheme();
-  const [sound, setSound] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [position, setPosition] = useState(0);
-  const [error, setError] = useState(null);
+  const player = useAudioPlayer(audioUrl ? { uri: audioUrl } : null);
+  const status = useAudioPlayerStatus(player);
   const autoplayTimer = useRef(null);
-  const soundRef = useRef(null);
+  const [error, setError] = useState(null);
 
   // Expose stop() so parent screens can kill audio on blur
   useImperativeHandle(ref, () => ({
     stop: async () => {
       clearTimeout(autoplayTimer.current);
-      if (soundRef.current) {
-        try { await soundRef.current.stopAsync(); } catch {}
-        try { await soundRef.current.unloadAsync(); } catch {}
-        soundRef.current = null;
-        setSound(null);
-        setIsPlaying(false);
-        setPosition(0);
-      }
+      try {
+        player.pause();
+        player.seekTo(0);
+      } catch {}
     },
   }));
 
-  // Unload on unmount
+  // Set audio mode once on mount (iOS silent mode support)
   useEffect(() => {
-    return () => {
-      clearTimeout(autoplayTimer.current);
-      if (soundRef.current) soundRef.current.unloadAsync();
-    };
+    if (Platform.OS !== 'web') {
+      setAudioModeAsync({ playsInSilentModeIOS: true }).catch(() => {});
+    }
   }, []);
 
   // Reset + autoplay whenever audioUrl changes
   useEffect(() => {
     clearTimeout(autoplayTimer.current);
-    setPosition(0);
-    setDuration(0);
-    setIsPlaying(false);
     setError(null);
 
-    if (soundRef.current) {
-      soundRef.current.unloadAsync();
-      soundRef.current = null;
-      setSound(null);
-    }
+    // Pause immediately so any retained shouldPlay state doesn't auto-start the new source
+    try { player.pause(); } catch {}
+
+    if (!audioUrl) return;
 
     autoplayTimer.current = setTimeout(() => {
-      triggerPlay();
+      try { player.play(); } catch {}
     }, 2000);
 
-    return () => clearTimeout(autoplayTimer.current);
+    return () => {
+      clearTimeout(autoplayTimer.current);
+      try { player.pause(); } catch {}
+    };
   }, [audioUrl]);
 
-  const loadSound = async () => {
-    if (!Audio) {
-      setError('Audio not available.');
-      return null;
-    }
-    try {
-      setIsLoading(true);
-      setError(null);
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      clearTimeout(autoplayTimer.current);
+    };
+  }, []);
 
-      if (Platform.OS !== 'web') {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          playsInSilentModeIOS: true,
-        });
-      }
+  // Notify parent of status updates
+  useEffect(() => {
+    onPlaybackStatusUpdate?.(status);
+  }, [status]);
 
-      const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri: audioUrl },
-        { shouldPlay: false },
-        (status) => {
-          if (status.isLoaded) {
-            setIsPlaying(status.isPlaying);
-            setPosition(status.positionMillis || 0);
-            setDuration(status.durationMillis || 0);
-            if (status.didJustFinish) {
-              setIsPlaying(false);
-              setPosition(0);
-            }
-          }
-          onPlaybackStatusUpdate?.(status);
-        }
-      );
-
-      soundRef.current = newSound;
-      setSound(newSound);
-      setIsLoading(false);
-      return newSound;
-    } catch (e) {
-      setError('Failed to load audio.');
-      setIsLoading(false);
-      return null;
-    }
-  };
-
-  const triggerPlay = async () => {
-    try {
-      let s = soundRef.current;
-      if (!s) s = await loadSound();
-      if (s) await s.playAsync();
-    } catch (e) {
-      setError('Playback error. Please try again.');
-    }
-  };
+  // expo-audio times are in seconds — convert to ms for display
+  const positionMs = (status.currentTime || 0) * 1000;
+  const durationMs = (status.duration || 0) * 1000;
+  const isPlaying = status.playing ?? false;
+  const isLoading = !status.isLoaded;
 
   const handlePlayPause = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     try {
-      const s = soundRef.current;
-      if (!s) {
-        await triggerPlay();
-        return;
-      }
       if (isPlaying) {
-        await s.pauseAsync();
+        player.pause();
       } else {
-        await s.playAsync();
+        player.play();
       }
-    } catch (e) {
+    } catch {
       setError('Playback error. Please try again.');
     }
   };
@@ -154,12 +97,9 @@ const AudioPlayer = forwardRef(function AudioPlayer({ audioUrl, onPlaybackStatus
   const handleReplay = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
-      const s = soundRef.current;
-      if (s) {
-        await s.setPositionAsync(0);
-        await s.playAsync();
-      }
-    } catch (e) {
+      player.seekTo(0);
+      player.play();
+    } catch {
       setError('Playback error. Please try again.');
     }
   };
@@ -171,13 +111,13 @@ const AudioPlayer = forwardRef(function AudioPlayer({ audioUrl, onPlaybackStatus
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  const progress = duration > 0 ? Math.min(position / duration, 1) : 0;
+  const progress = durationMs > 0 ? Math.min(positionMs / durationMs, 1) : 0;
   const strokeDashoffset = RING_CIRC * (1 - progress);
 
   const statusLabel = isLoading ? 'Loading...'
     : error ? error
       : isPlaying ? 'Playing'
-        : position > 0 ? 'Paused'
+        : positionMs > 0 ? 'Paused'
           : 'Ready';
 
   return (
@@ -225,7 +165,7 @@ const AudioPlayer = forwardRef(function AudioPlayer({ audioUrl, onPlaybackStatus
           </View>
         </TouchableOpacity>
 
-        {position > 0 && !isPlaying && (
+        {positionMs > 0 && !isPlaying && (
           <TouchableOpacity activeOpacity={0.85} onPress={handleReplay} style={styles.replayButton}>
             <Ionicons name="reload" size={24} color={colors.textSecondary} />
           </TouchableOpacity>
@@ -235,13 +175,13 @@ const AudioPlayer = forwardRef(function AudioPlayer({ audioUrl, onPlaybackStatus
         <View style={styles.info}>
           <View style={styles.timeRow}>
             <Text style={[styles.timeText, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
-              {formatTime(position)}
+              {formatTime(positionMs)}
             </Text>
             <Text style={[styles.statusText, { color: colors.accent, fontFamily: 'Poppins_700Bold' }]}>
               {statusLabel}
             </Text>
             <Text style={[styles.timeText, { color: colors.textSecondary, fontFamily: 'Poppins_700Bold' }]}>
-              {formatTime(duration)}
+              {formatTime(durationMs)}
             </Text>
           </View>
 

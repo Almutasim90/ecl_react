@@ -102,7 +102,7 @@ export default function HomeScreen() {
             <Text style={[styles.greetingLine, { fontFamily: font.bold }]}>
               {greetingEmoji}  {greeting}
             </Text>
-            <Text style={[styles.userName, { fontFamily: font.extraBold }]}>
+            <Text style={[styles.userName, { fontFamily: font.bold }]} numberOfLines={1} adjustsFontSizeToFit>
               {userName} 👋
             </Text>
           </View>
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   },
   greetingCol: { gap: spacing.xs / 2 },
   greetingLine: { fontSize: fontSize.label, color: 'rgba(255,255,255,0.75)' },
-  userName: { fontSize: fontSize.heroHeading, color: '#ffffff' },
+  userName: { fontSize: fontSize.sectionTitle, color: '#FFD700' },
   avatarRing: {
     borderRadius: radius.xl / 2,
     borderWidth: 2.5,

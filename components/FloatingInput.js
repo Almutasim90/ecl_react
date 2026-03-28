@@ -69,28 +69,28 @@ export default function FloatingInput({
 
 const styles = StyleSheet.create({
   wrap: {
-    marginBottom: 20,
+    marginBottom: 14,
     position: 'relative',
   },
   label: {
     position: 'absolute',
     left: 16,
-    top: 18,
-    fontSize: 16,
+    top: 15,
+    fontSize: 15,
     zIndex: 1,
   },
   labelFloating: {
-    top: -10,
+    top: -9,
     left: 12,
-    fontSize: 12,
+    fontSize: 11,
     backgroundColor: 'transparent',
   },
   input: {
-    height: 56,
+    height: 50,
     borderWidth: 1.5,
-    borderRadius: 16,
+    borderRadius: 14,
     paddingHorizontal: 16,
-    paddingTop: 20,
-    fontSize: 16,
+    paddingTop: 18,
+    fontSize: 15,
   },
 });

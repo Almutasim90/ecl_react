@@ -17,10 +17,15 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.almutasimsorganization.ecl",
       "infoPlist": {
-        "LSApplicationQueriesSchemes": ["https", "http"]
+        "LSApplicationQueriesSchemes": [
+          "https",
+          "http"
+        ]
       },
       "entitlements": {
-        "com.apple.developer.applesignin": ["Default"]
+        "com.apple.developer.applesignin": [
+          "Default"
+        ]
       }
     },
     "android": {
@@ -42,7 +47,10 @@
               "pathPrefix": "/callback"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -54,7 +62,7 @@
       "expo-font",
       "expo-web-browser",
       [
-        "expo-av",
+        "expo-audio",
         {
           "microphonePermission": "Allow ECL to access your microphone."
         }
@@ -65,7 +73,6 @@
       "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmZ3Rnam9uaXB2cmhland2bGR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MjQ0NjIsImV4cCI6MjA4OTIwMDQ2Mn0.2OcFte21Xp3uwqv0mJjlKoId_DM25o5AHK_JfnXG5qg",
       "router": {},
       "eas": {}
-
     },
     "owner": "almutasims-organization"
   }
