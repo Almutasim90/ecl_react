@@ -1,0 +1,27 @@
+services:
+  ecl:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80"
+    labels:
+      # ── Traefik / Coolify routing ─────────────────────────────────
+      - "traefik.enable=true"
+
+      # HTTP → HTTPS redirect
+      - "traefik.http.routers.ecl-http.rule=Host(`eclreact.almutasim.site`)"
+      - "traefik.http.routers.ecl-http.entrypoints=http"
+      - "traefik.http.routers.ecl-http.middlewares=ecl-https-redirect"
+      - "traefik.http.middlewares.ecl-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.ecl-https-redirect.redirectscheme.permanent=true"
+
+      # HTTPS with auto Let's Encrypt cert
+      - "traefik.http.routers.ecl.rule=Host(`eclreact.almutasim.site`)"
+      - "traefik.http.routers.ecl.entrypoints=https"
+      - "traefik.http.routers.ecl.tls=true"
+      - "traefik.http.routers.ecl.tls.certresolver=letsencrypt"
+
+      # Tell Traefik the container listens on port 80
+      - "traefik.http.services.ecl.loadbalancer.server.port=80"
