@@ -11,20 +11,18 @@ RUN apk add --no-cache python3 make g++ git
 # Increase Node heap to avoid OOM during Expo bundling
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV EXPO_NO_TELEMETRY=1
-ENV NODE_ENV=production
-# Disable Expo update checks so the build doesn't try to reach the internet
 ENV EXPO_NO_UPDATE_CHECK=1
 
-# ── Dependencies ───────────────────────────────────────────────────────
+# ── Dependencies (include devDeps — nativewind needs tailwindcss at build time) ──
 COPY package.json ./
-RUN npm install --legacy-peer-deps --prefer-offline
+RUN npm install --legacy-peer-deps
 
 # ── Source ────────────────────────────────────────────────────────────
 COPY . .
 
 # ── Web export ────────────────────────────────────────────────────────
-# Outputs static files to ./dist
-RUN npx expo export --platform web
+# NODE_ENV=production set here only, after install, so devDeps are present
+RUN NODE_ENV=production npx expo export --platform web
 
 # ──────────────────────────────────────────────────────────────────────
 # Stage 2: Serve with nginx (tiny final image)
