@@ -9,19 +9,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=coolify"
-
-      # HTTP → HTTPS redirect (Coolify uses 'web' not 'http')
-      - "traefik.http.routers.ecl-http.rule=Host(`eclreact.almutasim.site`)"
-      - "traefik.http.routers.ecl-http.entrypoints=web"
-      - "traefik.http.routers.ecl-http.middlewares=ecl-https-redirect"
-      - "traefik.http.middlewares.ecl-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.ecl-https-redirect.redirectscheme.permanent=true"
-
-      # HTTPS (Coolify uses 'websecure' not 'https')
       - "traefik.http.routers.ecl.rule=Host(`eclreact.almutasim.site`)"
-      - "traefik.http.routers.ecl.entrypoints=websecure"
-      - "traefik.http.routers.ecl.tls=true"
-      - "traefik.http.routers.ecl.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.ecl.entrypoints=web"
       - "traefik.http.services.ecl.loadbalancer.server.port=80"
 
 networks:
